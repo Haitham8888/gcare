@@ -72,7 +72,7 @@ function NavBar(props) {
 
 function Hero(props) {
   return (
-    <section class="hero" id="hero" role="banner" aria-label={props.t('heroAria')}>
+    <section class="section hero" id="hero" role="banner" aria-label={props.t('heroAria')}>
       <div class="hero-overlay" />
       <div class="container hero-content">
         <HeroInfiniteSlider />
@@ -218,15 +218,6 @@ function ProductsPage(props) {
 }
 
 function ContactPage(props) {
-  const infoCards = [
-    { title: props.t('contactPhone'), value: props.t('contactPhoneValue'), href: 'tel:+966112145550', note: props.t('contactPhoneNote') },
-    { title: props.t('contactEmailLabel'), value: 'info@gcare.sa', href: 'mailto:info@gcare.sa', note: props.t('contactEmailNote') },
-    { title: props.t('contactEmailHealthLabel'), value: 'hep@gcare.sa', href: 'mailto:hep@gcare.sa', note: props.t('contactEmailHealthNote') },
-    { title: props.t('contactAddress'), value: props.t('contactAddressValue'), note: props.t('contactVisitNote') }
-  ]
-
-  const tags = [props.t('contactTagSupport'), props.t('contactTagSupply'), props.t('contactTagPartners'), props.t('contactTagTraining')]
-
   return (
     <>
       <section class="section contact-page" id="contact-page" aria-label={props.t('contactAria')}>
@@ -282,7 +273,12 @@ function ContactPage(props) {
               </div>
             </div>
             <div class="contact-info-grid" aria-label={props.t('contactHighlightsAria')}>
-              {infoCards.map((card) => (
+              {[
+                { title: props.t('contactPhone'), value: props.t('contactPhoneValue'), href: 'tel:+966112145550', note: props.t('contactPhoneNote') },
+                { title: props.t('contactEmailLabel'), value: 'info@gcare.sa', href: 'mailto:info@gcare.sa', note: props.t('contactEmailNote') },
+                { title: props.t('contactEmailHealthLabel'), value: 'hep@gcare.sa', href: 'mailto:hep@gcare.sa', note: props.t('contactEmailHealthNote') },
+                { title: props.t('contactAddress'), value: props.t('contactAddressValue'), note: props.t('contactVisitNote') }
+              ].map((card) => (
                 <div class="info-card">
                   <div class="info-title">{card.title}</div>
                   {card.href ? (
@@ -742,13 +738,13 @@ export default function App() {
       contactPageSubtitle: 'We’d love to hear from you.',
       contactPageBody1: 'Our team is ready to answer questions about products, supply, or partnerships.',
       contactPageBody2: 'Reach us by email or through our social channels for faster support.',
-      contactPhone: 'Support phone',
+      contactPhone: 'Support Phone',
       contactPhoneValue: '+966 11 214 5550',
-      contactPhoneNote: 'Sunday to Thursday, 9am - 5pm',
-      contactEmailLabel: 'Email',
-      contactEmailNote: 'We reply within one business day',
+      contactPhoneNote: 'Sunday to Thursday, 9 AM - 5 PM',
+      contactEmailLabel: 'Email Address',
+      contactEmailNote: 'We respond within one business day',
       contactEmailHealthLabel: 'Health Education Email',
-      contactEmailHealthNote: 'For awareness materials and inquiries',
+      contactEmailHealthNote: 'For inquiries and awareness materials',
       contactAddress: 'Address',
       contactAddressValue: 'Riyadh, Saudi Arabia',
       contactVisitNote: 'Office visits by appointment',
