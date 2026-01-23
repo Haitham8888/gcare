@@ -274,17 +274,21 @@ function ContactPage(props) {
             </div>
             <div class="contact-info-grid" aria-label={props.t('contactHighlightsAria')}>
               {[
-                { title: props.t('contactPhone'), value: props.t('contactPhoneValue'), href: 'tel:+966112145550', note: props.t('contactPhoneNote') },
-                { title: props.t('contactEmailLabel'), value: 'info@gcare.sa', href: 'mailto:info@gcare.sa', note: props.t('contactEmailNote') },
-                { title: props.t('contactEmailHealthLabel'), value: 'hep@gcare.sa', href: 'mailto:hep@gcare.sa', note: props.t('contactEmailHealthNote') },
-                { title: props.t('contactAddress'), value: props.t('contactAddressValue'), note: props.t('contactVisitNote') }
+                { title: props.t('contactPhone'), value: props.t('contactPhoneValue'), href: 'tel:+966112145550', note: props.t('contactPhoneNote'), isLtr: true },
+                { title: props.t('contactEmailLabel'), value: 'info@gcare.sa', href: 'mailto:info@gcare.sa', note: props.t('contactEmailNote'), isLtr: true },
+                { title: props.t('contactEmailHealthLabel'), value: 'hep@gcare.sa', href: 'mailto:hep@gcare.sa', note: props.t('contactEmailHealthNote'), isLtr: true },
+                { title: props.t('contactAddress'), value: props.t('contactAddressValue'), note: props.t('contactVisitNote'), isLtr: false }
               ].map((card) => (
                 <div class="info-card">
                   <div class="info-title">{card.title}</div>
                   {card.href ? (
-                    <a class="info-value" href={card.href} dir="ltr">{card.value}</a>
+                    <a class="info-value" href={card.href}>
+                      <span dir={card.isLtr ? 'ltr' : 'auto'}>{card.value}</span>
+                    </a>
                   ) : (
-                    <div class="info-value" dir="ltr">{card.value}</div>
+                    <div class="info-value">
+                      <span dir={card.isLtr ? 'ltr' : 'auto'}>{card.value}</span>
+                    </div>
                   )}
                   <div class="info-note">{card.note}</div>
                 </div>
