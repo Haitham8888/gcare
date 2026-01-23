@@ -1160,9 +1160,10 @@ html[dir="rtl"] .search-field input {
   color: #1e293b;
   font-weight: 900;
   text-decoration: none;
-  direction: ltr;
-  unicode-bidi: isolate;
+  direction: ltr !important;
+  unicode-bidi: bidi-override !important;
   display: inline-block;
+  text-align: left;
 }
 
 .info-value:hover {
@@ -1508,8 +1509,8 @@ html[dir="ltr"] .education-gallery-track {
 
 .foot-phone .value {
   font-weight: 600;
-  direction: ltr;
-  unicode-bidi: isolate;
+  direction: ltr !important;
+  unicode-bidi: bidi-override !important;
   display: inline-block;
 }
 
