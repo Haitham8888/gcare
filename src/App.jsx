@@ -282,9 +282,9 @@ function ContactPage(props) {
                 <div class="info-card">
                   <div class="info-title">{card.title}</div>
                   {card.href ? (
-                    <a class="info-value" href={card.href}>{card.value}</a>
+                    <a class="info-value" href={card.href} dir="ltr">{card.value}</a>
                   ) : (
-                    <div class="info-value">{card.value}</div>
+                    <div class="info-value" dir="ltr">{card.value}</div>
                   )}
                   <div class="info-note">{card.note}</div>
                 </div>
@@ -511,7 +511,7 @@ function Contact(props) {
           <div class="contact-grid">
             <div class="contact-form">
               <div class="foot-contact-info">
-                <a href={`tel:${props.t('contactPhoneValue').replace(/\s+/g, '')}`} class="foot-phone">
+                <a href={`tel:${props.t('contactPhoneValue').replace(/\s+/g, '')}`} class="foot-phone" dir="ltr">
                   <span class="label">{props.t('contactPhone')}:</span>
                   <span class="value">{props.t('contactPhoneValue')}</span>
                 </a>
