@@ -511,9 +511,9 @@ function Contact(props) {
           <div class="contact-grid">
             <div class="contact-form">
               <div class="foot-contact-info">
-                <a href={`tel:${props.t('contactPhoneValue').replace(/\s+/g, '')}`} class="foot-phone" dir="ltr">
+                <a href={`tel:${props.t('contactPhoneValue').replace(/\s+/g, '')}`} class="foot-phone">
                   <span class="label">{props.t('contactPhone')}:</span>
-                  <span class="value">{props.t('contactPhoneValue')}</span>
+                  <span class="value" dir="ltr">{props.t('contactPhoneValue')}</span>
                 </a>
               </div>
               <div class="field"><input placeholder={props.t('contactName')} /></div>
