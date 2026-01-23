@@ -1,6 +1,6 @@
 @font-face {
   font-family: 'Neo Sans Arabic';
-  src: url('/static/fonts/Ar%20Neo%20Sans%20Arabic%20Font%20Family/NeoSansArabic.ttf') format('truetype');
+  src: url('../static/fonts/Ar%20Neo%20Sans%20Arabic%20Font%20Family/NeoSansArabic.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -8,7 +8,7 @@
 
 @font-face {
   font-family: 'Neo Sans Arabic';
-  src: url('/static/fonts/Ar%20Neo%20Sans%20Arabic%20Font%20Family/NeoSansArabicMedium.ttf') format('truetype');
+  src: url('../static/fonts/Ar%20Neo%20Sans%20Arabic%20Font%20Family/NeoSansArabicMedium.ttf') format('truetype');
   font-weight: 600;
   font-style: normal;
   font-display: swap;
@@ -16,7 +16,7 @@
 
 @font-face {
   font-family: 'Neo Sans Arabic';
-  src: url('/static/fonts/Ar%20Neo%20Sans%20Arabic%20Font%20Family/NeoSansArabicBold.ttf') format('truetype');
+  src: url('../static/fonts/Ar%20Neo%20Sans%20Arabic%20Font%20Family/NeoSansArabicBold.ttf') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -24,7 +24,7 @@
 
 @font-face {
   font-family: 'Uni Neue';
-  src: url('/static/fonts/En%20Uni%20Neue%20Font%20Family/UniNeueRegular.otf') format('opentype');
+  src: url('../static/fonts/En%20Uni%20Neue%20Font%20Family/UniNeueRegular.otf') format('opentype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -32,7 +32,7 @@
 
 @font-face {
   font-family: 'Uni Neue';
-  src: url('/static/fonts/En%20Uni%20Neue%20Font%20Family/UniNeueBook.otf') format('opentype');
+  src: url('../static/fonts/En%20Uni%20Neue%20Font%20Family/UniNeueBook.otf') format('opentype');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -40,7 +40,7 @@
 
 @font-face {
   font-family: 'Uni Neue';
-  src: url('/static/fonts/En%20Uni%20Neue%20Font%20Family/UniNeueBold.otf') format('opentype');
+  src: url('../static/fonts/En%20Uni%20Neue%20Font%20Family/UniNeueBold.otf') format('opentype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -64,7 +64,11 @@ html[dir="ltr"] {
   font-family: 'Uni Neue', 'Neo Sans Arabic', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji';
 }
 
-html, body, #root { height: 100%; }
+html,
+body,
+#root {
+  height: 100%;
+}
 
 body {
   margin: 0;
@@ -72,6 +76,10 @@ body {
   color: #0f172a;
 }
 
-a { color: inherit; }
+a {
+  color: inherit;
+}
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
