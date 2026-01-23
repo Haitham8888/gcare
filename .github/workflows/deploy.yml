@@ -74,3 +74,5 @@ jobs:
           port: ${{ secrets.FTP_PORT }}
           local-dir: ./dist/
           server-dir: ./
+          timeout: 60000
+          passive: true
