@@ -1,0 +1,34 @@
+backend:
+  name: github
+  repo: Haitham8888/gcare
+  branch: main
+
+media_folder: "static/img"
+public_folder: "/gcare/static/img"
+
+collections:
+  - name: "content"
+    label: "المحتوى"
+    files:
+      - name: "translations"
+        label: "الترجمات والنصوص"
+        file: "src/data/translations.json"
+        fields:
+          - { label: "النصوص العربية", name: "ar", widget: "object", fields: [
+              { label: "عنوان الهيرو", name: "heroTitle", widget: "string" },
+              { label: "وصف الهيرو", name: "heroSubtitle", widget: "string" },
+              { label: "نبذة عنا (فقرة 1)", name: "aboutP1", widget: "text" },
+              { label: "نبذة عنا (فقرة 2)", name: "aboutP2", widget: "text" },
+              { label: "هاتف التواصل", name: "contactPhoneValue", widget: "string" },
+              { label: "حقوق الفوتر", name: "footerRights", widget: "string" },
+              { label: "مكان البحث", name: "searchGlobalPlaceholder", widget: "string" }
+            ]}
+          - { label: "English Texts", name: "en", widget: "object", fields: [
+              { label: "Hero Title", name: "heroTitle", widget: "string" },
+              { label: "Hero Subtitle", name: "heroSubtitle", widget: "string" },
+              { label: "About Us (P1)", name: "aboutP1", widget: "text" },
+              { label: "About Us (P2)", name: "aboutP2", widget: "text" },
+              { label: "Contact Phone", name: "contactPhoneValue", widget: "string" },
+              { label: "Footer Rights", name: "footerRights", widget: "string" },
+              { label: "Search Placeholder", name: "searchGlobalPlaceholder", widget: "string" }
+            ]}
