@@ -70,12 +70,83 @@ function NavBar(props) {
   )
 }
 
+function GlobalSearch(props) {
+  const [query, setQuery] = createSignal('')
+  const [results, setResults] = createSignal([])
+  const [showResults, setShowResults] = createSignal(false)
+
+  const searchableItems = [
+    { key: 'navAbout', href: '#about' },
+    { key: 'navProducts', href: '#products' },
+    { key: 'navEducation', href: '#education-page' },
+    { key: 'navContact', href: '#contact-page' },
+    { key: 'catIVD', href: '#products' },
+    { key: 'catIUD', href: '#products' },
+    { key: 'catIUS', href: '#products' },
+    { key: 'catWomanCare', href: '#products' },
+    { key: 'educationTopic1Title', href: '#education-page' },
+    { key: 'educationTopic2Title', href: '#education-page' },
+    { key: 'educationTopic3Title', href: '#education-page' },
+  ]
+
+  createEffect(() => {
+    const q = query().toLowerCase().trim()
+    if (!q) {
+      setResults([])
+      return
+    }
+    const filtered = searchableItems.filter(item => {
+      const label = props.t(item.key).toLowerCase()
+      return label.includes(q)
+    })
+    setResults(filtered)
+  })
+
+  return (
+    <div class="global-search-container">
+      <div class="global-search-box">
+        <svg class="search-icon-main" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+        <input
+          type="text"
+          class="global-search-input"
+          placeholder={props.t('searchGlobalPlaceholder')}
+          onInput={(e) => {
+            setQuery(e.target.value)
+            setShowResults(true)
+          }}
+          onFocus={() => setShowResults(query().length > 0)}
+        />
+        {showResults() && results().length > 0 && (
+          <div class="search-results-dropdown shadow-lg">
+            {results().map(item => (
+              <a href={item.href} class="search-result-item" onClick={() => setShowResults(false)}>
+                <span class="result-label">{props.t(item.key)}</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14m-7-7 7 7-7 7" />
+                </svg>
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function Hero(props) {
   return (
     <section class="section hero" id="hero" role="banner" aria-label={props.t('heroAria')}>
       <div class="hero-overlay" />
       <div class="container hero-content">
         <HeroInfiniteSlider />
+        <div class="hero-search-overlay">
+          <h1 class="hero-main-title">{props.t('heroTitle')}</h1>
+          <p class="hero-main-subtitle">{props.t('heroSubtitle')}</p>
+          <GlobalSearch t={props.t} />
+        </div>
       </div>
     </section>
   )
@@ -672,7 +743,8 @@ export default function App() {
       contactName: 'اسمك',
       contactMessage: 'رسالتك',
       contactEmail: 'بريدك الإلكتروني',
-      contactSend: 'إرسال رسالة'
+      contactSend: 'إرسال رسالة',
+      searchGlobalPlaceholder: 'ابحث عن منتج، معلومة، أو قسم...'
     },
     en: {
       brand: 'G-Care',
@@ -783,7 +855,8 @@ export default function App() {
       contactName: 'Your Name',
       contactMessage: 'Your Message',
       contactEmail: 'Your Email',
-      contactSend: 'Send Message'
+      contactSend: 'Send Message',
+      searchGlobalPlaceholder: 'Search for products, info, or sections...'
     }
   }
 
