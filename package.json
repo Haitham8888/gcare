@@ -11,6 +11,8 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "@fontsource-variable/inter": "^5.2.8",
+    "@fontsource/noto-sans-arabic": "^5.2.10",
     "simple-icons": "^16.4.0",
     "solid-js": "^1.9.10"
   },
