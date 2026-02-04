@@ -2,6 +2,7 @@ backend:
   name: github
   repo: Haitham8888/gcare
   branch: main
+  base_url: https://cms-oauth-gh.pockethost.io
 
 media_folder: "static/img"
 public_folder: "/gcare/static/img"
