@@ -7,6 +7,36 @@
   --bg-soft: #f8fafc;
 }
 
+/* Custom Scrollbar - Refined for eye comfort */
+::-webkit-scrollbar {
+  width: 8px;
+  /* Thinner */
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+  /* Cleaner look */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  /* Neutral, soft color */
+  border-radius: 20px;
+  border: 2px solid #ffffff;
+  /* Floating effect */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--brand);
+  /* Brand color only on interaction */
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
 .page {
   background: var(--bg);
   color: var(--ink);
