@@ -378,15 +378,19 @@ function About(props) {
   return (
     <section class="section" id="about">
       <div class="container">
-        <div class="section-head">
-          <h2 class="section-title">{props.t('aboutTitle')}</h2>
-          <img class="brand-logo" src={`${baseUrl}static/img/G%20-%20Care-01.svg`} alt="" aria-hidden="true" style="width: 200px; height: 200px;" />
-        </div>
-        <div class="about-grid">
-          <p>{props.t('aboutP1')}</p>
-          <p>{props.t('aboutP2')}</p>
-          <p>{props.t('aboutP3')}</p>
-          <p>{props.t('aboutP4')}</p>
+        <div class="about-layout">
+          <div class="about-text">
+            <h2 class="section-title">{props.t('aboutTitle')}</h2>
+            <div class="about-content">
+              <p>{props.t('aboutP1')}</p>
+              <p>{props.t('aboutP2')}</p>
+              <p>{props.t('aboutP3')}</p>
+              <p>{props.t('aboutP4')}</p>
+            </div>
+          </div>
+          <div class="about-logo-v2">
+            <img src={`${baseUrl}static/img/G%20-%20Care-01.svg`} alt="" aria-hidden="true" />
+          </div>
         </div>
       </div>
     </section>
