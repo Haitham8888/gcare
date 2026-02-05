@@ -480,6 +480,8 @@ html[dir="ltr"] .hero-gallery-track {
 .section-title {
   margin: 0;
   font-size: clamp(1.4rem, 2vw + .5rem, 2rem);
+  color: #85c1af;
+  /* Updated title color */
 }
 
 .muted {
@@ -657,8 +659,9 @@ html[dir="ltr"] .hero-gallery-track {
 }
 
 .clients-track {
-  --clients-gap: 3rem;
+  --clients-gap: 6rem;
   display: flex;
+  gap: var(--clients-gap);
   width: max-content;
   animation: clientsMarquee 35s linear infinite;
   will-change: transform;
@@ -1134,7 +1137,7 @@ html[dir="rtl"] .footer-brand-logo img {
   font-size: 0.98rem;
   line-height: 1.7;
   color: #cbd5e1;
-  /* Lighter for better readability */
+  /* Reverted to previous color */
   text-align: right;
   margin: 0;
   font-weight: 500;
