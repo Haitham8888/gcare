@@ -608,11 +608,11 @@ function Contact(props) {
           </div>
           <div class="info-group">
             <span class="info-label">{props.t('footerPhoneTitle')}</span>
-            <a href="tel:+966112145550" class="info-value">+966 11 214 5550</a>
+            <a href="tel:+966112145550" class="info-value phone-number">+966 11 214 5550</a>
           </div>
           <div class="info-group">
             <span class="info-label">{props.t('footerInquiryTitle')}</span>
-            <a href="mailto:info@gcare.sa" class="info-value">info@gcare.sa</a>
+            <a href={`mailto:info@gcare.sa`} class="info-value">info@gcare.sa</a>
           </div>
         </div>
 
