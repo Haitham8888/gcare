@@ -1124,11 +1124,27 @@ html[dir="rtl"] .search-field input {
   font-size: 1.15rem;
   text-decoration: none;
   transition: opacity 0.3s ease;
+  text-align: inherit;
 }
 
 .info-value:hover {
   opacity: 0.8;
   color: #fff !important;
+}
+
+.info-value[dir="ltr"] {
+  display: inline-block;
+  direction: ltr;
+}
+
+.phone-number {
+  direction: ltr;
+  text-align: right;
+  display: block;
+}
+
+html[dir="ltr"] .phone-number {
+  text-align: left;
 }
 
 .info-value-text {
