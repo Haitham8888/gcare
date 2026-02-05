@@ -5,7 +5,7 @@ backend:
   base_url: https://cms-oauth-gh.pockethost.io
 
 media_folder: "public/static/img"
-public_folder: "/gcare/static/img"
+public_folder: "/static/img"
 
 collections:
   - name: "content"
