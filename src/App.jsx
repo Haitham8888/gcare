@@ -292,57 +292,55 @@ function ContactPage(props) {
     <>
       <section class="section contact-page" id="contact-page" aria-label={props.t('contactAria')}>
         <div class="container">
-          <div class="section-head">
-            <h2 class="section-title">{props.t('contactPageTitle')}</h2>
-            <p class="muted">{props.t('contactPageSubtitle')}</p>
-          </div>
-          <div class="contact contact-page-block">
-            <div class="contact-page-logo-wrapper">
-              <img class="contact-page-logo" src={`${import.meta.env.BASE_URL}static/img/G%20-%20Care-01.svg`} alt="G-Care" />
-            </div>
-            <div class="contact-page-intro">
-              <p class="muted contact-page-text">{props.t('contactPageBody1')}</p>
-              <p class="muted contact-page-text">{props.t('contactPageBody2')}</p>
-            </div>
-            <div class="contact-grid">
-              <div class="contact-form">
-                <label class="contact-form-title">{props.t('contactTitle')}</label>
-                <p class="contact-form-subtitle">{props.t('contactFormSubtitle')}</p>
-                <div class="field">
-                  <input id="contact-name" placeholder={props.t('contactName')} />
-                </div>
-                <div class="field">
-                  <textarea id="contact-message" placeholder={props.t('contactMessage')} rows="4"></textarea>
-                </div>
-                <a class="btn btn-primary contact-submit" href="mailto:info@gcare.sa" id="contact-submit">{props.t('contactSend')}</a>
+          <div class="contact-page-block">
+            <div class="contact-page-header">
+              <div class="contact-page-logo-wrapper">
+                <img class="contact-page-logo" src={`${import.meta.env.BASE_URL}static/img/G%20-%20Care-01.svg`} alt="G-Care" />
               </div>
-              <div class="socials" aria-label={props.t('socialsAria')}>
-                <span class="socials-label">{props.t('socialsTitle')}</span>
-                <div class="socials-links">
-                  {socialLinks.map((item) => {
-                    const key = item.label.toLowerCase().replace(/\s+/g, '')
-                    return (
-                      <a class={`social-item social-${key}`} href={item.href} target="_blank" rel="noreferrer" aria-label={item.label}>
-                        <span class="social-avatar" aria-hidden>
-                          {getSocialIcon(key) ? (
-                            <img
-                              class="social-icon"
-                              src={getSocialIcon(key)}
-                              alt=""
-                              aria-hidden="true"
-                            />
-                          ) : (
-                            <span class="social-icon-badge">*</span>
-                          )}
-                        </span>
-                        <span class="social-label">{item.label}</span>
-                      </a>
-                    )
-                  })}
+              <div class="contact-page-intro">
+                <p class="contact-page-text">{props.t('contactPageBody1')}</p>
+                <p class="contact-page-text">{props.t('contactPageBody2')}</p>
+              </div>
+            </div>
+
+            <div class="contact-main-grid">
+              <div class="contact-appointment-side">
+                <div class="appointment-card">
+                  <div class="appointment-content">
+                    <h3 class="appointment-title">{props.t('contactAppointmentTitle')}</h3>
+                    <p class="appointment-sub">{props.t('contactAppointmentSub')}</p>
+                  </div>
+                  <a href="#" class="btn appointment-btn" onClick={(e) => { e.preventDefault(); alert('رابط الحجز سيتوفر قريباً'); }}>
+                    {props.t('contactAppointmentBtn')}
+                  </a>
+                </div>
+              </div>
+
+              <div class="contact-form-side">
+                <div class="contact-form-card">
+                  <h3 class="contact-form-title">{props.t('contactTitle')}</h3>
+                  <p class="contact-form-subtitle">{props.t('contactFormSubtitle')}</p>
+                  <form class="contact-form-fields" onSubmit={(e) => e.preventDefault()}>
+                    <div class="field">
+                      <input type="text" id="contact-name" placeholder={props.t('contactName')} required />
+                    </div>
+                    <div class="field">
+                      <input type="email" id="contact-email" placeholder={props.t('contactEmail')} required />
+                    </div>
+                    <div class="field">
+                      <textarea id="contact-message" placeholder={props.t('contactMessage')} rows="4" required></textarea>
+                    </div>
+                    <button class="btn btn-primary contact-submit" type="submit">
+                      {props.t('contactSend')}
+                    </button>
+                  </form>
                 </div>
               </div>
             </div>
-            <div class="contact-info-grid" aria-label={props.t('contactHighlightsAria')}>
+
+
+
+            <div class="contact-info-grid">
               {[
                 { title: props.t('contactPhone'), value: props.t('contactPhoneValue'), href: 'tel:+966112145550', note: props.t('contactPhoneNote'), isLtr: true },
                 { title: props.t('contactEmailLabel'), value: 'info@gcare.sa', href: 'mailto:info@gcare.sa', note: props.t('contactEmailNote'), isLtr: true },
@@ -350,19 +348,32 @@ function ContactPage(props) {
                 { title: props.t('contactAddress'), value: props.t('contactAddressValue'), note: props.t('contactVisitNote'), isLtr: false }
               ].map((card) => (
                 <div class="info-card">
-                  <div class="info-title">{card.title}</div>
+                  <span class="info-card-title">{card.title}</span>
                   {card.href ? (
-                    <a class="info-value" href={card.href}>
-                      <span dir={card.isLtr ? 'ltr' : 'auto'}>{card.value}</span>
+                    <a class="info-card-value" href={card.href} dir={card.isLtr ? 'ltr' : 'auto'}>
+                      {card.value}
                     </a>
                   ) : (
-                    <div class="info-value">
-                      <span dir={card.isLtr ? 'ltr' : 'auto'}>{card.value}</span>
-                    </div>
+                    <span class="info-card-value" dir={card.isLtr ? 'ltr' : 'auto'}>{card.value}</span>
                   )}
-                  <div class="info-note">{card.note}</div>
+                  <p class="info-card-note">{card.note}</p>
                 </div>
               ))}
+            </div>
+
+            <div class="contact-map-section">
+              <div class="map-wrapper">
+                <iframe
+                  title="G-Care Location"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3625.04273570624!2d46.6190886!3d24.6917639!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e2f1d94fb8e9999%3A0x1d618d360050885!2zR1ZDIOCmrOCmrOCmrOCmrOCmrA!5e0!3m2!1sen!2ssa!4v1700000000000!5m2!1sen!2ssa"
+                  width="100%"
+                  height="400"
+                  style={{ border: 0 }}
+                  allowfullscreen=""
+                  loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade"
+                ></iframe>
+              </div>
             </div>
           </div>
         </div>
