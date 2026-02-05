@@ -397,12 +397,17 @@ function About(props) {
 }
 
 function ClientsSlider(props) {
+  const baseUrl = import.meta.env.BASE_URL
   const clients = [
-    'https://gcare.sa/wp-content/uploads/2025/12/c34c64d6-8ba7-46e8-b145-03f66a7356e9.jpg',
-    'https://gcare.sa/wp-content/uploads/2025/12/b1ae1ef0-2f5f-4d60-86ca-fc61063e3001-370x324.jpg',
-    'https://gcare.sa/wp-content/uploads/2025/12/242fac29-5f59-4d48-8f3f-1d3c88313536-370x101.jpg',
-    'https://gcare.sa/wp-content/uploads/2025/12/5f1dd936-d330-45df-bcf1-10d835a35f61-370x146.jpg',
-    'https://gcare.sa/wp-content/uploads/2025/12/5e78581e-a232-4b7e-9644-90b51a1ea6ec.jpg'
+    `${baseUrl}static/img/partners/dallahrevampedLogo.svg`,
+    `${baseUrl}static/img/partners/dkt.png`,
+    `${baseUrl}static/img/partners/euro.png`,
+    `${baseUrl}static/img/partners/Fakkeh.webp`,
+    `${baseUrl}static/img/partners/logo_valmed_alt.svg`,
+    `${baseUrl}static/img/partners/PCD.png`,
+    `${baseUrl}static/img/partners/pregnalogo.png`,
+    `${baseUrl}static/img/partners/saudi_german.svg`,
+    `${baseUrl}static/img/partners/sulaiman.svg`
   ]
 
   return (
@@ -474,11 +479,11 @@ function Visitors(props) {
       <div class="container">
         <div class="stats-grid">
           <div class="stat-card">
-            <div class="stat-value">{visitorCount()}</div>
+            <div class="stat-value">{visitorCount()}+</div>
             <div class="stat-label">{props.t('visitorsLabel')}</div>
           </div>
           <div class="stat-card">
-            <div class="stat-value">5</div>
+            <div class="stat-value">5+</div>
             <div class="stat-label">{props.t('partnersLabel')}</div>
           </div>
         </div>
