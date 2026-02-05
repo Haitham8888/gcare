@@ -73,6 +73,5 @@ jobs:
           port: ${{ secrets.FTP_PORT }}
           local-dir: ./dist/
           server-dir: ./
-          exclude: |
-            **/static/**
+          dangerous-clean-slate: false
           timeout: 60000
