@@ -600,7 +600,7 @@ function Contact(props) {
           <div class="info-group">
             <span class="info-label">{props.t('contactAddress')}</span>
             <address class="info-value-text">{props.t('footerAddress')}</address>
-            <p class="info-sub-value">{props.t('footerZip')}</p>
+            {props.t('footerZip') && <p class="info-sub-value">{props.t('footerZip')}</p>}
           </div>
           <div class="info-group">
             <span class="info-label">{props.t('footerPhoneTitle')}</span>
