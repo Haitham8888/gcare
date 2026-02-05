@@ -5,11 +5,11 @@ import './App.css'
 const getSocialIcon = (key) => {
   const baseUrl = import.meta.env.BASE_URL
   const icons = {
-    linkedin: 'linkedin-white.svg',
+    linkedin: 'in.svg',
     x: 'x.svg',
     whatsapp: 'whatsapp.svg',
     tiktok: 'tiktok.svg',
-    instagram: 'instagram.svg'
+    instagram: 'insta.svg'
   }
   return icons[key] ? `${baseUrl}static/img/${icons[key]}` : null
 }
@@ -17,7 +17,6 @@ const getSocialIcon = (key) => {
 const socialLinks = [
   { label: 'LinkedIn', href: 'https://www.linkedin.com/company/goldencare-medical-company/' },
   { label: 'X', href: 'https://x.com/G_Careksa' },
-  { label: 'WhatsApp', href: 'https://api.whatsapp.com/send?phone=966552527862' },
   { label: 'TikTok', href: 'https://www.tiktok.com/@g_careksa' },
   { label: 'Instagram', href: 'https://www.instagram.com/G_Careksa' }
 ]
@@ -570,63 +569,75 @@ function Contact(props) {
   const baseUrl = import.meta.env.BASE_URL
   return (
     <footer class="footer" id="contact">
-      <div class="container foot">
-        <div>
-          <div class="brand foot-brand">
-            <img class="brand-logo" src={`${baseUrl}static/img/Golden-Care-41.png`} alt="" aria-hidden="true" />
-            <span>{props.t('brand')}</span>
+      <div class="footer-top-divider"></div>
+      <div class="container foot-main">
+        <div class="foot-col foot-about-col">
+          <div class="footer-brand-logo">
+            <img src={`${baseUrl}static/img/whitelogo.svg`} alt="G-Care Logo" aria-hidden="true" />
           </div>
-          <p class="muted">{props.t('footerTagline')}</p>
-          <p class="muted">{props.t('footerRights')}</p>
+          <p class="footer-about-text">
+            {props.t('footerAbout')}
+          </p>
         </div>
-        <ul class="foot-links" aria-label={props.t('footerLinksAria')}>
-          <li><a href="#hero">{props.t('navHome')}</a></li>
-          <li><a href="#about">{props.t('navAbout')}</a></li>
-          <li><a href="#products">{props.t('navProducts')}</a></li>
-          <li><a href="#education">{props.t('navEducation')}</a></li>
-        </ul>
-        <div class="contact">
-          <label>{props.t('contactTitle')}</label>
-          <div class="contact-grid">
-            <div class="contact-form">
-              <div class="foot-contact-info">
-                <a href={`tel:${props.t('contactPhoneValue').replace(/\s+/g, '')}`} class="foot-phone">
-                  <span class="label">{props.t('contactPhone')}:</span>
-                  <span class="value" dir="ltr">{props.t('contactPhoneValue')}</span>
+
+        <div class="foot-col foot-info">
+          <div class="info-group">
+            <span class="info-label">{props.t('contactAddress')}</span>
+            <address class="info-value-text">{props.t('footerAddress')}</address>
+            <p class="info-sub-value">{props.t('footerZip')}</p>
+          </div>
+          <div class="info-group">
+            <span class="info-label">{props.t('footerPhoneTitle')}</span>
+            <a href="tel:920020885" class="info-value">920020885</a>
+          </div>
+          <div class="info-group">
+            <span class="info-label">{props.t('footerInquiryTitle')}</span>
+            <a href="mailto:info@ghc.sa" class="info-value">info@ghc.sa</a>
+          </div>
+        </div>
+
+        <div class="foot-col foot-newsletter">
+          <h3 class="footer-heading">{props.t('newsletterTitle')}</h3>
+          <form class="newsletter-form">
+            <div class="newsletter-input-group">
+              <input type="email" placeholder={props.t('newsletterPlaceholder')} required />
+              <button class="newsletter-btn" type="submit">
+                <span>{props.t('newsletterSubmit')}</span>
+              </button>
+            </div>
+          </form>
+          <div class="socials-links-grid">
+            {socialLinks.map((item) => {
+              const key = item.label.toLowerCase().replace(/\s+/g, '')
+              return (
+                <a class={`social-icon-link social-${key}`} href={item.href} target="_blank" rel="noreferrer" aria-label={item.label}>
+                  {getSocialIcon(key) ? (
+                    <img
+                      class="social-icon"
+                      src={getSocialIcon(key)}
+                      alt=""
+                      aria-hidden="true"
+                    />
+                  ) : (
+                    <span>*</span>
+                  )}
                 </a>
-              </div>
-              <div class="field"><input placeholder={props.t('contactName')} /></div>
-              <div class="field"><input placeholder={props.t('contactEmail')} type="email" /></div>
-              <button class="btn btn-primary" type="button">{props.t('contactSend')}</button>
-            </div>
+              )
+            })}
           </div>
         </div>
-        <div class="socials-wrapper">
-          <div class="socials" aria-label={props.t('socialsAria')}>
-            <span class="socials-label">{props.t('socialsTitle')}</span>
-            <div class="socials-links">
-              {socialLinks.map((item) => {
-                const key = item.label.toLowerCase().replace(/\s+/g, '')
-                return (
-                  <a class={`social-item social-${key}`} href={item.href} target="_blank" rel="noreferrer" aria-label={item.label}>
-                    <span class="social-avatar" aria-hidden>
-                      {getSocialIcon(key) ? (
-                        <img
-                          class="social-icon"
-                          src={getSocialIcon(key)}
-                          alt=""
-                          aria-hidden="true"
-                        />
-                      ) : (
-                        <span class="social-icon-badge">*</span>
-                      )}
-                    </span>
-                    <span class="social-label">{item.label}</span>
-                  </a>
-                )
-              })}
-            </div>
-          </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div class="container footer-bottom-inner">
+          <ul class="footer-bottom-menu">
+            <li><a href="#contact">{props.t('footerNavContact')}</a></li>
+            <li><a href="#">{props.t('footerNavTerms')}</a></li>
+            <li><a href="#">{props.t('footerNavPrivacy')}</a></li>
+          </ul>
+          <p class="copyright-text">
+            {props.t('footerRights')}
+          </p>
         </div>
       </div>
     </footer>

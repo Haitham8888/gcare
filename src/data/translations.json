@@ -105,7 +105,18 @@
         "contactMessage": "رسالتك",
         "contactEmail": "بريدك الإلكتروني",
         "contactSend": "إرسال رسالة",
-        "searchGlobalPlaceholder": "ابحث عن منتج، معلومة، أو قسم..."
+        "searchGlobalPlaceholder": "ابحث عن منتج، معلومة، أو قسم...",
+        "newsletterTitle": "اشترك في نشراتنا الإخبارية",
+        "newsletterPlaceholder": "البريد الإلكتروني",
+        "newsletterSubmit": "إرسال",
+        "footerAddress": "الرياض – حي السفارات – شارع سمحة",
+        "footerZip": "ص.ب 7431 - الرمز البريدي 11462",
+        "footerPhoneTitle": "رقم الهاتف",
+        "footerInquiryTitle": "الاستفسارات العامة",
+        "footerAbout": "جي كير الطبية.. رؤية طموحة انطلقت عام 2013 لتطوير الرعاية الصحية في المملكة، ملتزمون بتقديم أجود الحلول والتقنيات الطبية بمعايير عالمية تعزز جودة الحياة.",
+        "footerNavContact": "تواصل معنا",
+        "footerNavTerms": "شروط الاستخدام",
+        "footerNavPrivacy": "سياسة الخصوصية"
     },
     "en": {
         "brand": "G-Care",
@@ -213,6 +224,17 @@
         "contactMessage": "Your Message",
         "contactEmail": "Your Email",
         "contactSend": "Send Message",
-        "searchGlobalPlaceholder": "Search for products, info, or sections..."
+        "searchGlobalPlaceholder": "Search for products, info, or sections...",
+        "newsletterTitle": "Subscribe to our Newsletter",
+        "newsletterPlaceholder": "Email Address",
+        "newsletterSubmit": "Send",
+        "footerAddress": "Riyadh – Diplomatic Quarter – Samha Street",
+        "footerZip": "P.O. Box 7431 - Postal Code 11462",
+        "footerPhoneTitle": "Phone Number",
+        "footerInquiryTitle": "General Inquiries",
+        "footerAbout": "G-Care Medical: An ambitious vision launched in 2013 to advance healthcare in the Kingdom, dedicated to providing the finest medical solutions and technologies with international standards that enhance the quality of life.",
+        "footerNavContact": "Contact Us",
+        "footerNavTerms": "Terms of Use",
+        "footerNavPrivacy": "Privacy Policy"
     }
 }
