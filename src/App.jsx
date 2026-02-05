@@ -494,6 +494,10 @@ function Visitors(props) {
             <div class="stat-label">{props.t('visitorsLabel')}</div>
           </div>
           <div class="stat-card">
+            <div class="stat-value">{props.t('achievementsValue')}</div>
+            <div class="stat-label">{props.t('achievementsLabel')}</div>
+          </div>
+          <div class="stat-card">
             <div class="stat-value">5+</div>
             <div class="stat-label">{props.t('partnersLabel')}</div>
           </div>
