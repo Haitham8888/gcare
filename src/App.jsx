@@ -420,6 +420,22 @@ function HomeAbout(props) {
 
 function About(props) {
   const baseUrl = import.meta.env.BASE_URL
+  const images = [
+    'd263efc0-0a5b-4029-aa7d-a12a399dfd5e.jpg',
+    '45a473c7-debf-48cc-9a41-b9d61c38a0f1.jpg',
+    '0c672357-323e-4792-8605-0e4f67c43db9.jpg',
+    'ba862794-b872-49ac-be68-d173678fcbed.jpg',
+    'b67d7fb0-5715-490d-8482-2d8252ea7ad3.jpg'
+  ]
+  const [current, setCurrent] = createSignal(0)
+
+  createEffect(() => {
+    const timer = setInterval(() => {
+      setCurrent((c) => (c + 1) % images.length)
+    }, 3000)
+    onCleanup(() => clearInterval(timer))
+  })
+
   return (
     <section class="section" id="about">
       <div class="container">
@@ -434,7 +450,12 @@ function About(props) {
             </div>
           </div>
           <div class="about-logo-v2">
-            <img class="about-event-img rounded-card" src={`${baseUrl}static/img/d263efc0-0a5b-4029-aa7d-a12a399dfd5e.jpg`} alt="G-Care Event" />
+            <img
+              class="about-event-img rounded-card"
+              src={`${baseUrl}static/img/${images[current()]}`}
+              alt="G-Care Event"
+              style={{ transition: 'opacity 0.5s ease-in-out' }}
+            />
           </div>
         </div>
       </div>
