@@ -59,7 +59,7 @@ function NavBar(props) {
 
         <nav class={`nav-links ${open() ? 'open' : ''}`} aria-label={props.t('navLabel')}>
           <a href="#hero" onClick={() => setOpen(false)}>{props.t('navHome')}</a>
-          <a href="#about" onClick={() => setOpen(false)}>{props.t('navAbout')}</a>
+          <a href="#about-page" onClick={() => setOpen(false)}>{props.t('navAbout')}</a>
           <a href="#products" onClick={() => setOpen(false)}>{props.t('navProducts')}</a>
           <a href="#education-page" onClick={() => setOpen(false)}>{props.t('navEducation')}</a>
           <a href="#contact-page" onClick={() => setOpen(false)}>{props.t('navContact')}</a>
@@ -180,17 +180,22 @@ function Products(props) {
     {
       key: 'topSurgicalKit',
       href: 'https://gcare.sa/product/surgical-kit/',
-      img: 'https://gcare.sa/wp-content/uploads/2025/12/DSC04599-300x250.png'
+      img: 'https://lemon.sa/image/cache/catalog/-SH-%20Products/9%20May/03114003%20G-Care%20Pregnany%20Test%20--700x700.jpg'
     },
     {
       key: 'topElectronicMonitor',
       href: 'https://gcare.sa/product/electronic-monitor/',
-      img: 'https://gcare.sa/wp-content/uploads/2025/12/DSC04598-300x250.png'
+      img: 'https://lemon.sa/image/cache/catalog/-SH-%20Products/9%20May/03114003%20G-Care%20Pregnany%20Test%20--700x700.jpg'
     },
     {
       key: 'topPlasticEnema',
       href: 'https://gcare.sa/product/plastic-enema/',
-      img: 'https://gcare.sa/wp-content/uploads/2025/12/DSC04593-300x250.png'
+      img: 'https://lemon.sa/image/cache/catalog/-SH-%20Products/9%20May/03114003%20G-Care%20Pregnany%20Test%20--700x700.jpg'
+    },
+    {
+      key: 'catPregnancyTest',
+      href: '#',
+      img: 'https://lemon.sa/image/cache/catalog/-SH-%20Products/9%20May/03114003%20G-Care%20Pregnany%20Test%20--700x700.jpg'
     }
   ]
 
@@ -269,10 +274,19 @@ function HomePage(props) {
   return (
     <>
       <Hero t={props.t} />
-      <About t={props.t} />
+      <HomeAbout t={props.t} />
       <ClientsSlider t={props.t} />
       <Visitors t={props.t} />
       <Education t={props.t} lang={props.lang} />
+      <Contact t={props.t} />
+    </>
+  )
+}
+
+function AboutPage(props) {
+  return (
+    <>
+      <About t={props.t} />
       <Contact t={props.t} />
     </>
   )
@@ -380,6 +394,30 @@ function ContactPage(props) {
   )
 }
 
+function HomeAbout(props) {
+  const baseUrl = import.meta.env.BASE_URL
+  return (
+    <section class="section" id="home-about">
+      <div class="container">
+        <div class="about-layout" style={{ alignItems: 'center' }}>
+          <div class="about-text">
+            <h2 class="section-title">{props.t('aboutTitle')}</h2>
+            <div class="about-content">
+              <p style={{ fontSize: '1.25rem', color: 'var(--muted)', lineHeight: '1.8' }}>{props.t('aboutP1')}</p>
+              <a href="#about-page" class="btn btn-primary" style={{ marginTop: '1.5rem', display: 'inline-block' }}>
+                {props.t('heroCtaSecondary')}
+              </a>
+            </div>
+          </div>
+          <div class="about-logo-v2">
+            <img class="about-event-img" src={`${baseUrl}static/img/G%20-%20Care-01.svg`} alt="G-Care Logo" style={{ maxWidth: '280px', borderRadius: '0', boxShadow: 'none' }} />
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 function About(props) {
   const baseUrl = import.meta.env.BASE_URL
   return (
@@ -387,7 +425,7 @@ function About(props) {
       <div class="container">
         <div class="about-layout">
           <div class="about-text">
-            <h2 class="section-title">{props.t('aboutTitle')}</h2>
+            <h2 class="section-title">{props.t('aboutUsPageTitle')}</h2>
             <div class="about-content">
               <p>{props.t('aboutP1')}</p>
               <p>{props.t('aboutP2')}</p>
@@ -396,7 +434,7 @@ function About(props) {
             </div>
           </div>
           <div class="about-logo-v2">
-            <img class="about-event-img" src={`${baseUrl}static/img/d263efc0-0a5b-4029-aa7d-a12a399dfd5e.jpg`} alt="G-Care Event" />
+            <img class="about-event-img rounded-card" src={`${baseUrl}static/img/d263efc0-0a5b-4029-aa7d-a12a399dfd5e.jpg`} alt="G-Care Event" />
           </div>
         </div>
       </div>
@@ -733,6 +771,7 @@ export default function App() {
     if (hash === '#products') return 'products'
     if (hash === '#contact-page') return 'contact'
     if (hash === '#education-page') return 'education'
+    if (hash === '#about-page') return 'about'
     return 'home'
   }
 
@@ -760,6 +799,7 @@ export default function App() {
       {route() === 'products' ? <ProductsPage t={t} /> : null}
       {route() === 'contact' ? <ContactPage t={t} /> : null}
       {route() === 'education' ? <EducationPage t={t} /> : null}
+      {route() === 'about' ? <AboutPage t={t} /> : null}
       {route() === 'home' ? <HomePage t={t} lang={lang} /> : null}
     </div>
   )
