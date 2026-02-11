@@ -580,7 +580,7 @@ function Education(props) {
 
         <div class="gallery-slider-wrapper">
           <button class="gallery-nav-btn prev" onClick={prevSlide} aria-label="Previous">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style={{ transform: props.lang() === 'ar' ? 'rotate(180deg)' : 'none' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="15 18 9 12 15 6"></polyline>
             </svg>
           </button>
@@ -601,7 +601,7 @@ function Education(props) {
           </div>
 
           <button class="gallery-nav-btn next" onClick={nextSlide} aria-label="Next">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style={{ transform: props.lang() === 'ar' ? 'rotate(180deg)' : 'none' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="9 18 15 12 9 6"></polyline>
             </svg>
           </button>
