@@ -287,6 +287,133 @@ function AboutPage(props) {
   return (
     <>
       <About t={props.t} />
+
+      {/* Mission Section */}
+      <section class="section our-msg" id="mission">
+        <div class="container">
+          <div class="coe-row">
+            <div class="coe-content-col mission-content">
+              <div class="msg-content-box">
+                <span class="coe-label">{props.t('missionTitle')}</span>
+                <p class="coe-text">{props.t('missionP1')}</p>
+              </div>
+            </div>
+            <div class="coe-icon-col mission-icon">
+              <div class="msg-img-box">
+                {/* Paper plane / send icon */}
+                <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 2L11 13"></path>
+                  <path d="M22 2L15 22L11 13L2 9L22 2Z"></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Vision Section */}
+      <section class="section about-vision" id="vision">
+        <div class="container">
+          <div class="coe-row">
+            <div class="coe-icon-col vision-icon">
+              <div class="vision-img-box">
+                {/* Eye / vision icon */}
+                <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </div>
+            </div>
+            <div class="coe-content-col vision-content">
+              <div class="vision-content-box">
+                <span class="coe-label">{props.t('visionTitle')}</span>
+                <p class="coe-text">{props.t('visionP1')}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Values Section - 3 column cards grid */}
+      <section class="section coe-values" id="values">
+        <div class="container">
+          <h2 class="coe-values-title">{props.t('valuesTitle')}</h2>
+          <div class="coe-values-grid">
+
+            <div class="coe-value-card coe-val-1">
+              <div class="coe-value-icon-box">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  <path d="m9 12 2 2 4-4"></path>
+                </svg>
+              </div>
+              <div class="coe-value-content">
+                <h4>{props.t('valueQualityTitle')}</h4>
+                <p>{props.t('valueQualityDesc')}</p>
+              </div>
+            </div>
+
+            <div class="coe-value-card coe-val-2">
+              <div class="coe-value-icon-box">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 18h6"></path>
+                  <path d="M10 22h4"></path>
+                  <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path>
+                </svg>
+              </div>
+              <div class="coe-value-content">
+                <h4>{props.t('valueInnovationTitle')}</h4>
+                <p>{props.t('valueInnovationDesc')}</p>
+              </div>
+            </div>
+
+            <div class="coe-value-card coe-val-3">
+              <div class="coe-value-icon-box">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 3v18"></path>
+                  <path d="M18 7l-6-4-6 4"></path>
+                  <path d="M5 10l-3 7h6l-3-7"></path>
+                  <path d="M19 10l-3 7h6l-3-7"></path>
+                </svg>
+              </div>
+              <div class="coe-value-content">
+                <h4>{props.t('valueIntegrityTitle')}</h4>
+                <p>{props.t('valueIntegrityDesc')}</p>
+              </div>
+            </div>
+
+            <div class="coe-value-card coe-val-4">
+              <div class="coe-value-icon-box">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+              </div>
+              <div class="coe-value-content">
+                <h4>{props.t('valueTeamworkTitle')}</h4>
+                <p>{props.t('valueTeamworkDesc')}</p>
+              </div>
+            </div>
+
+            <div class="coe-value-card coe-val-5">
+              <div class="coe-value-icon-box">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="8" r="7"></circle>
+                  <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                </svg>
+              </div>
+              <div class="coe-value-content">
+                <h4>{props.t('valueServiceTitle')}</h4>
+                <p>{props.t('valueServiceDesc')}</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
       <Contact t={props.t} />
     </>
   )
@@ -353,7 +480,7 @@ function ContactPage(props) {
 
             <div class="contact-info-grid">
               {[
-                { title: props.t('contactPhone'), value: props.t('contactPhoneValue'), href: 'tel:+966112145550', note: props.t('contactPhoneNote'), isLtr: true },
+                { title: props.t('contactPhone'), value: props.t('contactPhoneValue'), href: 'tel:+966552527862', note: props.t('contactPhoneNote'), isLtr: true },
                 { title: props.t('contactEmailLabel'), value: 'info@gcare.sa', href: 'mailto:info@gcare.sa', note: props.t('contactEmailNote'), isLtr: true },
                 { title: props.t('contactEmailHealthLabel'), value: 'hep@gcare.sa', href: 'mailto:hep@gcare.sa', note: props.t('contactEmailHealthNote'), isLtr: true },
                 { title: props.t('contactAddress'), value: props.t('contactAddressValue'), note: props.t('contactVisitNote'), isLtr: false }
@@ -734,7 +861,7 @@ function Contact(props) {
               <svg class="info-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l2.27-2.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
               <span class="info-label">{props.t('footerPhoneTitle')}</span>
             </div>
-            <a href="tel:+966112145550" class="info-value phone-number">+966 11 214 5550</a>
+            <a href="tel:+966552527862" class="info-value phone-number">+966 55 252 7862</a>
           </div>
 
           <div class="info-group">
