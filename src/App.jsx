@@ -693,12 +693,12 @@ function Visitors(props) {
 function Education(props) {
   const baseUrl = import.meta.env.BASE_URL
   const galleryImages = [
-    { src: `${baseUrl}static/img/d263efc0-0a5b-4029-aa7d-a12a399dfd5e.jpg`, title: 'مشاركة G-Care في مؤتمر MedGo الدولي', alt: 'MedGo Conference' },
-    { src: `${baseUrl}static/img/45a473c7-debf-48cc-9a41-b9d61c38a0f1.jpg`, title: 'ورشة عمل حول أحدث التقنيات الطبية', alt: 'Medical Tech Workshop' },
-    { src: `${baseUrl}static/img/9c4be885-1bf0-4a93-ba83-9cafe6e79c91-591x456.jpg`, title: 'زيارة الوفد الطبي لمقر الشركة', alt: 'Medical Delegation Visit' },
-    { src: `${baseUrl}static/img/0c672357-323e-4792-8605-0e4f67c43db9.jpg`, title: 'معرض الصحة العالمي - الرياض', alt: 'Global Health Exhibition' },
-    { src: `${baseUrl}static/img/ba862794-b872-49ac-be68-d173678fcbed.jpg`, title: 'شراكة استراتيجية جديدة لتطوير الرعاية', alt: 'Strategic Partnership' },
-    { src: `${baseUrl}static/img/b67d7fb0-5715-490d-8482-2d8252ea7ad3.jpg`, title: 'دورة تدريبية متخصصة للأطباء', alt: 'Medical Training Session' }
+    { src: `${baseUrl}static/img/d263efc0-0a5b-4029-aa7d-a12a399dfd5e.jpg`, title: props.t('galleryItem1Title'), alt: 'MedGo Conference' },
+    { src: `${baseUrl}static/img/45a473c7-debf-48cc-9a41-b9d61c38a0f1.jpg`, title: props.t('galleryItem2Title'), alt: 'Medical Tech Workshop' },
+    { src: `${baseUrl}static/img/9c4be885-1bf0-4a93-ba83-9cafe6e79c91-591x456.jpg`, title: props.t('galleryItem3Title'), alt: 'Medical Delegation Visit' },
+    { src: `${baseUrl}static/img/0c672357-323e-4792-8605-0e4f67c43db9.jpg`, title: props.t('galleryItem4Title'), alt: 'Global Health Exhibition' },
+    { src: `${baseUrl}static/img/ba862794-b872-49ac-be68-d173678fcbed.jpg`, title: props.t('galleryItem5Title'), alt: 'Strategic Partnership' },
+    { src: `${baseUrl}static/img/b67d7fb0-5715-490d-8482-2d8252ea7ad3.jpg`, title: props.t('galleryItem6Title'), alt: 'Medical Training Session' }
   ]
 
   const [currentIndex, setCurrentIndex] = createSignal(0)
@@ -731,7 +731,7 @@ function Education(props) {
       <div class="container gallery-container">
         <div class="gallery-header text-center">
           <h2 class="gallery-main-title">{props.t('educationGalleryTitle')}</h2>
-          <p class="gallery-subtitle">{props.lang() === 'ar' ? 'رحلتنا بالصور والفعاليات' : 'Our journey in pictures and events'}</p>
+          <p class="gallery-subtitle">{props.t('eduGallerySubtitle')}</p>
         </div>
 
         <div class="gallery-slider-wrapper">
@@ -789,8 +789,8 @@ function LakiPage(props) {
   const contentSeries = [
     {
       id: 1,
-      title: "هرموني في دقيقة",
-      subtitle: "دليل سريع وموثوق",
+      title: props.t('lakiSeries1Title'),
+      subtitle: props.t('lakiSeries1Sub'),
       icon: (
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
@@ -800,8 +800,8 @@ function LakiPage(props) {
     },
     {
       id: 2,
-      title: "خياراتي اليومية",
-      subtitle: "نمط حياة صحي",
+      title: props.t('lakiSeries2Title'),
+      subtitle: props.t('lakiSeries2Sub'),
       icon: (
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><path d="m9 12 2 2 4-4" />
@@ -811,8 +811,8 @@ function LakiPage(props) {
     },
     {
       id: 3,
-      title: "أكلكِ وصحتكِ",
-      subtitle: "تغذية المرأة المتكاملة",
+      title: props.t('lakiSeries3Title'),
+      subtitle: props.t('lakiSeries3Sub'),
       icon: (
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16z" /><path d="M12 14v6" /><path d="M12 14L8 10" /><path d="M12 14l4-4" />
@@ -843,15 +843,15 @@ function LakiPage(props) {
           <div class="laki-hero-text">
             <div class="laki-logo-row">
               <img src={`${baseUrl}static/img/G%20-%20Care-01.svg`} alt="Laki Logo" class="laki-hero-logo" />
-              <div class="laki-hero-badge">لكِ وبوعي</div>
+              <div class="laki-hero-badge">{props.t('lakiBadge')}</div>
             </div>
-            <h1 class="laki-hero-title">لكِ وبوعي: رحلتكِ نحو صحة واعية.</h1>
+            <h1 class="laki-hero-title">{props.t('lakiHeroTitle')}</h1>
             <p class="laki-hero-subtitle">
-              منظومة تعليمية متكاملة ترفقكِ في كل مراحل حياتكِ الصحية بمعلومات طبية موثوقة.
+              {props.t('lakiHeroSubtitle')}
             </p>
             <button class="back-link-v2" onClick={() => props.setEduRoute('main')}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5m7 7-7-7 7-7" /></svg>
-              الرئيسية {'>'} التثقيف الصحي {'>'} برنامج لكِ وبوعي
+              {props.t('lakiBreadcrumbHome')} {'>'} {props.t('lakiBreadcrumbEdu')} {'>'} {props.t('lakiBreadcrumbCurrent')}
             </button>
           </div>
           <div class="laki-hero-image">
@@ -864,9 +864,9 @@ function LakiPage(props) {
         <div class="container">
           <div class="laki-section-layout">
             <div class="laki-section-intro">
-              <h2 class="laki-section-title">سلاسل المحتوى</h2>
-              <p class="laki-section-subtitle">تعرفي على المزيد</p>
-              <button class="btn btn-primary laki-explore-btn">تعرفي على المزيد ←</button>
+              <h2 class="laki-section-title">{props.t('lakiContentSeriesTitle')}</h2>
+              <p class="laki-section-subtitle">{props.t('lakiLearnMore')}</p>
+              <button class="btn btn-primary laki-explore-btn">{props.t('lakiLearnMoreAction')}</button>
             </div>
             <div class="laki-series-grid">
               {contentSeries.map(item => (
@@ -885,7 +885,7 @@ function LakiPage(props) {
 
       <section class="section laki-latest">
         <div class="container">
-          <h2 class="laki-section-title text-center mb-4">أحدث الإضافات</h2>
+          <h2 class="laki-section-title text-center mb-4">{props.t('lakiLatestAdditions')}</h2>
           <div class="laki-latest-grid">
             {latestAdditions.map(item => (
               <div class="laki-latest-card" onClick={() => setSelectedImg(item.img)}>
@@ -894,7 +894,7 @@ function LakiPage(props) {
                 </div>
                 <div class="laki-latest-info">
                   <h3>{item.title}</h3>
-                  <button class="laki-link">اقرأ المزيد</button>
+                  <button class="laki-link">{props.t('lakiReadMore')}</button>
                 </div>
               </div>
             ))}
@@ -904,7 +904,7 @@ function LakiPage(props) {
 
       <section class="section laki-posters">
         <div class="container">
-          <h2 class="laki-section-title text-center mb-4">البوسترات التوعوية</h2>
+          <h2 class="laki-section-title text-center mb-4">{props.t('lakiPostersTitle')}</h2>
           <div class="resource-grid">
             {posters.map(item => (
               <div class="resource-card" onClick={() => setSelectedImg(item.img)}>
@@ -913,8 +913,8 @@ function LakiPage(props) {
               </div>
             ))}
             <div class="resource-card more-card">
-              <div class="resource-thumb more-placeholder"><span>للمزيد ...</span></div>
-              <h3>استكشف المزيد</h3>
+              <div class="resource-thumb more-placeholder"><span>{props.t('lakiMore')}</span></div>
+              <h3>{props.t('lakiExploreMore')}</h3>
             </div>
           </div>
         </div>
@@ -923,11 +923,11 @@ function LakiPage(props) {
       <section class="section laki-signup">
         <div class="container">
           <div class="laki-signup-card">
-            <h3>اشتركي في لكِ وبوعي</h3>
+            <h3>{props.t('lakiSignupTitle')}</h3>
             <form class="laki-signup-form" onSubmit={e => e.preventDefault()}>
-              <input type="text" placeholder="الاسم" />
-              <input type="email" placeholder="البريد الإلكتروني" />
-              <button type="submit" class="btn btn-primary">اشتركي الآن</button>
+              <input type="text" placeholder={props.t('lakiSignupName')} />
+              <input type="email" placeholder={props.t('lakiSignupEmail')} />
+              <button type="submit" class="btn btn-primary">{props.t('lakiSignupBtn')}</button>
             </form>
           </div>
         </div>
@@ -948,8 +948,8 @@ function ExpertPage(props) {
 
   const advantages = [
     {
-      title: "توسيع شبكتك المهنية",
-      desc: "توسع شبكتك المهنية من المتخصصين والخبراء وبناء شراكات مهنية.",
+      title: props.t('expertWhy1Title'),
+      desc: props.t('expertWhy1Desc'),
       icon: (
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
@@ -957,8 +957,8 @@ function ExpertPage(props) {
       )
     },
     {
-      title: "الوصول لأحدث الأبحاث",
-      desc: "منصة متخصصة للربط بين المهتمين بالبحث العلمي لتبادل الخبرات وبناء شراكات.",
+      title: props.t('expertWhy2Title'),
+      desc: props.t('expertWhy2Desc'),
       icon: (
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
@@ -966,8 +966,8 @@ function ExpertPage(props) {
       )
     },
     {
-      title: "فرص تعاون حصرية",
-      desc: "فرص تعاون حصرية للتدريب والبحث وبناء الشراكات ومراكز تميز مهنية.",
+      title: props.t('expertWhy3Title'),
+      desc: props.t('expertWhy3Desc'),
       icon: (
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><polyline points="16 11 18 13 22 9" />
@@ -977,15 +977,15 @@ function ExpertPage(props) {
   ]
 
   const steps = [
-    { id: 1, title: "سجل ملفك التعريفي", desc: "سجل بياناتك الشخصية والمهنية على الموقع." },
-    { id: 2, title: "استكشف وشارك", desc: "استكشف المنصة وشارك خبراتك وتعلم من الآخرين." },
-    { id: 3, title: "تواصل وابدأ التعاون", desc: "تواصل مع الخبراء والزملاء وابدأ مشروعاتك التعاونية." }
+    { id: 1, title: props.t('expertStep1Title'), desc: props.t('expertStep1Desc') },
+    { id: 2, title: props.t('expertStep2Title'), desc: props.t('expertStep2Desc') },
+    { id: 3, title: props.t('expertStep3Title'), desc: props.t('expertStep3Desc') }
   ]
 
   const experts = [
-    { name: "اسم الخبير", role: "التخصص المهني", img: `${baseUrl}static/img/image.png` },
-    { name: "اسم الخبير", role: "التخصص المهني", img: `${baseUrl}static/img/image.png` },
-    { name: "اسم الخبير", role: "التخصص المهني", img: `${baseUrl}static/img/image.png` }
+    { name: props.t('expertDocName'), role: props.t('expertDocRole'), img: `${baseUrl}static/img/image.png` },
+    { name: props.t('expertDocName'), role: props.t('expertDocRole'), img: `${baseUrl}static/img/image.png` },
+    { name: props.t('expertDocName'), role: props.t('expertDocRole'), img: `${baseUrl}static/img/image.png` }
   ]
 
   return (
@@ -995,13 +995,13 @@ function ExpertPage(props) {
           <div class="expert-hero-text">
             <button class="back-link-v2" onClick={() => props.setEduRoute('main')}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5m7 7-7-7 7-7" /></svg>
-              الرئيسية {'>'} التثقيف الصحي {'>'} برنامج إكسبرت
+              {props.t('lakiBreadcrumbHome')} {'>'} {props.t('lakiBreadcrumbEdu')} {'>'} {props.t('expertHeroTitle')}
             </button>
-            <h1 class="expert-hero-title">برنامج عيادة إكسبرت</h1>
+            <h1 class="expert-hero-title">{props.t('expertHeroTitle')}</h1>
             <p class="expert-hero-subtitle">
-              منصة متخصصة للربط بين المتخصصين في صحة المرأة لتبادل الخبرات وبناء شراكات مهنية.
+              {props.t('expertHeroSubtitle')}
             </p>
-            <a href="https://wa.me/966552527862" class="btn btn-primary expert-cta-btn">انضم لشبكة الخبراء</a>
+            <a href="https://wa.me/966552527862" class="btn btn-primary expert-cta-btn">{props.t('expertJoinAction')}</a>
           </div>
           <div class="expert-hero-image">
             <img src={`${baseUrl}static/img/0c672357-323e-4792-8605-0e4f67c43db9.jpg`} alt="Medical Expert" />
@@ -1011,7 +1011,7 @@ function ExpertPage(props) {
 
       <section class="section expert-why">
         <div class="container">
-          <h2 class="expert-section-header">لماذا عيادة إكسبرت؟</h2>
+          <h2 class="expert-section-header">{props.t('expertWhyTitle')}</h2>
           <div class="expert-why-grid">
             {advantages.map(adv => (
               <div class="expert-why-card">
@@ -1026,7 +1026,7 @@ function ExpertPage(props) {
 
       <section class="section expert-how">
         <div class="container">
-          <h2 class="expert-section-header">كيف يعمل البرنامج؟</h2>
+          <h2 class="expert-section-header">{props.t('expertHowTitle')}</h2>
           <div class="expert-how-steps">
             {steps.map(step => (
               <div class="expert-step-card">
@@ -1041,7 +1041,7 @@ function ExpertPage(props) {
 
       <section class="section expert-team">
         <div class="container">
-          <h2 class="expert-section-header">خبراء بارزون</h2>
+          <h2 class="expert-section-header">{props.t('expertTeamTitle')}</h2>
           <div class="expert-team-grid">
             {experts.map(doc => (
               <div class="expert-doc-card">
@@ -1059,12 +1059,12 @@ function ExpertPage(props) {
       <section class="section expert-footer-signup">
         <div class="container">
           <div class="laki-signup-card">
-            <h3>انضم إلى شبكة إكسبرت</h3>
-            <p class="mb-4">سجل اهتمامك الآن وسنتواصل معك قريباً</p>
+            <h3>{props.t('expertSignupTitle')}</h3>
+            <p class="mb-4">{props.t('expertSignupSub')}</p>
             <form class="laki-signup-form" onSubmit={e => e.preventDefault()}>
-              <input type="text" placeholder="الاسم الكامل" />
-              <input type="email" placeholder="البريد الإلكتروني المهني" />
-              <button type="submit" class="btn btn-primary">إرسال الطلب</button>
+              <input type="text" placeholder={props.t('expertSignupName')} />
+              <input type="email" placeholder={props.t('expertSignupEmail')} />
+              <button type="submit" class="btn btn-primary">{props.t('expertSignupBtn')}</button>
             </form>
           </div>
         </div>
@@ -1097,7 +1097,7 @@ function EducationPage(props) {
                     <h3>{props.t('educationTopic2Title')}</h3>
                     <p>{props.t('educationTopic2Body')}</p>
                     <button class="btn btn-primary" onClick={() => setEduRoute('laki')}>
-                      استكشف البرنامج
+                      {props.t('eduLakiExploreBtn')}
                     </button>
                   </div>
                 </div>
@@ -1107,7 +1107,7 @@ function EducationPage(props) {
                     <h3>{props.t('educationTopic1Title')}</h3>
                     <p>{props.t('educationTopic1Body')}</p>
                     <button class="btn btn-brand-alt" onClick={() => setEduRoute('expert')}>
-                      انضم لشبكة الخبراء
+                      {props.t('eduExpertJoinBtn')}
                     </button>
                   </div>
                 </div>
