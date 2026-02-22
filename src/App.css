@@ -2481,6 +2481,7 @@ html[dir="ltr"] .coe-value-content {
     height: 32px;
   }
 }
+
 /* Health Education Page Enhancements */
 .education-page-wrapper {
   background: #ffffff;
@@ -2514,9 +2515,9 @@ html[dir="ltr"] .coe-value-content {
   background: #ffffff;
   border-radius: 30px;
   padding: 3.5rem 2.5rem;
-  box-shadow: 0 15px 45px rgba(0,0,0,0.05);
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.05);
   transition: all 0.4s ease;
-  border: 1px solid rgba(0,0,0,0.02);
+  border: 1px solid rgba(0, 0, 0, 0.02);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -2658,7 +2659,7 @@ html[dir="ltr"] .coe-value-content {
 .lightbox {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.9);
+  background: rgba(0, 0, 0, 0.9);
   z-index: 9999;
   display: flex;
   align-items: center;
@@ -2672,7 +2673,7 @@ html[dir="ltr"] .coe-value-content {
   max-height: 90vh;
   object-fit: contain;
   border-radius: 12px;
-  box-shadow: 0 0 50px rgba(0,0,0,0.5);
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
 }
 
 .close-lightbox {
@@ -2722,9 +2723,11 @@ html[dir="ltr"] .coe-value-content {
   .education-programs-grid {
     grid-template-columns: 1fr;
   }
+
   .subpage-title {
     font-size: 2.25rem;
   }
+
   .expert-join-card {
     padding: 3rem 1.5rem;
   }
@@ -2810,7 +2813,7 @@ html[dir="ltr"] .coe-value-content {
   flex: 1;
   border-radius: 40px;
   overflow: hidden;
-  box-shadow: 0 30px 60px rgba(0,0,0,0.1);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.1);
 }
 
 .laki-hero-image img {
@@ -2869,7 +2872,7 @@ html[dir="ltr"] .coe-value-content {
 .laki-series-card:hover {
   transform: translateY(-10px);
   background: #fff;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
 }
 
 .laki-series-icon {
@@ -2882,7 +2885,7 @@ html[dir="ltr"] .coe-value-content {
   justify-content: center;
   font-size: 2rem;
   margin: 0 auto 1.5rem auto;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
 }
 
 .laki-series-card h3 {
@@ -2913,14 +2916,14 @@ html[dir="ltr"] .coe-value-content {
   background: #ffffff;
   border-radius: 24px;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .laki-latest-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
 }
 
 .laki-latest-thumb {
@@ -2947,6 +2950,7 @@ html[dir="ltr"] .coe-value-content {
   height: 3.5rem;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -2990,8 +2994,8 @@ html[dir="ltr"] .coe-value-content {
 
 .laki-signup-form input {
   flex: 1;
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 1.25rem 2rem;
   border-radius: 15px;
   color: #fff;
@@ -3000,11 +3004,11 @@ html[dir="ltr"] .coe-value-content {
 }
 
 .laki-signup-form input::placeholder {
-  color: rgba(255,255,255,0.5);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .laki-signup-form input:focus {
-  background: rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.15);
   border-color: var(--brand);
 }
 
@@ -3013,20 +3017,25 @@ html[dir="ltr"] .coe-value-content {
     flex-direction: column;
     text-align: center;
   }
+
   .laki-hero-text {
     order: 2;
   }
+
   .laki-hero-image {
     order: 1;
     width: 100%;
     max-width: 500px;
   }
+
   .laki-logo-row {
     justify-content: center;
   }
+
   .laki-section-layout {
     flex-direction: column;
   }
+
   .laki-section-intro {
     flex: none;
     text-align: center;
@@ -3035,13 +3044,16 @@ html[dir="ltr"] .coe-value-content {
 }
 
 @media (max-width: 800px) {
+
   .laki-series-grid,
   .laki-latest-grid {
     grid-template-columns: 1fr;
   }
+
   .laki-signup-form {
     flex-direction: column;
   }
+
   .laki-hero-title {
     font-size: 2.5rem;
   }
@@ -3049,16 +3061,13 @@ html[dir="ltr"] .coe-value-content {
 
 /* Expert Page Premium UI Enhancements */
 .expert-hero {
-  background: linear-gradient(135deg, #1093a5 0%, #0d7a8a 100%);
-  padding-block: 5rem;
-  color: #fff;
+  background: #f8fafc;
+  padding-block: 4rem;
   overflow: hidden;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .expert-hero .back-link-v2 {
-  background: rgba(255,255,255,0.1);
-  border-color: rgba(255,255,255,0.2);
-  color: #fff;
   margin-bottom: 2rem;
 }
 
@@ -3075,13 +3084,14 @@ html[dir="ltr"] .coe-value-content {
 .expert-hero-title {
   font-size: 3.5rem;
   font-weight: 900;
+  color: var(--ink);
   margin-bottom: 1.5rem;
   line-height: 1.2;
 }
 
 .expert-hero-subtitle {
   font-size: 1.35rem;
-  opacity: 0.9;
+  color: var(--muted);
   line-height: 1.6;
   margin-bottom: 3rem;
   max-width: 600px;
@@ -3091,15 +3101,14 @@ html[dir="ltr"] .coe-value-content {
   padding: 1.25rem 2.5rem;
   font-size: 1.1rem;
   border-radius: 12px;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 .expert-hero-image {
   flex: 0.8;
-  border-radius: 30px;
+  border-radius: 40px;
   overflow: hidden;
-  box-shadow: 0 30px 60px rgba(0,0,0,0.2);
-  border: 4px solid rgba(255,255,255,0.1);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.1);
 }
 
 .expert-hero-image img {
@@ -3138,7 +3147,7 @@ html[dir="ltr"] .coe-value-content {
 
 .expert-why-card:hover {
   transform: translateY(-10px);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
 }
 
 .expert-why-icon {
@@ -3235,14 +3244,14 @@ html[dir="ltr"] .coe-value-content {
   border-radius: 24px;
   padding: 2.5rem;
   text-align: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
   transition: all 0.3s ease;
   border: 1px solid #f1f5f9;
 }
 
 .expert-doc-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
 }
 
 .doc-img-box {
@@ -3278,22 +3287,27 @@ html[dir="ltr"] .coe-value-content {
     flex-direction: column;
     text-align: center;
   }
+
   .expert-hero-text {
     order: 2;
   }
+
   .expert-hero-image {
     order: 1;
     width: 100%;
     max-width: 450px;
   }
+
   .expert-why-grid,
   .expert-how-steps {
     grid-template-columns: 1fr;
     gap: 3rem;
   }
+
   .expert-how-steps::before {
     display: none;
   }
+
   .expert-hero-title {
     font-size: 2.75rem;
   }
