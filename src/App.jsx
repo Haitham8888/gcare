@@ -1,4 +1,4 @@
-import { createEffect, createSignal, onCleanup, For, Show } from 'solid-js'
+import { createEffect, createSignal, onCleanup, For, Show, createMemo } from 'solid-js'
 import './App.css'
 import { products } from './data/products'
 
@@ -172,6 +172,15 @@ function Products(props) {
   const [selectedProduct, setSelectedProduct] = createSignal(null)
   const [activeTab, setActiveTab] = createSignal('overview')
   const [mainImage, setMainImage] = createSignal('')
+  const [selectedCategory, setSelectedCategory] = createSignal('All')
+
+  const uniqueCategories = ['All', ...new Set(products.map(p => p.category))]
+
+  const filteredProducts = createMemo(() => {
+    const cat = selectedCategory()
+    if (cat === 'All') return products
+    return products.filter(p => p.category === cat)
+  })
 
   const openProduct = (p) => {
     setSelectedProduct(p)
@@ -193,8 +202,19 @@ function Products(props) {
             <p class="hero-subtitle-large">{props.t('productsSubtitle') || 'Integrated medical solutions & devices'}</p>
           </div>
 
+          <div class="category-filter-bar">
+            {uniqueCategories.map(cat => (
+              <button
+                class={`filter-btn ${selectedCategory() === cat ? 'active' : ''}`}
+                onClick={() => setSelectedCategory(cat)}
+              >
+                {props.t(`cat${cat}`)}
+              </button>
+            ))}
+          </div>
+
           <div class="catalog-grid">
-            <For each={products}>
+            <For each={filteredProducts()}>
               {(product) => (
                 <div class="catalog-card">
                   <div class="catalog-card-img">
