@@ -1,5 +1,6 @@
-import { createEffect, createSignal, onCleanup } from 'solid-js'
+import { createEffect, createSignal, onCleanup, For, Show } from 'solid-js'
 import './App.css'
+import { products } from './data/products'
 
 // Shared social media helpers
 const getSocialIcon = (key) => {
@@ -168,102 +169,162 @@ function HeroInfiniteSlider() {
 }
 
 function Products(props) {
-  const categories = [
-    { key: 'catIVD', count: 4 },
-    { key: 'catIUD', count: 4 },
-    { key: 'catIUS', count: 4 },
-    { key: 'catWomanCare', count: 4 }
-  ]
+  const [selectedProduct, setSelectedProduct] = createSignal(null)
+  const [activeTab, setActiveTab] = createSignal('overview')
+  const [mainImage, setMainImage] = createSignal('')
 
-  const topRated = [
-    {
-      key: 'topSurgicalKit',
-      href: 'https://gcare.sa/product/surgical-kit/',
-      img: 'https://lemon.sa/image/cache/catalog/-SH-%20Products/9%20May/03114003%20G-Care%20Pregnany%20Test%20--700x700.jpg'
-    },
-    {
-      key: 'topElectronicMonitor',
-      href: 'https://gcare.sa/product/electronic-monitor/',
-      img: 'https://lemon.sa/image/cache/catalog/-SH-%20Products/9%20May/03114003%20G-Care%20Pregnany%20Test%20--700x700.jpg'
-    },
-    {
-      key: 'topPlasticEnema',
-      href: 'https://gcare.sa/product/plastic-enema/',
-      img: 'https://lemon.sa/image/cache/catalog/-SH-%20Products/9%20May/03114003%20G-Care%20Pregnany%20Test%20--700x700.jpg'
-    },
-    {
-      key: 'catPregnancyTest',
-      href: '#',
-      img: 'https://lemon.sa/image/cache/catalog/-SH-%20Products/9%20May/03114003%20G-Care%20Pregnany%20Test%20--700x700.jpg'
-    }
-  ]
+  const openProduct = (p) => {
+    setSelectedProduct(p)
+    setMainImage(p.mainImage)
+    setActiveTab('overview')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const closeProduct = () => {
+    setSelectedProduct(null)
+  }
 
   return (
-    <section class="section" id="products" aria-label={props.t('productsAria')}>
+    <section class="section catalog-section" id="products">
       <div class="container">
-        <div class="section-head">
-          <h2 class="section-title">{props.t('productsTitle')}</h2>
-          <span class="badge">{props.t('productsBadge')}</span>
-        </div>
+        <Show when={!selectedProduct()}>
+          <div class="section-head text-center">
+            <h2 class="section-title">{props.t('productDigitalCatalog')}</h2>
+            <p class="hero-subtitle-large">{props.t('productsSubtitle') || 'Integrated medical solutions & devices'}</p>
+          </div>
 
-        <div class="products-layout">
-          <main class="products-main" aria-label={props.t('productsMainAria')}>
-            <div class="products-toolbar">
-              <div class="products-toolbar-label">{props.t('sortLabel')}</div>
-              <select class="select" aria-label={props.t('sortLabel')}>
-                <option value="default">{props.t('sortDefault')}</option>
-              </select>
-            </div>
-
-            <div class="products-grid" role="list">
-              {categories.map((c) => (
-                <div class="product-tile" role="listitem">
-                  <div class="product-title">{props.t(c.key)}</div>
-                  <div class="product-meta">({c.count})</div>
+          <div class="catalog-grid">
+            <For each={products}>
+              {(product) => (
+                <div class="catalog-card">
+                  <div class="catalog-card-img">
+                    <img src={product.mainImage} alt={product.name} loading="lazy" />
+                    <div class="catalog-card-overlay">
+                      <button class="btn btn-brand-alt" onClick={() => openProduct(product)}>
+                        {props.t('productViewDetails')}
+                      </button>
+                    </div>
+                  </div>
+                  <div class="catalog-card-info">
+                    <span class="catalog-card-cat">{product.category}</span>
+                    <h3 class="catalog-card-title">{product.name}</h3>
+                  </div>
                 </div>
-              ))}
-            </div>
-          </main>
+              )}
+            </For>
+          </div>
+        </Show>
 
-          <aside class="products-side" aria-label={props.t('productsSideAria')}>
-            <div class="side-card search-card">
-              <label class="side-label">{props.t('searchLabel')}</label>
-              <div class="field search-field">
-                <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <path d="m21 21-4.35-4.35"></path>
-                </svg>
-                <input type="search" placeholder={props.t('searchPlaceholder')} />
+        <Show when={selectedProduct()}>
+          <div class="product-detail-page">
+            <button class="back-link-v2 mb-8" onClick={closeProduct}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5m7 7-7-7 7-7" /></svg>
+              {props.t('productBackToList')}
+            </button>
+
+            <div class="product-detail-layout">
+              <div class="product-visuals">
+                <div class="product-main-stage">
+                  <div class="stage-inner">
+                    <img src={mainImage()} alt={selectedProduct().name} class="zoom-img" />
+                  </div>
+                </div>
+                <div class="product-thumbs">
+                  <For each={selectedProduct().images}>
+                    {(img) => (
+                      <div
+                        class={`thumb-box ${mainImage() === img ? 'active' : ''}`}
+                        onClick={() => setMainImage(img)}
+                      >
+                        <img src={img} alt="Thumbnail" />
+                      </div>
+                    )}
+                  </For>
+                </div>
+              </div>
+
+              <div class="product-info-panel">
+                <span class="detail-badge">{selectedProduct().category}</span>
+                <h1 class="detail-title">{selectedProduct().name}</h1>
+
+                <div class="detail-tabs">
+                  <div class="tabs-nav">
+                    <button
+                      class={`tab-btn ${activeTab() === 'overview' ? 'active' : ''}`}
+                      onClick={() => setActiveTab('overview')}
+                    >
+                      {props.t('productOverview')}
+                    </button>
+                    <button
+                      class={`tab-btn ${activeTab() === 'specs' ? 'active' : ''}`}
+                      onClick={() => setActiveTab('specs')}
+                    >
+                      {props.t('productSpecs')}
+                    </button>
+                    <button
+                      class={`tab-btn ${activeTab() === 'features' ? 'active' : ''}`}
+                      onClick={() => setActiveTab('features')}
+                    >
+                      {props.t('productFeatures')}
+                    </button>
+                  </div>
+
+                  <div class="tab-content">
+                    <Show when={activeTab() === 'overview'}>
+                      <div class="tab-pane fade-in">
+                        <p>{selectedProduct().overview}</p>
+                      </div>
+                    </Show>
+                    <Show when={activeTab() === 'specs'}>
+                      <div class="tab-pane fade-in">
+                        <table class="specs-table">
+                          <tbody>
+                            <For each={selectedProduct().specifications}>
+                              {(spec) => (
+                                <tr>
+                                  <td>{spec.label}</td>
+                                  <td>{spec.value}</td>
+                                </tr>
+                              )}
+                            </For>
+                          </tbody>
+                        </table>
+                      </div>
+                    </Show>
+                    <Show when={activeTab() === 'features'}>
+                      <div class="tab-pane fade-in">
+                        <ul class="features-list">
+                          <For each={selectedProduct().features}>
+                            {(feature) => <li>{feature}</li>}
+                          </For>
+                        </ul>
+                      </div>
+                    </Show>
+                  </div>
+                </div>
+
+                <div class="detail-actions">
+                  <a href={selectedProduct().brochureUrl} class="btn btn-ghost w-full mb-4">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+                    </svg>
+                    {props.t('productDownloadBrochure')}
+                  </a>
+                  <button
+                    class="btn btn-primary w-full"
+                    onClick={() => {
+                      const msgText = `${props.lang() === 'ar' ? 'أرغب في الاستفسار عن المنتج: ' : 'I would like to inquire about: '} ${selectedProduct().name}`;
+                      props.setPrefilledMessage(msgText);
+                      window.location.hash = '#contact-page';
+                    }}
+                  >
+                    {props.t('productContactCTA')}
+                  </button>
+                </div>
               </div>
             </div>
-
-            <div class="side-card">
-              <div class="side-title">{props.t('categoriesTitle')}</div>
-              <ul class="side-list" aria-label={props.t('categoriesTitle')}>
-                {categories.map((c) => (
-                  <li>
-                    <span class="side-item">{props.t(c.key)}</span>
-                    <span class="side-count">({c.count})</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div class="side-card">
-              <div class="side-title">{props.t('topRatedTitle')}</div>
-              <ul class="side-list" aria-label={props.t('topRatedTitle')}>
-                {topRated.map((p) => (
-                  <li>
-                    <a class="top-rated" href={p.href} target="_blank" rel="noreferrer">
-                      <img class="top-rated-thumb" src={p.img} alt={props.t(p.key)} loading="lazy" />
-                      <span class="top-rated-title">{props.t(p.key)}</span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </aside>
-        </div>
+          </div>
+        </Show>
       </div>
     </section>
   )
@@ -421,13 +482,23 @@ function AboutPage(props) {
 function ProductsPage(props) {
   return (
     <>
-      <Products t={props.t} />
+      <Products t={props.t} setRoute={props.setRoute} setPrefilledMessage={props.setPrefilledMessage} lang={props.lang} />
       <Contact t={props.t} />
     </>
   )
 }
 
 function ContactPage(props) {
+  let messageRef;
+
+  createEffect(() => {
+    if (props.prefilledMessage() && messageRef) {
+      messageRef.value = props.prefilledMessage();
+      // Scroll to form?
+      document.querySelector('.contact-form-card')?.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+
   return (
     <>
       <section class="section contact-page" id="contact-page" aria-label={props.t('contactAria')}>
@@ -453,7 +524,14 @@ function ContactPage(props) {
                       <input type="email" id="contact-email" placeholder={props.t('contactEmail')} required />
                     </div>
                     <div class="field">
-                      <textarea id="contact-message" placeholder={props.t('contactMessage')} rows="4" required></textarea>
+                      <textarea
+                        id="contact-message"
+                        ref={messageRef}
+                        placeholder={props.t('contactMessage')}
+                        rows="4"
+                        required
+                        onInput={(e) => props.setPrefilledMessage(e.target.value)}
+                      ></textarea>
                     </div>
                     <button class="btn btn-primary contact-submit" type="submit">
                       {props.t('contactSend')}
@@ -1221,6 +1299,7 @@ import translationsData from './data/translations.json'
 export default function App() {
   const [lang, setLang] = createSignal('ar')
   const [route, setRoute] = createSignal('home')
+  const [prefilledMessage, setPrefilledMessage] = createSignal('')
 
   const translations = translationsData
 
@@ -1262,8 +1341,8 @@ export default function App() {
   return (
     <div class="page">
       <NavBar t={t} lang={lang} setLang={setLang} />
-      {route() === 'products' ? <ProductsPage t={t} /> : null}
-      {route() === 'contact' ? <ContactPage t={t} /> : null}
+      {route() === 'products' ? <ProductsPage t={t} setRoute={setRoute} setPrefilledMessage={setPrefilledMessage} lang={lang} /> : null}
+      {route() === 'contact' ? <ContactPage t={t} prefilledMessage={prefilledMessage} setPrefilledMessage={setPrefilledMessage} /> : null}
       {route() === 'education' ? <EducationPage t={t} /> : null}
       {route() === 'about' ? <AboutPage t={t} /> : null}
       {route() === 'home' ? <HomePage t={t} lang={lang} /> : null}
