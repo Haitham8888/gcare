@@ -85,7 +85,6 @@ function GlobalSearch(props) {
     { key: 'catWomanCare', href: '#products' },
     { key: 'educationTopic1Title', href: '#education-page' },
     { key: 'educationTopic2Title', href: '#education-page' },
-    { key: 'educationTopic3Title', href: '#education-page' },
   ]
 
   createEffect(() => {
@@ -1112,15 +1111,6 @@ function EducationPage(props) {
                   </div>
                 </div>
 
-                <div class="program-card library-card">
-                  <div class="program-content">
-                    <h3>{props.t('educationTopic3Title')}</h3>
-                    <p>{props.t('educationTopic3Body')}</p>
-                    <button class="btn btn-primary">
-                      {props.t('eduScientificLibBtn')}
-                    </button>
-                  </div>
-                </div>
               </div>
             </div>
           </section>
