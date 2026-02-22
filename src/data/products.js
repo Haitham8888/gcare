@@ -6,8 +6,8 @@ export const products = [
             en: "Lana TS (TCu 380 A)"
         },
         category: "IUD",
-        mainImage: "static/img/products/lana_iud.png",
-        images: ["static/img/products/lana_iud.png"],
+        mainImage: "static/img/Products/DSC04613.png",
+        images: ["static/img/Products/DSC04613.png"],
         overview: {
             ar: "لولب رحمي مزود بنظام تحميل آمن (Safe Load). يضمن التعقيم أثناء تحميل اللولب ، ويسهل تقنية التحميل بدون لمس ، كما يوفر تحميلاً دقيقاً للإطار على شكل حرف 'T'.",
             en: "Intrauterine device with a Safe Load system. Ensures sterilization during loading, facilitates 'no-touch' technique, and provides accurate loading of the 'T' frame."
@@ -29,8 +29,8 @@ export const products = [
             en: "Lana V (Cu 380 Ag)"
         },
         category: "IUD",
-        mainImage: "static/img/products/lana_iud.png",
-        images: ["static/img/products/lana_iud.png"],
+        mainImage: "static/img/Products/DSC04614.png",
+        images: ["static/img/Products/DSC04614.png"],
         overview: {
             ar: "لولب رحمي يوفر راحة البال طوال فترة الاستخدام. يحتوي على قلب فضي ينظم تفتت النحاس، مما يوفر معدل راحة عالي. تتميز أذرعه بالمرونة لتوفر وضعاً مثالياً في قاع الرحم.",
             en: "IUD providing peace of mind during use. Contains a silver core that regulates copper fragmentation for high comfort. Flexible arms for optimal fundal placement."
@@ -51,8 +51,8 @@ export const products = [
             en: "Lana U (Cu 375)"
         },
         category: "IUD",
-        mainImage: "static/img/products/lana_iud.png",
-        images: ["static/img/products/lana_iud.png"],
+        mainImage: "static/img/Products/DSC04615.png",
+        images: ["static/img/Products/DSC04615.png"],
         overview: {
             ar: "لولب رحمي يتميز بثبات أقوى في الرحم مع نسبة قبول عالية. تتوافق أذرعه المرنة مع الرحم ذي الحجم الطبيعي والكبير. يُعتبر الأسهل في الإدخال بفضل تقنية الدفع بيد واحدة.",
             en: "IUD with stronger stability and high acceptance. Flexible arms fit medium and large uteri. Easiest insertion with one-hand push technique."
@@ -73,8 +73,8 @@ export const products = [
             en: "Gold T"
         },
         category: "IUD",
-        mainImage: "static/img/products/lana_iud.png",
-        images: ["static/img/products/lana_iud.png"],
+        mainImage: "static/img/Products/DSC04624.png",
+        images: ["static/img/Products/DSC04624.png"],
         overview: {
             ar: "لولب رحمي يحافظ نقاؤه بشكل فريد على فعالية عالية طوال 5 سنوات من الاستخدام. يضمن التوافق الحيوي له السلامة وراحة البال ، ونظامه الفريد للإدخال يضمن الوضع الأمثل في الرحم.",
             en: "IUD with unique purity maintaining high effectiveness for 5 years. Bio-compatible for safety and peace of mind, with a unique insertion system for optimal placement."
@@ -95,8 +95,8 @@ export const products = [
             en: "ESA Disposable Uterine Sound"
         },
         category: "IUD",
-        mainImage: "static/img/products/lana_iud.png",
-        images: ["static/img/products/lana_iud.png"],
+        mainImage: "static/img/Products/DSC04617.png",
+        images: ["static/img/Products/DSC04617.png"],
         overview: {
             ar: "مسبار رحمي معقم بأشعة جاما يُستخدم لقياس عمق الرحم لضمان الوضع الدقيق لأجهزة منع الحمل في قاع الرحم. هو مصمم للاستخدام مرة واحدة ويبقى معقماً ما لم يتم فتح العبوة أو تلفها.",
             en: "Gamma-sterilized uterine sound used to measure uterine depth for accurate IUD placement. Disposable design, remains sterile until opened."
@@ -117,8 +117,8 @@ export const products = [
             en: "Ipas MVA Plus®"
         },
         category: "Surgical",
-        mainImage: "static/img/products/ipas_mva.png",
-        images: ["static/img/products/ipas_mva.png"],
+        mainImage: "static/img/Products/DSC04620.png",
+        images: ["static/img/Products/DSC04620.png"],
         overview: {
             ar: "جهاز طبي آمن وفعال وبأسعار معقولة، يُستخدم للإخلاء الرحمي حتى الأسبوع 12 من الحمل ولأخذ خزعة من بطانة الرحم. تعتمد هذه الأداة على تقنية الشفط اليدوي (MVA)، وهي الطريقة المفضلة للإخلاء الرحمي.",
             en: "Safe, effective, and affordable medical device for uterine evacuation up to 12 weeks of pregnancy and endometrial biopsy. Based on Manual Vacuum Aspiration (MVA) technology."
@@ -161,8 +161,8 @@ export const products = [
             en: "LH Ovulation Test"
         },
         category: "IVD",
-        mainImage: "static/img/products/gcare_tests.png",
-        images: ["static/img/products/gcare_tests.png"],
+        mainImage: "static/img/Products/DSC04621.png",
+        images: ["static/img/Products/DSC04621.png"],
         overview: {
             ar: "اختبار يستخدم لمرة واحدة عن طريق البول ويحتوي على 7 إختبارات. يكتشف ارتفاع هرمون (LH) لتحديد اليومين اللذين تكون فيهما المرأة أكثر خصوبة.",
             en: "Single-use urine test pack containing 7 tests. Detects LH surge to identify the 2 most fertile days."
@@ -183,8 +183,8 @@ export const products = [
             en: "Midstream Pregnancy Test (6.0 mm)"
         },
         category: "IVD",
-        mainImage: "static/img/products/gcare_tests.png",
-        images: ["static/img/products/gcare_tests.png"],
+        mainImage: "static/img/Products/DSC04622.png",
+        images: ["static/img/Products/DSC04622.png"],
         overview: {
             ar: "اختبار حمل منزلي (HCG) يستخدم لمرة واحدة عن طريق البول. يمكن استخدامه قبل 7 أيام من موعد الدورة.",
             en: "Single-use HCG urine pregnancy test. Can be used up to 7 days before expected period."
@@ -205,8 +205,8 @@ export const products = [
             en: "Cassette Pregnancy Test (4.0mm)"
         },
         category: "IVD",
-        mainImage: "static/img/products/gcare_tests.png",
-        images: ["static/img/products/gcare_tests.png"],
+        mainImage: "static/img/Products/DSC04623.png",
+        images: ["static/img/Products/DSC04623.png"],
         overview: {
             ar: "شريط كاسيت 4 ملم، وهو اختبار حمل منزلي يُستخدم لمرة واحدة عن طريق البول للحصول على نتيجة مرئية ونوعية.",
             en: "4mm cassette urine pregnancy test for qualitative visual results and early detection."
