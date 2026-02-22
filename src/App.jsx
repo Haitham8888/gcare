@@ -693,21 +693,23 @@ function Visitors(props) {
 function Education(props) {
   const baseUrl = import.meta.env.BASE_URL
   const galleryImages = [
-    { src: `${baseUrl}static/img/d263efc0-0a5b-4029-aa7d-a12a399dfd5e.jpg`, alt: 'فعالية G-Care 1' },
-    { src: `${baseUrl}static/img/45a473c7-debf-48cc-9a41-b9d61c38a0f1.jpg`, alt: 'فعالية G-Care 2' },
-    { src: `${baseUrl}static/img/9c4be885-1bf0-4a93-ba83-9cafe6e79c91-591x456.jpg`, alt: 'مؤتمر G-Care' },
-    { src: `${baseUrl}static/img/0c672357-323e-4792-8605-0e4f67c43db9.jpg`, alt: 'معرض G-Care' },
-    { src: `${baseUrl}static/img/ba862794-b872-49ac-be68-d173678fcbed.jpg`, alt: 'مشاركة G-Care' },
-    { src: `${baseUrl}static/img/b67d7fb0-5715-490d-8482-2d8252ea7ad3.jpg`, alt: 'حضور G-Care' }
+    { src: `${baseUrl}static/img/d263efc0-0a5b-4029-aa7d-a12a399dfd5e.jpg`, title: 'مشاركة G-Care في مؤتمر MedGo الدولي', alt: 'MedGo Conference' },
+    { src: `${baseUrl}static/img/45a473c7-debf-48cc-9a41-b9d61c38a0f1.jpg`, title: 'ورشة عمل حول أحدث التقنيات الطبية', alt: 'Medical Tech Workshop' },
+    { src: `${baseUrl}static/img/9c4be885-1bf0-4a93-ba83-9cafe6e79c91-591x456.jpg`, title: 'زيارة الوفد الطبي لمقر الشركة', alt: 'Medical Delegation Visit' },
+    { src: `${baseUrl}static/img/0c672357-323e-4792-8605-0e4f67c43db9.jpg`, title: 'معرض الصحة العالمي - الرياض', alt: 'Global Health Exhibition' },
+    { src: `${baseUrl}static/img/ba862794-b872-49ac-be68-d173678fcbed.jpg`, title: 'شراكة استراتيجية جديدة لتطوير الرعاية', alt: 'Strategic Partnership' },
+    { src: `${baseUrl}static/img/b67d7fb0-5715-490d-8482-2d8252ea7ad3.jpg`, title: 'دورة تدريبية متخصصة للأطباء', alt: 'Medical Training Session' }
   ]
 
   const [currentIndex, setCurrentIndex] = createSignal(0)
+  const [isHovered, setIsHovered] = createSignal(false)
 
-  // Auto-play every 3 seconds
+  // Auto-play switch
   createEffect(() => {
+    if (isHovered()) return
     const timer = setInterval(() => {
       nextSlide()
-    }, 3000)
+    }, 5000)
     onCleanup(() => clearInterval(timer))
   })
 
@@ -720,15 +722,21 @@ function Education(props) {
   }
 
   return (
-    <section class="section education-gallery-section" id="education">
+    <section
+      class="section education-gallery-section"
+      id="media-center"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <div class="container gallery-container">
-        <div class="gallery-header">
+        <div class="gallery-header text-center">
           <h2 class="gallery-main-title">{props.t('educationGalleryTitle')}</h2>
+          <p class="gallery-subtitle">{props.lang() === 'ar' ? 'رحلتنا بالصور والفعاليات' : 'Our journey in pictures and events'}</p>
         </div>
 
         <div class="gallery-slider-wrapper">
           <button class="gallery-nav-btn prev" onClick={prevSlide} aria-label="Previous">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="15 18 9 12 15 6"></polyline>
             </svg>
           </button>
@@ -742,14 +750,19 @@ function Education(props) {
             >
               {galleryImages.map((image) => (
                 <div class="gallery-slide">
-                  <img src={image.src} alt={image.alt} class="gallery-slide-img" />
+                  <div class="slide-content-wrapper">
+                    <img src={image.src} alt={image.alt} class="gallery-slide-img" />
+                    <div class="slide-caption">
+                      <h3>{image.title}</h3>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
 
           <button class="gallery-nav-btn next" onClick={nextSlide} aria-label="Next">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="9 18 15 12 9 6"></polyline>
             </svg>
           </button>
