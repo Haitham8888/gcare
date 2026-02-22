@@ -970,9 +970,9 @@ function ExpertPage(props) {
   ]
 
   const experts = [
-    { name: "فريق الإشراف الفني", role: "Team Leader", img: `${baseUrl}static/img/partners/p1.png` },
-    { name: "غدير إبراهيم عيسى", role: "Specialist", img: `${baseUrl}static/img/partners/p2.png` },
-    { name: "لمياء صالح المطيري", role: "Specialist", img: `${baseUrl}static/img/partners/p3.png` }
+    { name: "اسم الخبير", role: "التخصص المهني", img: `${baseUrl}static/img/partners/p1.png` },
+    { name: "اسم الخبير", role: "التخصص المهني", img: `${baseUrl}static/img/partners/p2.png` },
+    { name: "اسم الخبير", role: "التخصص المهني", img: `${baseUrl}static/img/partners/p3.png` }
   ]
 
   return (
