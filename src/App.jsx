@@ -769,37 +769,171 @@ function Education(props) {
   )
 }
 
-function EducationPage(props) {
+function LakiPage(props) {
+  const baseUrl = import.meta.env.BASE_URL
+  const [selectedImg, setSelectedImg] = createSignal(null)
+
+  const articles = [
+    { id: 1, title: "نصائح لصحة المرأة", img: `${baseUrl}static/img/0c672357-323e-4792-8605-0e4f67c43db9.jpg` },
+    { id: 2, title: "التغذية الإنجابية", img: `${baseUrl}static/img/45a473c7-debf-48cc-9a41-b9d61c38a0f1.jpg` }
+  ]
+  const guides = [
+    { id: 1, title: "دليل الفحوصات الدورية", img: `${baseUrl}static/img/ba862794-b872-49ac-be68-d173678fcbed.jpg` }
+  ]
+  const posters = [
+    { id: 1, title: "بوستر 1", img: `${baseUrl}static/img/d263efc0-0a5b-4029-aa7d-a12a399dfd5e.jpg` },
+    { id: 2, title: "بوستر 2", img: `${baseUrl}static/img/b67d7fb0-5715-490d-8482-2d8252ea7ad3.jpg` },
+    { id: 3, title: "بوستر 3", img: `${baseUrl}static/img/9c4be885-1bf0-4a93-ba83-9cafe6e79c91-591x456.jpg` },
+    { id: 4, title: "بوستر 4", img: `${baseUrl}static/img/0c672357-323e-4792-8605-0e4f67c43db9.jpg` },
+    { id: 5, title: "بوستر 5", img: `${baseUrl}static/img/45a473c7-debf-48cc-9a41-b9d61c38a0f1.jpg` }
+  ]
+
   return (
-    <>
-      <section class="section education-page" id="education-page">
+    <div class="laki-page-content">
+      <section class="section subpage-hero">
         <div class="container">
-          <div class="section-head">
-            <h2 class="section-title">{props.t('educationTitle')}</h2>
-            <p class="muted">{props.t('educationSubtitle')}</p>
-          </div>
-          <div class="education-content">
-            <div class="info-card">
-              <h3 class="subsection-title">{props.t('educationContentTitle')}</h3>
-              <p class="about-paragraph">{props.t('educationBody')}</p>
+          <button class="back-link" onClick={() => props.setEduRoute('main')}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5m7 7-7-7 7-7" /></svg>
+            عودة للتثقيف الصحي
+          </button>
+          <h1 class="subpage-title">برنامج "لكِ وبوعي"</h1>
+          <p class="subpage-intro">{props.t('educationTopic2Body')}</p>
+        </div>
+      </section>
+
+      <section class="section laki-resources">
+        <div class="container">
+          <div class="resource-block">
+            <h2 class="resource-header">المقالات التعليمية</h2>
+            <div class="resource-grid">
+              {articles.map(item => (
+                <div class="resource-card" onClick={() => setSelectedImg(item.img)}>
+                  <div class="resource-thumb"><img src={item.img} alt="" /></div>
+                  <h3>{item.title}</h3>
+                </div>
+              ))}
             </div>
-            <div class="education-topics">
-              <div class="info-card">
-                <h4 class="side-title">{props.t('educationTopic1Title')}</h4>
-                <p class="muted">{props.t('educationTopic1Body')}</p>
-              </div>
-              <div class="info-card">
-                <h4 class="side-title">{props.t('educationTopic2Title')}</h4>
-                <p class="muted">{props.t('educationTopic2Body')}</p>
-              </div>
-              <div class="info-card">
-                <h4 class="side-title">{props.t('educationTopic3Title')}</h4>
-                <p class="muted">{props.t('educationTopic3Body')}</p>
+          </div>
+
+          <div class="resource-block">
+            <h2 class="resource-header">الأدلة الإرشادية</h2>
+            <div class="resource-grid">
+              {guides.map(item => (
+                <div class="resource-card" onClick={() => setSelectedImg(item.img)}>
+                  <div class="resource-thumb"><img src={item.img} alt="" /></div>
+                  <h3>{item.title}</h3>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div class="resource-block">
+            <h2 class="resource-header">قسم البوسترات</h2>
+            <div class="resource-grid">
+              {posters.map(item => (
+                <div class="resource-card" onClick={() => setSelectedImg(item.img)}>
+                  <div class="resource-thumb"><img src={item.img} alt="" /></div>
+                  <h3>{item.title}</h3>
+                </div>
+              ))}
+              <div class="resource-card more-card">
+                <div class="resource-thumb more-placeholder"><span>للمزيد ...</span></div>
+                <h3>استكشف المزيد</h3>
               </div>
             </div>
           </div>
         </div>
       </section>
+
+      {selectedImg() && (
+        <div class="lightbox" onClick={() => setSelectedImg(null)}>
+          <img src={selectedImg()} alt="" />
+          <button class="close-lightbox">×</button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function ExpertPage(props) {
+  return (
+    <div class="expert-page-content">
+      <section class="section subpage-hero">
+        <div class="container">
+          <button class="back-link" onClick={() => props.setEduRoute('main')}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5m7 7-7-7 7-7" /></svg>
+            عودة للتثقيف الصحي
+          </button>
+          <h1 class="subpage-title">برنامج "إكسبرت"</h1>
+          <p class="subpage-intro">{props.t('educationTopic1Body')}</p>
+        </div>
+      </section>
+
+      <section class="section expert-join">
+        <div class="container">
+          <div class="expert-join-card">
+            <h2>انضم لشبكة الخبراء</h2>
+            <p>نحن ندعو الأطباء المتميزين للمساهمة في رحلة التوعية الصحية ورفع جودة الرعاية.</p>
+            <div class="join-actions">
+              <a href="https://wa.me/966552527862" class="btn btn-primary">
+                تواصل عبر واتساب
+              </a>
+              <a href="mailto:info@gcare.sa" class="btn btn-ghost">
+                تواصل عبر الإيميل
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  )
+}
+
+function EducationPage(props) {
+  const [eduRoute, setEduRoute] = createSignal('main')
+
+  return (
+    <>
+      <div class="education-page-wrapper">
+        {eduRoute() === 'main' && (
+          <section class="section education-page" id="education-page">
+            <div class="container">
+              <div class="section-head text-center">
+                <h2 class="section-title">{props.t('educationTitle')}</h2>
+                <p class="hero-subtitle-large">{props.t('educationSubtitle')}</p>
+              </div>
+
+              <div class="education-intro-block">
+                <p>{props.t('educationBody')}</p>
+              </div>
+
+              <div class="education-programs-grid">
+                <div class="program-card laki-card">
+                  <div class="program-content">
+                    <h3>{props.t('educationTopic2Title')}</h3>
+                    <p>{props.t('educationTopic2Body')}</p>
+                    <button class="btn btn-primary" onClick={() => setEduRoute('laki')}>
+                      استكشف البرنامج
+                    </button>
+                  </div>
+                </div>
+
+                <div class="program-card expert-card">
+                  <div class="program-content">
+                    <h3>{props.t('educationTopic1Title')}</h3>
+                    <p>{props.t('educationTopic1Body')}</p>
+                    <button class="btn btn-brand-alt" onClick={() => setEduRoute('expert')}>
+                      انضم لشبكة الخبراء
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+        {eduRoute() === 'laki' && <LakiPage t={props.t} setEduRoute={setEduRoute} />}
+        {eduRoute() === 'expert' && <ExpertPage t={props.t} setEduRoute={setEduRoute} />}
+      </div>
       <Contact t={props.t} />
     </>
   )
