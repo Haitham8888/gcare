@@ -2313,97 +2313,116 @@ html[dir="ltr"] .vision-content-box {
 }
 
 
-/* ========== COE-Style Values Section ========== */
+/* ========== Premium COE-Style Values Section ========== */
 .coe-values {
-  background: #fff;
-  padding-block: 4rem;
-  border-top: 1px solid #e2e8f0;
+  background: var(--bg-soft);
+  padding-block: 6rem;
 }
 
 .coe-values-title {
-  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
   font-weight: 900;
   color: var(--ink);
   text-align: center;
-  margin: 0 0 2.5rem 0;
+  margin-bottom: 4rem;
   position: relative;
-  padding-bottom: 0.75rem;
 }
 
 .coe-values-title::after {
   content: '';
   position: absolute;
-  bottom: 0;
+  bottom: -1rem;
   left: 50%;
   transform: translateX(-50%);
-  width: 60px;
-  height: 3px;
+  width: 80px;
+  height: 4px;
   background: var(--brand);
-  border-radius: 2px;
+  border-radius: 99px;
 }
 
 .coe-values-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
 }
 
 .coe-value-card {
-  background: #fff;
-  border: 1px solid #e8eaed;
-  border-radius: 12px;
-  padding: 2.5rem 1.5rem;
-  text-align: center;
-  transition: all 0.35s ease;
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
   position: relative;
   overflow: hidden;
-  width: calc(33.333% - 1rem);
-  min-width: 280px;
 }
 
-.coe-value-card::before {
+.coe-value-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 25px 50px rgba(16, 147, 165, 0.1);
+  border-color: rgba(16, 147, 165, 0.2);
+}
+
+.coe-value-card::after {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
-  right: 0;
-  height: 4px;
-  background: var(--brand);
-  /* Unified teal top border */
-  border-radius: 12px 12px 0 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(16, 147, 165, 0.05) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
 }
 
-.coe-value-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.06);
+.coe-value-card:hover::after {
+  opacity: 1;
 }
 
 .coe-value-icon-box {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  background: #f0f7f9;
-  /* Very light teal background */
+  flex: 0 0 70px;
+  height: 70px;
+  border-radius: 18px;
+  background: rgba(16, 147, 165, 0.08);
+  color: var(--brand);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 1.5rem auto;
-  color: var(--brand);
+  transition: all 0.4s ease;
+  position: relative;
+  z-index: 2;
+}
+
+.coe-value-card:hover .coe-value-icon-box {
+  background: var(--brand);
+  color: #ffffff;
+  transform: rotate(-10deg);
+}
+
+.coe-value-content {
+  flex: 1;
+  text-align: right;
+  position: relative;
+  z-index: 2;
+}
+
+html[dir="ltr"] .coe-value-content {
+  text-align: left;
 }
 
 .coe-value-content h4 {
-  font-size: 1.25rem;
+  font-size: 1.35rem;
   font-weight: 800;
   color: var(--ink);
-  /* Dark navy */
-  margin: 0 0 0.5rem 0;
+  margin-bottom: 0.5rem;
 }
 
 .coe-value-content p {
   font-size: 0.95rem;
-  color: #8e959f;
-  /* Muted gray for description */
+  color: var(--muted);
   line-height: 1.6;
   margin: 0;
 }
