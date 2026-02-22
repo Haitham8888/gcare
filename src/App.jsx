@@ -173,6 +173,7 @@ function Products(props) {
   const [activeTab, setActiveTab] = createSignal('overview')
   const [mainImage, setMainImage] = createSignal('')
   const [selectedCategory, setSelectedCategory] = createSignal('All')
+  const baseUrl = import.meta.env.BASE_URL
 
   const uniqueCategories = ['All', ...new Set(products.map(p => p.category))]
 
@@ -184,7 +185,7 @@ function Products(props) {
 
   const openProduct = (p) => {
     setSelectedProduct(p)
-    setMainImage(p.mainImage)
+    setMainImage(`${baseUrl}${p.mainImage}`)
     setActiveTab('overview')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -218,7 +219,7 @@ function Products(props) {
               {(product) => (
                 <div class="catalog-card">
                   <div class="catalog-card-img">
-                    <img src={product.mainImage} alt={product.name} loading="lazy" />
+                    <img src={`${baseUrl}${product.mainImage}`} alt={product.name[props.lang()]} loading="lazy" />
                     <div class="catalog-card-overlay">
                       <button class="btn btn-brand-alt" onClick={() => openProduct(product)}>
                         {props.t('productViewDetails')}
@@ -226,8 +227,8 @@ function Products(props) {
                     </div>
                   </div>
                   <div class="catalog-card-info">
-                    <span class="catalog-card-cat">{product.category}</span>
-                    <h3 class="catalog-card-title">{product.name}</h3>
+                    <span class="catalog-card-cat">{props.t(`cat${product.category}`)}</span>
+                    <h3 class="catalog-card-title">{product.name[props.lang()]}</h3>
                   </div>
                 </div>
               )}
@@ -246,17 +247,17 @@ function Products(props) {
               <div class="product-visuals">
                 <div class="product-main-stage">
                   <div class="stage-inner">
-                    <img src={mainImage()} alt={selectedProduct().name} class="zoom-img" />
+                    <img src={mainImage()} alt={selectedProduct().name[props.lang()]} class="zoom-img" />
                   </div>
                 </div>
                 <div class="product-thumbs">
                   <For each={selectedProduct().images}>
                     {(img) => (
                       <div
-                        class={`thumb-box ${mainImage() === img ? 'active' : ''}`}
-                        onClick={() => setMainImage(img)}
+                        class={`thumb-box ${mainImage() === `${baseUrl}${img}` ? 'active' : ''}`}
+                        onClick={() => setMainImage(`${baseUrl}${img}`)}
                       >
-                        <img src={img} alt="Thumbnail" />
+                        <img src={`${baseUrl}${img}`} alt="Thumbnail" />
                       </div>
                     )}
                   </For>
@@ -264,8 +265,8 @@ function Products(props) {
               </div>
 
               <div class="product-info-panel">
-                <span class="detail-badge">{selectedProduct().category}</span>
-                <h1 class="detail-title">{selectedProduct().name}</h1>
+                <span class="detail-badge">{props.t(`cat${selectedProduct().category}`)}</span>
+                <h1 class="detail-title">{selectedProduct().name[props.lang()]}</h1>
 
                 <div class="detail-tabs">
                   <div class="tabs-nav">
@@ -292,7 +293,7 @@ function Products(props) {
                   <div class="tab-content">
                     <Show when={activeTab() === 'overview'}>
                       <div class="tab-pane fade-in">
-                        <p>{selectedProduct().overview}</p>
+                        <p>{selectedProduct().overview[props.lang()]}</p>
                       </div>
                     </Show>
                     <Show when={activeTab() === 'specs'}>
@@ -302,8 +303,8 @@ function Products(props) {
                             <For each={selectedProduct().specifications}>
                               {(spec) => (
                                 <tr>
-                                  <td>{spec.label}</td>
-                                  <td>{spec.value}</td>
+                                  <td>{spec.label[props.lang()]}</td>
+                                  <td>{spec.value[props.lang()]}</td>
                                 </tr>
                               )}
                             </For>
@@ -314,7 +315,7 @@ function Products(props) {
                     <Show when={activeTab() === 'features'}>
                       <div class="tab-pane fade-in">
                         <ul class="features-list">
-                          <For each={selectedProduct().features}>
+                          <For each={selectedProduct().features[props.lang()]}>
                             {(feature) => <li>{feature}</li>}
                           </For>
                         </ul>
@@ -333,7 +334,7 @@ function Products(props) {
                   <button
                     class="btn btn-primary w-full"
                     onClick={() => {
-                      const msgText = `${props.lang() === 'ar' ? 'أرغب في الاستفسار عن المنتج: ' : 'I would like to inquire about: '} ${selectedProduct().name}`;
+                      const msgText = `${props.lang() === 'ar' ? 'أرغب في الاستفسار عن المنتج: ' : 'I would like to inquire about: '} ${selectedProduct().name[props.lang()]}`;
                       props.setPrefilledMessage(msgText);
                       window.location.hash = '#contact-page';
                     }}
