@@ -773,13 +773,18 @@ function LakiPage(props) {
   const baseUrl = import.meta.env.BASE_URL
   const [selectedImg, setSelectedImg] = createSignal(null)
 
-  const articles = [
-    { id: 1, title: "نصائح لصحة المرأة", img: `${baseUrl}static/img/0c672357-323e-4792-8605-0e4f67c43db9.jpg` },
-    { id: 2, title: "التغذية الإنجابية", img: `${baseUrl}static/img/45a473c7-debf-48cc-9a41-b9d61c38a0f1.jpg` }
+  const contentSeries = [
+    { id: 1, title: "هرموني في دقيقة", subtitle: "تعرفي على المزيد", icon: "🕒", color: "#6b7280" },
+    { id: 2, title: "خياراتي اليومية", subtitle: "تعرفي على المزيد", icon: "💊", color: "#85c1af" },
+    { id: 3, title: "أكلكِ وصحتكِ", subtitle: "تعرفي على المزيد", icon: "🍎", color: "#f97316" }
   ]
-  const guides = [
-    { id: 1, title: "دليل الفحوصات الدورية", img: `${baseUrl}static/img/ba862794-b872-49ac-be68-d173678fcbed.jpg` }
+
+  const latestAdditions = [
+    { id: 1, title: "أسباب الصداع الهرموني وطرق الوقاية منه", img: `${baseUrl}static/img/0c672357-323e-4792-8605-0e4f67c43db9.jpg` },
+    { id: 2, title: "أهمية الصحة النفسية للطفل والمراهق", img: `${baseUrl}static/img/45a473c7-debf-48cc-9a41-b9d61c38a0f1.jpg` },
+    { id: 3, title: "خطر مقاومة المضادات الحيوية", img: `${baseUrl}static/img/ba862794-b872-49ac-be68-d173678fcbed.jpg` }
   ]
+
   const posters = [
     { id: 1, title: "بوستر 1", img: `${baseUrl}static/img/d263efc0-0a5b-4029-aa7d-a12a399dfd5e.jpg` },
     { id: 2, title: "بوستر 2", img: `${baseUrl}static/img/b67d7fb0-5715-490d-8482-2d8252ea7ad3.jpg` },
@@ -790,57 +795,95 @@ function LakiPage(props) {
 
   return (
     <div class="laki-page-content">
-      <section class="section subpage-hero">
-        <div class="container">
-          <button class="back-link" onClick={() => props.setEduRoute('main')}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5m7 7-7-7 7-7" /></svg>
-            عودة للتثقيف الصحي
-          </button>
-          <h1 class="subpage-title">برنامج "لكِ وبوعي"</h1>
-          <p class="subpage-intro">{props.t('educationTopic2Body')}</p>
+      <section class="laki-hero">
+        <div class="laki-hero-inner container">
+          <div class="laki-hero-text">
+            <div class="laki-logo-row">
+              <img src={`${baseUrl}static/img/G%20-%20Care-01.svg`} alt="Laki Logo" class="laki-hero-logo" />
+              <div class="laki-hero-badge">لكِ وبوعي</div>
+            </div>
+            <h1 class="laki-hero-title">لكِ وبوعي: رحلتكِ نحو صحة واعية.</h1>
+            <p class="laki-hero-subtitle">
+              منظومة تعليمية متكاملة ترفقكِ في كل مراحل حياتكِ الصحية بمعلومات طبية موثوقة.
+            </p>
+            <button class="back-link-v2" onClick={() => props.setEduRoute('main')}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5m7 7-7-7 7-7" /></svg>
+              الرئيسية {'>'} التثقيف الصحي {'>'} برنامج لكِ وبوعي
+            </button>
+          </div>
+          <div class="laki-hero-image">
+            <img src={`${baseUrl}static/img/d263efc0-0a5b-4029-aa7d-a12a399dfd5e.jpg`} alt="Women Health" />
+          </div>
         </div>
       </section>
 
-      <section class="section laki-resources">
+      <section class="section laki-series">
         <div class="container">
-          <div class="resource-block">
-            <h2 class="resource-header">المقالات التعليمية</h2>
-            <div class="resource-grid">
-              {articles.map(item => (
-                <div class="resource-card" onClick={() => setSelectedImg(item.img)}>
-                  <div class="resource-thumb"><img src={item.img} alt="" /></div>
+          <div class="laki-section-layout">
+            <div class="laki-section-intro">
+              <h2 class="laki-section-title">سلاسل المحتوى</h2>
+              <p class="laki-section-subtitle">تعرفي على المزيد</p>
+              <button class="btn btn-primary laki-explore-btn">تعرفي على المزيد ←</button>
+            </div>
+            <div class="laki-series-grid">
+              {contentSeries.map(item => (
+                <div class="laki-series-card" style={{ "--card-color": item.color }}>
+                  <div class="laki-series-icon"><span>{item.icon}</span></div>
                   <h3>{item.title}</h3>
+                  <p>{item.subtitle}</p>
                 </div>
               ))}
             </div>
           </div>
+        </div>
+      </section>
 
-          <div class="resource-block">
-            <h2 class="resource-header">الأدلة الإرشادية</h2>
-            <div class="resource-grid">
-              {guides.map(item => (
-                <div class="resource-card" onClick={() => setSelectedImg(item.img)}>
-                  <div class="resource-thumb"><img src={item.img} alt="" /></div>
-                  <h3>{item.title}</h3>
+      <section class="section laki-latest">
+        <div class="container">
+          <h2 class="laki-section-title text-center mb-4">أحدث الإضافات</h2>
+          <div class="laki-latest-grid">
+            {latestAdditions.map(item => (
+              <div class="laki-latest-card" onClick={() => setSelectedImg(item.img)}>
+                <div class="laki-latest-thumb">
+                  <img src={item.img} alt="" />
                 </div>
-              ))}
-            </div>
-          </div>
-
-          <div class="resource-block">
-            <h2 class="resource-header">قسم البوسترات</h2>
-            <div class="resource-grid">
-              {posters.map(item => (
-                <div class="resource-card" onClick={() => setSelectedImg(item.img)}>
-                  <div class="resource-thumb"><img src={item.img} alt="" /></div>
+                <div class="laki-latest-info">
                   <h3>{item.title}</h3>
+                  <button class="laki-link">اقرأ المزيد</button>
                 </div>
-              ))}
-              <div class="resource-card more-card">
-                <div class="resource-thumb more-placeholder"><span>للمزيد ...</span></div>
-                <h3>استكشف المزيد</h3>
               </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="section laki-posters">
+        <div class="container">
+          <h2 class="laki-section-title text-center mb-4">البوسترات التوعوية</h2>
+          <div class="resource-grid">
+            {posters.map(item => (
+              <div class="resource-card" onClick={() => setSelectedImg(item.img)}>
+                <div class="resource-thumb"><img src={item.img} alt="" /></div>
+                <h3>{item.title}</h3>
+              </div>
+            ))}
+            <div class="resource-card more-card">
+              <div class="resource-thumb more-placeholder"><span>للمزيد ...</span></div>
+              <h3>استكشف المزيد</h3>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section laki-signup">
+        <div class="container">
+          <div class="laki-signup-card">
+            <h3>اشتركي في لكِ وبوعي</h3>
+            <form class="laki-signup-form" onSubmit={e => e.preventDefault()}>
+              <input type="text" placeholder="الاسم" />
+              <input type="email" placeholder="البريد الإلكتروني" />
+              <button type="submit" class="btn btn-primary">اشتركي الآن</button>
+            </form>
           </div>
         </div>
       </section>
