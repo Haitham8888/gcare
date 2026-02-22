@@ -181,7 +181,16 @@
         "expertSignupBtn": "إرسال الطلب",
         "eduGallerySubtitle": "رحلتنا بالصور والفعاليات",
         "eduLakiExploreBtn": "استكشف البرنامج",
-        "eduExpertJoinBtn": "انضم لشبكة الخبراء"
+        "eduExpertJoinBtn": "انضم لشبكة الخبراء",
+        "eduScientificLibBtn": "تصفح المكتبة",
+        "lakiLatest1": "أسباب الصداع الهرموني وطرق الوقاية منه",
+        "lakiLatest2": "أهمية الصحة النفسية للطفل والمراهق",
+        "lakiLatest3": "خطر مقاومة المضادات الحيوية",
+        "lakiPoster1": "بوستر 1",
+        "lakiPoster2": "بوستر 2",
+        "lakiPoster3": "بوستر 3",
+        "lakiPoster4": "بوستر 4",
+        "lakiPoster5": "بوستر 5"
     },
     "en": {
         "brand": "G-Care",
@@ -366,5 +375,18 @@
         "eduGallerySubtitle": "Our journey in pictures and events",
         "eduLakiExploreBtn": "Explore the Program",
         "eduExpertJoinBtn": "Join Expert Network"
+        "expertSignupBtn": "Send Request",
+        "eduGallerySubtitle": "Our journey in pictures and events",
+        "eduLakiExploreBtn": "Explore the Program",
+        "eduExpertJoinBtn": "Join Expert Network",
+        "eduScientificLibBtn": "Browse Library",
+        "lakiLatest1": "Causes of hormonal headaches and prevention methods",
+        "lakiLatest2": "Importance of mental health for children and adolescents",
+        "lakiLatest3": "The danger of antibiotic resistance",
+        "lakiPoster1": "Poster 1",
+        "lakiPoster2": "Poster 2",
+        "lakiPoster3": "Poster 3",
+        "lakiPoster4": "Poster 4",
+        "lakiPoster5": "Poster 5"
     }
 }

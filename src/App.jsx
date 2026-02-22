@@ -823,17 +823,17 @@ function LakiPage(props) {
   ]
 
   const latestAdditions = [
-    { id: 1, title: "أسباب الصداع الهرموني وطرق الوقاية منه", img: `${baseUrl}static/img/0c672357-323e-4792-8605-0e4f67c43db9.jpg` },
-    { id: 2, title: "أهمية الصحة النفسية للطفل والمراهق", img: `${baseUrl}static/img/45a473c7-debf-48cc-9a41-b9d61c38a0f1.jpg` },
-    { id: 3, title: "خطر مقاومة المضادات الحيوية", img: `${baseUrl}static/img/ba862794-b872-49ac-be68-d173678fcbed.jpg` }
+    { id: 1, title: props.t('lakiLatest1'), img: `${baseUrl}static/img/0c672357-323e-4792-8605-0e4f67c43db9.jpg` },
+    { id: 2, title: props.t('lakiLatest2'), img: `${baseUrl}static/img/45a473c7-debf-48cc-9a41-b9d61c38a0f1.jpg` },
+    { id: 3, title: props.t('lakiLatest3'), img: `${baseUrl}static/img/ba862794-b872-49ac-be68-d173678fcbed.jpg` }
   ]
 
   const posters = [
-    { id: 1, title: "بوستر 1", img: `${baseUrl}static/img/d263efc0-0a5b-4029-aa7d-a12a399dfd5e.jpg` },
-    { id: 2, title: "بوستر 2", img: `${baseUrl}static/img/b67d7fb0-5715-490d-8482-2d8252ea7ad3.jpg` },
-    { id: 3, title: "بوستر 3", img: `${baseUrl}static/img/9c4be885-1bf0-4a93-ba83-9cafe6e79c91-591x456.jpg` },
-    { id: 4, title: "بوستر 4", img: `${baseUrl}static/img/0c672357-323e-4792-8605-0e4f67c43db9.jpg` },
-    { id: 5, title: "بوستر 5", img: `${baseUrl}static/img/45a473c7-debf-48cc-9a41-b9d61c38a0f1.jpg` }
+    { id: 1, title: props.t('lakiPoster1'), img: `${baseUrl}static/img/d263efc0-0a5b-4029-aa7d-a12a399dfd5e.jpg` },
+    { id: 2, title: props.t('lakiPoster2'), img: `${baseUrl}static/img/b67d7fb0-5715-490d-8482-2d8252ea7ad3.jpg` },
+    { id: 3, title: props.t('lakiPoster3'), img: `${baseUrl}static/img/9c4be885-1bf0-4a93-ba83-9cafe6e79c91-591x456.jpg` },
+    { id: 4, title: props.t('lakiPoster4'), img: `${baseUrl}static/img/0c672357-323e-4792-8605-0e4f67c43db9.jpg` },
+    { id: 5, title: props.t('lakiPoster5'), img: `${baseUrl}static/img/45a473c7-debf-48cc-9a41-b9d61c38a0f1.jpg` }
   ]
 
   return (
@@ -1108,6 +1108,16 @@ function EducationPage(props) {
                     <p>{props.t('educationTopic1Body')}</p>
                     <button class="btn btn-brand-alt" onClick={() => setEduRoute('expert')}>
                       {props.t('eduExpertJoinBtn')}
+                    </button>
+                  </div>
+                </div>
+
+                <div class="program-card library-card">
+                  <div class="program-content">
+                    <h3>{props.t('educationTopic3Title')}</h3>
+                    <p>{props.t('educationTopic3Body')}</p>
+                    <button class="btn btn-primary">
+                      {props.t('eduScientificLibBtn')}
                     </button>
                   </div>
                 </div>
