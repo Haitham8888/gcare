@@ -451,6 +451,7 @@ html[dir="ltr"] .hero-gallery-track {
   font-weight: 700;
   border: 1px solid transparent;
   cursor: pointer;
+  font-family: inherit;
 }
 
 .btn-primary {
@@ -3409,4 +3410,3 @@ html[dir="ltr"] .coe-value-content {
     font-size: 2.75rem;
   }
 }
-
