@@ -2315,7 +2315,7 @@ html[dir="ltr"] .vision-content-box {
 
 /* ========== Premium COE-Style Values Section ========== */
 .coe-values {
-  background: var(--bg-soft);
+  background: #ffffff;
   padding-block: 6rem;
 }
 
