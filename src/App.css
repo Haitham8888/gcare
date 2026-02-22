@@ -3726,6 +3726,7 @@ html[dir=\"ltr\"] .features-list li::before {
 .fade-in {
   animation: fadeIn 0.4s ease-out;
 }
+
 /* Category Filter Bar */
 .category-filter-bar {
   display: flex;
@@ -3743,8 +3744,9 @@ html[dir=\"ltr\"] .features-list li::before {
   font-weight: 700;
   color: var(--muted);
   cursor: pointer;
+  font-family: inherit;
   transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
-  box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
 }
 
 .filter-btn:hover {
