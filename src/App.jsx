@@ -970,9 +970,9 @@ function ExpertPage(props) {
   ]
 
   const experts = [
-    { name: "اسم الخبير", role: "التخصص المهني", img: `${baseUrl}static/img/partners/p1.png` },
-    { name: "اسم الخبير", role: "التخصص المهني", img: `${baseUrl}static/img/partners/p2.png` },
-    { name: "اسم الخبير", role: "التخصص المهني", img: `${baseUrl}static/img/partners/p3.png` }
+    { name: "اسم الخبير", role: "التخصص المهني", img: `${baseUrl}static/img/image.png` },
+    { name: "اسم الخبير", role: "التخصص المهني", img: `${baseUrl}static/img/image.png` },
+    { name: "اسم الخبير", role: "التخصص المهني", img: `${baseUrl}static/img/image.png` }
   ]
 
   return (
