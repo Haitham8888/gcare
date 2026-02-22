@@ -774,9 +774,39 @@ function LakiPage(props) {
   const [selectedImg, setSelectedImg] = createSignal(null)
 
   const contentSeries = [
-    { id: 1, title: "هرموني في دقيقة", subtitle: "تعرفي على المزيد", icon: "🕒", color: "#6b7280" },
-    { id: 2, title: "خياراتي اليومية", subtitle: "تعرفي على المزيد", icon: "💊", color: "#85c1af" },
-    { id: 3, title: "أكلكِ وصحتكِ", subtitle: "تعرفي على المزيد", icon: "🍎", color: "#f97316" }
+    {
+      id: 1,
+      title: "هرموني في دقيقة",
+      subtitle: "دليل سريع وموثوق",
+      icon: (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+        </svg>
+      ),
+      color: "#6b7280"
+    },
+    {
+      id: 2,
+      title: "خياراتي اليومية",
+      subtitle: "نمط حياة صحي",
+      icon: (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><path d="m9 12 2 2 4-4" />
+        </svg>
+      ),
+      color: "#1093a5"
+    },
+    {
+      id: 3,
+      title: "أكلكِ وصحتكِ",
+      subtitle: "تغذية المرأة المتكاملة",
+      icon: (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16z" /><path d="M12 14v6" /><path d="M12 14L8 10" /><path d="M12 14l4-4" />
+        </svg>
+      ),
+      color: "#f97316"
+    }
   ]
 
   const latestAdditions = [
@@ -828,7 +858,9 @@ function LakiPage(props) {
             <div class="laki-series-grid">
               {contentSeries.map(item => (
                 <div class="laki-series-card" style={{ "--card-color": item.color }}>
-                  <div class="laki-series-icon"><span>{item.icon}</span></div>
+                  <div class="laki-series-icon">
+                    {item.icon}
+                  </div>
                   <h3>{item.title}</h3>
                   <p>{item.subtitle}</p>
                 </div>
