@@ -3046,3 +3046,255 @@ html[dir="ltr"] .coe-value-content {
     font-size: 2.5rem;
   }
 }
+
+/* Expert Page Premium UI Enhancements */
+.expert-hero {
+  background: linear-gradient(135deg, #1093a5 0%, #0d7a8a 100%);
+  padding-block: 5rem;
+  color: #fff;
+  overflow: hidden;
+}
+
+.expert-hero .back-link-v2 {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.2);
+  color: #fff;
+  margin-bottom: 2rem;
+}
+
+.expert-hero-inner {
+  display: flex;
+  align-items: center;
+  gap: 4rem;
+}
+
+.expert-hero-text {
+  flex: 1.2;
+}
+
+.expert-hero-title {
+  font-size: 3.5rem;
+  font-weight: 900;
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+}
+
+.expert-hero-subtitle {
+  font-size: 1.35rem;
+  opacity: 0.9;
+  line-height: 1.6;
+  margin-bottom: 3rem;
+  max-width: 600px;
+}
+
+.expert-cta-btn {
+  padding: 1.25rem 2.5rem;
+  font-size: 1.1rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.expert-hero-image {
+  flex: 0.8;
+  border-radius: 30px;
+  overflow: hidden;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+  border: 4px solid rgba(255,255,255,0.1);
+}
+
+.expert-hero-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.expert-section-header {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: var(--ink);
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+/* Why Expert Section */
+.expert-why {
+  background: #ffffff;
+}
+
+.expert-why-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2.5rem;
+}
+
+.expert-why-card {
+  text-align: center;
+  padding: 3rem 2rem;
+  border-radius: 24px;
+  background: var(--bg-soft);
+  transition: all 0.3s ease;
+}
+
+.expert-why-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+}
+
+.expert-why-icon {
+  width: 80px;
+  height: 80px;
+  background: #ffffff;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 2rem auto;
+  color: var(--brand);
+  box-shadow: 0 10px 20px rgba(16, 147, 165, 0.1);
+}
+
+.expert-why-card h3 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--ink);
+  margin-bottom: 1rem;
+}
+
+.expert-why-card p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* How it Works Section */
+.expert-how {
+  background: #f8fafc;
+}
+
+.expert-how-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4rem;
+  position: relative;
+}
+
+.expert-how-steps::before {
+  content: '';
+  position: absolute;
+  top: 40px;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  background: dashed #cbd5e1;
+  z-index: 1;
+}
+
+.expert-step-card {
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.expert-step-num {
+  width: 80px;
+  height: 80px;
+  background: var(--brand);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  font-weight: 900;
+  margin: 0 auto 2rem auto;
+  border: 6px solid #fff;
+  box-shadow: 0 10px 20px rgba(16, 147, 165, 0.2);
+}
+
+.expert-step-card h3 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--ink);
+  margin-bottom: 1rem;
+}
+
+.expert-step-card p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* Expert Team Section */
+.expert-team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2.5rem;
+}
+
+.expert-doc-card {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 2.5rem;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+  transition: all 0.3s ease;
+  border: 1px solid #f1f5f9;
+}
+
+.expert-doc-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+}
+
+.doc-img-box {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0 auto 1.5rem auto;
+  border: 4px solid var(--bg-soft);
+}
+
+.doc-img-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.expert-doc-card h3 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+}
+
+.expert-doc-card p {
+  color: var(--brand);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 1024px) {
+  .expert-hero-inner {
+    flex-direction: column;
+    text-align: center;
+  }
+  .expert-hero-text {
+    order: 2;
+  }
+  .expert-hero-image {
+    order: 1;
+    width: 100%;
+    max-width: 450px;
+  }
+  .expert-why-grid,
+  .expert-how-steps {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+  .expert-how-steps::before {
+    display: none;
+  }
+  .expert-hero-title {
+    font-size: 2.75rem;
+  }
+}

@@ -931,32 +931,128 @@ function LakiPage(props) {
 }
 
 function ExpertPage(props) {
+  const baseUrl = import.meta.env.BASE_URL
+
+  const advantages = [
+    {
+      title: "توسيع شبكتك المهنية",
+      desc: "توسع شبكتك المهنية من المتخصصين والخبراء وبناء شراكات مهنية.",
+      icon: (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        </svg>
+      )
+    },
+    {
+      title: "الوصول لأحدث الأبحاث",
+      desc: "منصة متخصصة للربط بين المهتمين بالبحث العلمي لتبادل الخبرات وبناء شراكات.",
+      icon: (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+        </svg>
+      )
+    },
+    {
+      title: "فرص تعاون حصرية",
+      desc: "فرص تعاون حصرية للتدريب والبحث وبناء الشراكات ومراكز تميز مهنية.",
+      icon: (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><polyline points="16 11 18 13 22 9" />
+        </svg>
+      )
+    }
+  ]
+
+  const steps = [
+    { id: 1, title: "سجل ملفك التعريفي", desc: "سجل بياناتك الشخصية والمهنية على الموقع." },
+    { id: 2, title: "استكشف وشارك", desc: "استكشف المنصة وشارك خبراتك وتعلم من الآخرين." },
+    { id: 3, title: "تواصل وابدأ التعاون", desc: "تواصل مع الخبراء والزملاء وابدأ مشروعاتك التعاونية." }
+  ]
+
+  const experts = [
+    { name: "فريق الإشراف الفني", role: "Team Leader", img: `${baseUrl}static/img/partners/p1.png` },
+    { name: "غدير إبراهيم عيسى", role: "Specialist", img: `${baseUrl}static/img/partners/p2.png` },
+    { name: "لمياء صالح المطيري", role: "Specialist", img: `${baseUrl}static/img/partners/p3.png` }
+  ]
+
   return (
     <div class="expert-page-content">
-      <section class="section subpage-hero">
-        <div class="container">
-          <button class="back-link" onClick={() => props.setEduRoute('main')}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5m7 7-7-7 7-7" /></svg>
-            عودة للتثقيف الصحي
-          </button>
-          <h1 class="subpage-title">برنامج "إكسبرت"</h1>
-          <p class="subpage-intro">{props.t('educationTopic1Body')}</p>
+      <section class="expert-hero">
+        <div class="expert-hero-inner container">
+          <div class="expert-hero-text">
+            <button class="back-link-v2" onClick={() => props.setEduRoute('main')}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5m7 7-7-7 7-7" /></svg>
+              الرئيسية {'>'} التثقيف الصحي {'>'} برنامج إكسبرت
+            </button>
+            <h1 class="expert-hero-title">برنامج عيادة إكسبرت</h1>
+            <p class="expert-hero-subtitle">
+              منصة متخصصة للربط بين المتخصصين في صحة المرأة لتبادل الخبرات وبناء شراكات مهنية.
+            </p>
+            <a href="https://wa.me/966552527862" class="btn btn-primary expert-cta-btn">انضم لشبكة الخبراء</a>
+          </div>
+          <div class="expert-hero-image">
+            <img src={`${baseUrl}static/img/0c672357-323e-4792-8605-0e4f67c43db9.jpg`} alt="Medical Expert" />
+          </div>
         </div>
       </section>
 
-      <section class="section expert-join">
+      <section class="section expert-why">
         <div class="container">
-          <div class="expert-join-card">
-            <h2>انضم لشبكة الخبراء</h2>
-            <p>نحن ندعو الأطباء المتميزين للمساهمة في رحلة التوعية الصحية ورفع جودة الرعاية.</p>
-            <div class="join-actions">
-              <a href="https://wa.me/966552527862" class="btn btn-primary">
-                تواصل عبر واتساب
-              </a>
-              <a href="mailto:info@gcare.sa" class="btn btn-ghost">
-                تواصل عبر الإيميل
-              </a>
-            </div>
+          <h2 class="expert-section-header">لماذا عيادة إكسبرت؟</h2>
+          <div class="expert-why-grid">
+            {advantages.map(adv => (
+              <div class="expert-why-card">
+                <div class="expert-why-icon">{adv.icon}</div>
+                <h3>{adv.title}</h3>
+                <p>{adv.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="section expert-how">
+        <div class="container">
+          <h2 class="expert-section-header">كيف يعمل البرنامج؟</h2>
+          <div class="expert-how-steps">
+            {steps.map(step => (
+              <div class="expert-step-card">
+                <div class="expert-step-num">{step.id}</div>
+                <h3>{step.title}</h3>
+                <p>{step.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="section expert-team">
+        <div class="container">
+          <h2 class="expert-section-header">خبراء بارزون</h2>
+          <div class="expert-team-grid">
+            {experts.map(doc => (
+              <div class="expert-doc-card">
+                <div class="doc-img-box">
+                  <img src={doc.img} alt={doc.name} />
+                </div>
+                <h3>{doc.name}</h3>
+                <p>{doc.role}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="section expert-footer-signup">
+        <div class="container">
+          <div class="laki-signup-card">
+            <h3>انضم إلى شبكة إكسبرت</h3>
+            <p class="mb-4">سجل اهتمامك الآن وسنتواصل معك قريباً</p>
+            <form class="laki-signup-form" onSubmit={e => e.preventDefault()}>
+              <input type="text" placeholder="الاسم الكامل" />
+              <input type="email" placeholder="البريد الإلكتروني المهني" />
+              <button type="submit" class="btn btn-primary">إرسال الطلب</button>
+            </form>
           </div>
         </div>
       </section>
