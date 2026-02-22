@@ -139,8 +139,8 @@ export const products = [
             en: "CERVIRON®"
         },
         category: "WomanCare",
-        mainImage: "static/img/products/cerviron.png",
-        images: ["static/img/products/cerviron.png"],
+        mainImage: "static/img/Products/CERVIRON®.png",
+        images: ["static/img/Products/CERVIRON®.png"],
         overview: {
             ar: "تركيبة أصلية ومعقدة تحتوي على مادة 'تحت غالات البزموت' (bismuth subgallate). فعالة في علاج الاضطرابات المهبلية المتعددة. يمكن استخدامه كعلاج أحادي أو بالاشتراك مع المنتجات القياسية.",
             en: "Original complex formula containing Bismuth Subgallate. Effective for various vaginal disorders. Can be used alone or with standard treatments."
