@@ -1061,9 +1061,9 @@ function LakiPage(props) {
   ]
 
   const latestAdditions = [
-    { id: 1, title: props.t('lakiLatest1'), img: `${baseUrl}static/img/0c672357-323e-4792-8605-0e4f67c43db9.jpg` },
-    { id: 2, title: props.t('lakiLatest2'), img: `${baseUrl}static/img/45a473c7-debf-48cc-9a41-b9d61c38a0f1.jpg` },
-    { id: 3, title: props.t('lakiLatest3'), img: `${baseUrl}static/img/ba862794-b872-49ac-be68-d173678fcbed.jpg` }
+    { id: 1, title: props.t('lakiLatest1'), img: `${baseUrl}static/img/ HealthEducation/health_edu_3.png` },
+    { id: 2, title: props.t('lakiLatest2'), img: `${baseUrl}static/img/ HealthEducation/health_edu_4.png` },
+    { id: 3, title: props.t('lakiLatest3'), img: `${baseUrl}static/img/ HealthEducation/health_edu_5.png` }
   ]
 
   const posters = [
@@ -1090,7 +1090,7 @@ function LakiPage(props) {
             </button>
           </div>
           <div class="laki-hero-image">
-            <img src={`${baseUrl}static/img/d263efc0-0a5b-4029-aa7d-a12a399dfd5e.jpg`} alt="Women Health" />
+            <img src={`${baseUrl}static/img/ HealthEducation/health_edu_1.png`} alt="Women Health" />
           </div>
         </div>
       </section>
@@ -1187,9 +1187,9 @@ function ExpertPage(props) {
   ]
 
   const experts = [
-    { name: props.t('expertDocName'), role: props.t('expertDocRole'), img: `${baseUrl}static/img/image.png` },
-    { name: props.t('expertDocName'), role: props.t('expertDocRole'), img: `${baseUrl}static/img/image.png` },
-    { name: props.t('expertDocName'), role: props.t('expertDocRole'), img: `${baseUrl}static/img/image.png` }
+    { name: props.t('expertDocName'), role: props.t('expertDocRole'), img: `${baseUrl}static/img/0c672357-323e-4792-8605-0e4f67c43db9.jpg` },
+    { name: props.t('expertDocName'), role: props.t('expertDocRole'), img: `${baseUrl}static/img/45a473c7-debf-48cc-9a41-b9d61c38a0f1.jpg` },
+    { name: props.t('expertDocName'), role: props.t('expertDocRole'), img: `${baseUrl}static/img/ba862794-b872-49ac-be68-d173678fcbed.jpg` }
   ]
 
   return (
@@ -1208,7 +1208,7 @@ function ExpertPage(props) {
             <a href="https://wa.me/966552527862" class="btn btn-primary expert-cta-btn">{props.t('expertJoinAction')}</a>
           </div>
           <div class="expert-hero-image">
-            <img src={`${baseUrl}static/img/0c672357-323e-4792-8605-0e4f67c43db9.jpg`} alt="Medical Expert" />
+            <img src={`${baseUrl}static/img/ HealthEducation/health_edu_2.png`} alt="Medical Expert" />
           </div>
         </div>
       </section>
