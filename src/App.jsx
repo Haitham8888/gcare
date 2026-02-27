@@ -149,7 +149,10 @@ function GlobalSearch(props) {
                   <div class="item-visual">
                     {item.type === 'product' ? (
                       <div class="result-thumb-mini">
-                        <img src={`${baseUrl}${item.img}`} alt="" />
+                        <img
+                          src={`${baseUrl}${item.img}`}
+                          alt=""
+                        />
                       </div>
                     ) : (
                       <div class="result-icon-mini">
@@ -374,7 +377,8 @@ function Products(props) {
                       alt={props.activeProduct().name.en}
                       style={{
                         transform: zoomPos().active ? `scale(2.5)` : `scale(1)`,
-                        "transform-origin": `${zoomPos().x}% ${zoomPos().y}%`
+                        "transform-origin": `${zoomPos().x}% ${zoomPos().y}%`,
+                        display: 'block'
                       }}
                     />
                   </div>
@@ -386,7 +390,10 @@ function Products(props) {
                         class={`thumb-box ${mainImage() === `${baseUrl}${img}` ? 'active' : ''}`}
                         onClick={() => setMainImage(`${baseUrl}${img}`)}
                       >
-                        <img src={`${baseUrl}${img}`} alt="Thumbnail" />
+                        <img
+                          src={`${baseUrl}${img}`}
+                          alt="Thumbnail"
+                        />
                       </div>
                     )}
                   </For>
