@@ -174,14 +174,21 @@ function Products(props) {
   const [mainImage, setMainImage] = createSignal('')
   const [selectedCategory, setSelectedCategory] = createSignal('All')
   const [zoomPos, setZoomPos] = createSignal({ x: 50, y: 50, active: false })
+  const [searchQuery, setSearchQuery] = createSignal('')
+  const [showSuggestions, setShowSuggestions] = createSignal(false)
   const baseUrl = import.meta.env.BASE_URL
 
   const uniqueCategories = ['All', ...new Set(products.map(p => p.category))]
 
   const filteredProducts = createMemo(() => {
     const cat = selectedCategory()
-    if (cat === 'All') return products
-    return products.filter(p => p.category === cat)
+    const query = searchQuery().toLowerCase().trim()
+
+    return products.filter(p => {
+      const matchCat = (cat === 'All' || p.category === cat)
+      const matchQuery = p.name.en.toLowerCase().includes(query)
+      return matchCat && matchQuery
+    })
   })
 
   const openProduct = (p) => {
@@ -215,12 +222,54 @@ function Products(props) {
             ))}
           </div>
 
+          <div class="catalog-search-wrapper">
+            <div class="search-input-box">
+              <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input
+                type="text"
+                placeholder={props.t('searchPlaceholder')}
+                value={searchQuery()}
+                onInput={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => setShowSuggestions(true)}
+              />
+              <Show when={searchQuery().length > 0}>
+                <button class="clear-search" onClick={() => { setSearchQuery(''); setShowSuggestions(false); }}>×</button>
+              </Show>
+
+              {/* Suggestions Dropdown */}
+              <Show when={showSuggestions() && searchQuery().trim().length > 0 && filteredProducts().length > 0}>
+                <div class="search-suggestions-dropdown">
+                  <For each={filteredProducts().slice(0, 6)}>
+                    {(product) => (
+                      <div class="suggestion-item" onClick={() => {
+                        openProduct(product);
+                        setSearchQuery('');
+                        setShowSuggestions(false);
+                      }}>
+                        <div class="suggestion-thumb">
+                          <img src={`${baseUrl}${product.mainImage}`} alt="" />
+                        </div>
+                        <div class="suggestion-info">
+                          <div class="suggestion-name">{product.name.en}</div>
+                          <div class="suggestion-cat">{props.t(`cat${product.category}`)}</div>
+                        </div>
+                      </div>
+                    )}
+                  </For>
+                </div>
+              </Show>
+            </div>
+          </div>
+
           <div class="catalog-grid">
             <For each={filteredProducts()}>
               {(product) => (
                 <div class="catalog-card">
                   <div class="catalog-card-img">
-                    <img src={`${baseUrl}${product.mainImage}`} alt={product.name[props.lang()]} loading="lazy" />
+                    <img src={`${baseUrl}${product.mainImage}`} alt={product.name.en} loading="lazy" />
                     <div class="catalog-card-overlay">
                       <button class="btn btn-brand-alt" onClick={() => openProduct(product)}>
                         {props.t('productViewDetails')}
@@ -229,7 +278,7 @@ function Products(props) {
                   </div>
                   <div class="catalog-card-info">
                     <span class="catalog-card-cat">{props.t(`cat${product.category}`)}</span>
-                    <h3 class="catalog-card-title">{product.name[props.lang()]}</h3>
+                    <h3 class="catalog-card-title">{product.name.en}</h3>
                   </div>
                 </div>
               )}
@@ -259,7 +308,7 @@ function Products(props) {
                   <div class="stage-inner">
                     <img
                       src={mainImage()}
-                      alt={selectedProduct().name[props.lang()]}
+                      alt={selectedProduct().name.en}
                       style={{
                         transform: zoomPos().active ? `scale(2.5)` : `scale(1)`,
                         "transform-origin": `${zoomPos().x}% ${zoomPos().y}%`
@@ -283,7 +332,7 @@ function Products(props) {
 
               <div class="product-info-panel">
                 <span class="detail-badge">{props.t(`cat${selectedProduct().category}`)}</span>
-                <h1 class="detail-title">{selectedProduct().name[props.lang()]}</h1>
+                <h1 class="detail-title">{selectedProduct().name.en}</h1>
 
                 <div class="detail-tabs">
                   <div class="tabs-nav">
@@ -351,7 +400,7 @@ function Products(props) {
                   <button
                     class="btn btn-primary w-full"
                     onClick={() => {
-                      const msgText = `${props.lang() === 'ar' ? 'أرغب في الاستفسار عن المنتج: ' : 'I would like to inquire about: '} ${selectedProduct().name[props.lang()]}`;
+                      const msgText = `${props.lang() === 'ar' ? 'أرغب في الاستفسار عن المنتج: ' : 'I would like to inquire about: '} ${selectedProduct().name.en}`;
                       props.setPrefilledMessage(msgText);
                       window.location.hash = '#contact-page';
                     }}
