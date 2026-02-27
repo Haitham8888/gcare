@@ -94,11 +94,28 @@ function GlobalSearch(props) {
       setResults([])
       return
     }
-    const filtered = searchableItems.filter(item => {
+
+    // Search regular pages/items
+    const pages = searchableItems.filter(item => {
       const label = props.t(item.key).toLowerCase()
       return label.includes(q)
-    })
-    setResults(filtered)
+    }).map(p => ({ ...p, type: 'page', label: props.t(p.key) }))
+
+    // Search products
+    const prods = products.filter(p => {
+      const nameMatch = p.name.en.toLowerCase().includes(q)
+      const catMatch = props.t(`cat${p.category}`).toLowerCase().includes(q)
+      return nameMatch || catMatch
+    }).map(p => ({
+      label: p.name.en,
+      href: '#products',
+      type: 'product',
+      img: p.mainImage,
+      category: props.t(`cat${p.category}`),
+      productData: p
+    }))
+
+    setResults([...pages, ...prods].slice(0, 8))
   })
 
   return (
@@ -120,14 +137,39 @@ function GlobalSearch(props) {
         />
         {showResults() && results().length > 0 && (
           <div class="search-results-dropdown shadow-lg">
-            {results().map(item => (
-              <a href={item.href} class="search-result-item" onClick={() => setShowResults(false)}>
-                <span class="result-label">{props.t(item.key)}</span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M5 12h14m-7-7 7 7-7 7" />
-                </svg>
-              </a>
-            ))}
+            {results().map(item => {
+              const baseUrl = import.meta.env.BASE_URL
+              return (
+                <a href={item.href} class="search-result-item" onClick={() => {
+                  setShowResults(false);
+                  if (item.type === 'product' && props.setActiveProduct) {
+                    props.setActiveProduct(item.productData);
+                  }
+                }}>
+                  <div class="item-visual">
+                    {item.type === 'product' ? (
+                      <div class="result-thumb-mini">
+                        <img src={`${baseUrl}${item.img}`} alt="" />
+                      </div>
+                    ) : (
+                      <div class="result-icon-mini">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <circle cx="11" cy="11" r="8"></circle>
+                          <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                      </div>
+                    )}
+                  </div>
+                  <div class="result-text-box">
+                    <span class="result-label">{item.label}</span>
+                    {item.type === 'product' && <span class="result-sub"> - {item.category}</span>}
+                  </div>
+                  <svg class="arrow-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14m-7-7 7 7-7 7" />
+                  </svg>
+                </a>
+              )
+            })}
           </div>
         )}
       </div>
@@ -144,7 +186,7 @@ function Hero(props) {
         <div class="hero-search-overlay">
           <h1 class="hero-main-title">{props.t('heroTitle')}</h1>
           <p class="hero-main-subtitle">{props.t('heroSubtitle')}</p>
-          <GlobalSearch t={props.t} />
+          <GlobalSearch t={props.t} setActiveProduct={props.setActiveProduct} />
         </div>
       </div>
     </section>
@@ -169,7 +211,6 @@ function HeroInfiniteSlider() {
 }
 
 function Products(props) {
-  const [selectedProduct, setSelectedProduct] = createSignal(null)
   const [activeTab, setActiveTab] = createSignal('overview')
   const [mainImage, setMainImage] = createSignal('')
   const [selectedCategory, setSelectedCategory] = createSignal('All')
@@ -178,8 +219,26 @@ function Products(props) {
   const [showSuggestions, setShowSuggestions] = createSignal(false)
   const baseUrl = import.meta.env.BASE_URL
 
+  // Handle opening product from global search or internal selection
+  createEffect(() => {
+    const p = props.activeProduct ? props.activeProduct() : null;
+    if (p) {
+      setMainImage(`${baseUrl}${p.mainImage}`);
+      setActiveTab('overview');
+    }
+  });
+
   const uniqueCategories = ['All', ...new Set(products.map(p => p.category))]
 
+  // Independent suggestions list for better performance
+  const suggestionResults = createMemo(() => {
+    const query = searchQuery().toLowerCase().trim()
+    if (query.length < 1) return []
+    return products.filter(p => p.name.en.toLowerCase().includes(query)).slice(0, 6)
+  })
+
+  // Filtered products for the grid - with a slight debounce/delay if needed, 
+  // but for now just decoupling it from the immediate suggestions
   const filteredProducts = createMemo(() => {
     const cat = selectedCategory()
     const query = searchQuery().toLowerCase().trim()
@@ -192,20 +251,24 @@ function Products(props) {
   })
 
   const openProduct = (p) => {
-    setSelectedProduct(p)
+    if (props.setActiveProduct) {
+      props.setActiveProduct(p);
+    }
     setMainImage(`${baseUrl}${p.mainImage}`)
     setActiveTab('overview')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const closeProduct = () => {
-    setSelectedProduct(null)
+    if (props.setActiveProduct) {
+      props.setActiveProduct(null);
+    }
   }
 
   return (
     <section class="section catalog-section" id="products">
       <div class="container">
-        <Show when={!selectedProduct()}>
+        <Show when={!(props.activeProduct ? props.activeProduct() : false)}>
           <div class="section-head text-center">
             <h2 class="section-title">{props.t('productDigitalCatalog')}</h2>
             <p class="hero-subtitle-large">{props.t('productsSubtitle') || 'Integrated medical solutions & devices'}</p>
@@ -224,7 +287,7 @@ function Products(props) {
 
           <div class="catalog-search-wrapper">
             <div class="search-input-box">
-              <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <svg class="unique-catalog-search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
@@ -240,9 +303,9 @@ function Products(props) {
               </Show>
 
               {/* Suggestions Dropdown */}
-              <Show when={showSuggestions() && searchQuery().trim().length > 0 && filteredProducts().length > 0}>
+              <Show when={showSuggestions() && suggestionResults().length > 0}>
                 <div class="search-suggestions-dropdown">
-                  <For each={filteredProducts().slice(0, 6)}>
+                  <For each={suggestionResults()}>
                     {(product) => (
                       <div class="suggestion-item" onClick={() => {
                         openProduct(product);
@@ -286,7 +349,7 @@ function Products(props) {
           </div>
         </Show>
 
-        <Show when={selectedProduct()}>
+        <Show when={props.activeProduct ? props.activeProduct() : false}>
           <div class="product-detail-page">
             <button class="back-link-v2 mb-8" onClick={closeProduct}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5m7 7-7-7 7-7" /></svg>
@@ -308,7 +371,7 @@ function Products(props) {
                   <div class="stage-inner">
                     <img
                       src={mainImage()}
-                      alt={selectedProduct().name.en}
+                      alt={props.activeProduct().name.en}
                       style={{
                         transform: zoomPos().active ? `scale(2.5)` : `scale(1)`,
                         "transform-origin": `${zoomPos().x}% ${zoomPos().y}%`
@@ -317,7 +380,7 @@ function Products(props) {
                   </div>
                 </div>
                 <div class="product-thumbs">
-                  <For each={selectedProduct().images}>
+                  <For each={props.activeProduct().images}>
                     {(img) => (
                       <div
                         class={`thumb-box ${mainImage() === `${baseUrl}${img}` ? 'active' : ''}`}
@@ -331,8 +394,8 @@ function Products(props) {
               </div>
 
               <div class="product-info-panel">
-                <span class="detail-badge">{props.t(`cat${selectedProduct().category}`)}</span>
-                <h1 class="detail-title">{selectedProduct().name.en}</h1>
+                <span class="detail-badge">{props.t(`cat${props.activeProduct().category}`)}</span>
+                <h1 class="detail-title">{props.activeProduct().name.en}</h1>
 
                 <div class="detail-tabs">
                   <div class="tabs-nav">
@@ -359,14 +422,14 @@ function Products(props) {
                   <div class="tab-content">
                     <Show when={activeTab() === 'overview'}>
                       <div class="tab-pane fade-in">
-                        <p>{selectedProduct().overview[props.lang()]}</p>
+                        <p>{props.activeProduct().overview[props.lang()]}</p>
                       </div>
                     </Show>
                     <Show when={activeTab() === 'specs'}>
                       <div class="tab-pane fade-in">
                         <table class="specs-table">
                           <tbody>
-                            <For each={selectedProduct().specifications}>
+                            <For each={props.activeProduct().specifications}>
                               {(spec) => (
                                 <tr>
                                   <td>{spec.label[props.lang()]}</td>
@@ -381,7 +444,7 @@ function Products(props) {
                     <Show when={activeTab() === 'features'}>
                       <div class="tab-pane fade-in">
                         <ul class="features-list">
-                          <For each={selectedProduct().features[props.lang()]}>
+                          <For each={props.activeProduct().features[props.lang()]}>
                             {(feature) => <li>{feature}</li>}
                           </For>
                         </ul>
@@ -391,7 +454,7 @@ function Products(props) {
                 </div>
 
                 <div class="detail-actions">
-                  <a href={selectedProduct().brochureUrl} class="btn btn-ghost w-full mb-4">
+                  <a href={props.activeProduct().brochureUrl} class="btn btn-ghost w-full mb-4">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
                       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
                     </svg>
@@ -400,7 +463,7 @@ function Products(props) {
                   <button
                     class="btn btn-primary w-full"
                     onClick={() => {
-                      const msgText = `${props.lang() === 'ar' ? 'أرغب في الاستفسار عن المنتج: ' : 'I would like to inquire about: '} ${selectedProduct().name.en}`;
+                      const msgText = `${props.lang() === 'ar' ? 'أرغب في الاستفسار عن المنتج: ' : 'I would like to inquire about: '} ${props.activeProduct().name.en}`;
                       props.setPrefilledMessage(msgText);
                       window.location.hash = '#contact-page';
                     }}
@@ -424,7 +487,7 @@ function SectionDivider() {
 function HomePage(props) {
   return (
     <>
-      <Hero t={props.t} />
+      <Hero t={props.t} setActiveProduct={props.setActiveProduct} />
       <SectionDivider />
       <HomeAbout t={props.t} />
       <SectionDivider />
@@ -578,7 +641,7 @@ function AboutPage(props) {
 function ProductsPage(props) {
   return (
     <>
-      <Products t={props.t} setRoute={props.setRoute} setPrefilledMessage={props.setPrefilledMessage} lang={props.lang} />
+      <Products t={props.t} setRoute={props.setRoute} setPrefilledMessage={props.setPrefilledMessage} lang={props.lang} activeProduct={props.activeProduct} setActiveProduct={props.setActiveProduct} />
       <Contact t={props.t} />
     </>
   )
@@ -1372,6 +1435,7 @@ export default function App() {
   const [lang, setLang] = createSignal('ar')
   const [route, setRoute] = createSignal('home')
   const [prefilledMessage, setPrefilledMessage] = createSignal('')
+  const [activeProduct, setActiveProduct] = createSignal(null)
 
   const translations = translationsData
 
@@ -1413,11 +1477,11 @@ export default function App() {
   return (
     <div class="page">
       <NavBar t={t} lang={lang} setLang={setLang} />
-      {route() === 'products' ? <ProductsPage t={t} setRoute={setRoute} setPrefilledMessage={setPrefilledMessage} lang={lang} /> : null}
+      {route() === 'products' ? <ProductsPage t={t} setRoute={setRoute} setPrefilledMessage={setPrefilledMessage} lang={lang} activeProduct={activeProduct} setActiveProduct={setActiveProduct} /> : null}
       {route() === 'contact' ? <ContactPage t={t} prefilledMessage={prefilledMessage} setPrefilledMessage={setPrefilledMessage} /> : null}
       {route() === 'education' ? <EducationPage t={t} /> : null}
       {route() === 'about' ? <AboutPage t={t} /> : null}
-      {route() === 'home' ? <HomePage t={t} lang={lang} /> : null}
+      {route() === 'home' ? <HomePage t={t} lang={lang} setActiveProduct={setActiveProduct} /> : null}
     </div>
   )
 }

@@ -320,9 +320,10 @@
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 20px;
-  padding: 6px;
+  padding: 0 1.5rem;
   display: flex;
   align-items: center;
+  gap: 1rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -335,8 +336,8 @@
 }
 
 .search-icon-main {
-  margin-inline: 16px 12px;
   color: rgba(255, 255, 255, 0.8);
+  flex-shrink: 0;
 }
 
 .global-search-input {
@@ -345,9 +346,11 @@
   border: none;
   color: #fff;
   font-size: 1.15rem;
-  padding: 12px 0;
+  padding: 1.25rem 0;
   outline: none;
   font-family: inherit;
+  text-align: inherit;
+  width: 100%;
 }
 
 .global-search-input::placeholder {
@@ -360,25 +363,40 @@
   top: 110%;
   left: 0;
   right: 0;
-  background: #ffffff;
+  background: white;
   border-radius: 18px;
   overflow: hidden;
-  z-index: 100;
+  z-index: 1000;
+  border: 1px solid #e2e8f0;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
   animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .search-result-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 16px 24px;
-  color: var(--ink);
+  padding: 0.85rem 1.25rem;
   text-decoration: none;
-  font-weight: 700;
   border-bottom: 1px solid #f1f5f9;
   transition: all 0.2s ease;
+  gap: 1rem;
   text-align: right;
+}
+
+html[dir="ltr"] .search-result-item {
+  text-align: left;
 }
 
 .search-result-item:last-child {
@@ -387,16 +405,63 @@
 
 .search-result-item:hover {
   background: #f8fafc;
-  color: var(--brand);
-  padding-inline-end: 28px;
 }
 
-html[dir="ltr"] .search-result-item {
-  text-align: left;
+.item-visual {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1f5f9;
+  border-radius: 10px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.result-thumb-mini img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.result-icon-mini {
+  color: #64748b;
+}
+
+.result-text-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .result-label {
+  color: #1e293b;
+  font-weight: 800;
   font-size: 1rem;
+  margin: 0;
+}
+
+.result-sub {
+  color: #64748b;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.arrow-icon {
+  color: #94a3b8;
+  opacity: 0.5;
+  transition: all 0.2s ease;
+}
+
+.search-result-item:hover .arrow-icon {
+  opacity: 1;
+  color: var(--brand);
+  transform: translateX(-4px);
+}
+
+html[dir="ltr"] .search-result-item:hover .arrow-icon {
+  transform: translateX(4px);
 }
 
 @keyframes slideDown {
@@ -3981,6 +4046,8 @@ html[dir=\"ltr\"] .features-list li::before {
   max-width: 600px;
   margin: 0 auto 3rem auto;
   padding-inline: 1rem;
+  position: relative;
+  z-index: 2000;
 }
 
 .search-input-box {
@@ -3990,8 +4057,8 @@ html[dir=\"ltr\"] .features-list li::before {
   background: #fff;
   border: 2px solid #e2e8f0;
   border-radius: 16px;
-  padding: 0 1.25rem;
-  gap: 1rem;
+  padding: 0 1.75rem;
+  gap: 1.5rem;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
 }
@@ -4002,7 +4069,7 @@ html[dir=\"ltr\"] .features-list li::before {
   transform: translateY(-2px);
 }
 
-.search-icon {
+.catalog-search-icon {
   color: #94a3b8;
   flex-shrink: 0;
 }
@@ -4011,17 +4078,14 @@ html[dir=\"ltr\"] .features-list li::before {
   flex: 1;
   border: none;
   background: transparent;
-  padding: 1rem 0;
+  padding: 1.1rem 0;
   font-size: 1.1rem;
   font-family: inherit;
   font-weight: 500;
   color: var(--ink);
   direction: inherit;
-  text-align: right;
-}
-
-html[dir="ltr"] .search-input-box input {
-  text-align: left;
+  text-align: inherit;
+  width: 100%;
 }
 
 .search-input-box input:focus {
@@ -4052,23 +4116,43 @@ html[dir="ltr"] .search-input-box input {
   background: #e2e8f0;
   color: var(--ink);
 }
+
 .search-suggestions-dropdown {
   position: absolute;
-  top: calc(100% + 8px);
+  top: calc(100% + 12px);
   left: 0;
   right: 0;
   background: #fff;
   border-radius: 20px;
-  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
   border: 1px solid #f1f5f9;
-  z-index: 1000;
+  z-index: 10000;
   overflow: hidden;
-  animation: slideUpFade 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+  animation: fadeInQuick 0.2s ease-out;
+}
+
+@keyframes fadeInQuick {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes slideUpFade {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .suggestion-item {
