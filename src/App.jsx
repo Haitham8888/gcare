@@ -173,6 +173,7 @@ function Products(props) {
   const [activeTab, setActiveTab] = createSignal('overview')
   const [mainImage, setMainImage] = createSignal('')
   const [selectedCategory, setSelectedCategory] = createSignal('All')
+  const [zoomPos, setZoomPos] = createSignal({ x: 50, y: 50, active: false })
   const baseUrl = import.meta.env.BASE_URL
 
   const uniqueCategories = ['All', ...new Set(products.map(p => p.category))]
@@ -245,9 +246,25 @@ function Products(props) {
 
             <div class="product-detail-layout">
               <div class="product-visuals">
-                <div class="product-main-stage">
+                <div
+                  class="product-main-stage"
+                  onMouseMove={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const x = ((e.clientX - rect.left) / rect.width) * 100;
+                    const y = ((e.clientY - rect.top) / rect.height) * 100;
+                    setZoomPos({ x, y, active: true });
+                  }}
+                  onMouseLeave={() => setZoomPos({ x: 50, y: 50, active: false })}
+                >
                   <div class="stage-inner">
-                    <img src={mainImage()} alt={selectedProduct().name[props.lang()]} class="zoom-img" />
+                    <img
+                      src={mainImage()}
+                      alt={selectedProduct().name[props.lang()]}
+                      style={{
+                        transform: zoomPos().active ? `scale(2.5)` : `scale(1)`,
+                        "transform-origin": `${zoomPos().x}% ${zoomPos().y}%`
+                      }}
+                    />
                   </div>
                 </div>
                 <div class="product-thumbs">
@@ -351,14 +368,23 @@ function Products(props) {
   )
 }
 
+function SectionDivider() {
+  return <div class="section-divider" aria-hidden="true"></div>
+}
+
 function HomePage(props) {
   return (
     <>
       <Hero t={props.t} />
+      <SectionDivider />
       <HomeAbout t={props.t} />
+      <SectionDivider />
       <ClientsSlider t={props.t} />
+      <SectionDivider />
       <Visitors t={props.t} />
+      <SectionDivider />
       <Education t={props.t} lang={props.lang} />
+      <SectionDivider />
       <Contact t={props.t} />
     </>
   )
@@ -626,9 +652,9 @@ function HomeAbout(props) {
       <div class="container">
         <div class="about-layout" style={{ alignItems: 'center' }}>
           <div class="about-text">
-            <h2 class="section-title">{props.t('aboutTitle')}</h2>
+            <h2 class="section-title" style={{ "margin-bottom": "2.5rem" }}>{props.t('aboutTitle')}</h2>
             <div class="about-content">
-              <p style={{ fontSize: '1.25rem', color: 'var(--muted)', lineHeight: '1.8' }}>{props.t('aboutP1')}</p>
+              <p style={{ fontSize: '1.25rem', color: 'var(--muted)', lineHeight: '1.8', "margin-top": "1rem" }}>{props.t('aboutP1')}</p>
               <a href="#about-page" class="btn btn-primary" style={{ marginTop: '1.5rem', display: 'inline-block' }}>
                 {props.t('heroCtaSecondary')}
               </a>
@@ -668,10 +694,12 @@ function About(props) {
           <div class="about-text">
             <h2 class="section-title">{props.t('aboutUsPageTitle')}</h2>
             <div class="about-content">
-              <p>{props.t('aboutP1')}</p>
-              <p>{props.t('aboutP2')}</p>
-              <p>{props.t('aboutP3')}</p>
-              <p>{props.t('aboutP4')}</p>
+              <ul class="about-bullets">
+                <li>{props.t('aboutP1')}</li>
+                <li>{props.t('aboutP2')}</li>
+                <li>{props.t('aboutP3')}</li>
+                <li>{props.t('aboutP4')}</li>
+              </ul>
             </div>
           </div>
           <div class="about-logo-v2">
@@ -709,7 +737,7 @@ function ClientsSlider(props) {
           <h2 class="section-title">{props.t('clientsTitle')}</h2>
         </div>
         <div class="clients-slider">
-          <div class="clients-track" aria-hidden="true">
+          <div class="clients-track" style={{ animation: props.t('brand') === 'G-Care' && document.documentElement.dir === 'ltr' ? 'clientsMarqueeLTR 35s linear infinite' : 'clientsMarqueeRTL 35s linear infinite' }}>
             <div class="clients-group">
               {clients.map((url) => (
                 <div class="client-logo">
@@ -929,9 +957,7 @@ function LakiPage(props) {
   const posters = [
     { id: 1, title: props.t('lakiPoster1'), img: `${baseUrl}static/img/d263efc0-0a5b-4029-aa7d-a12a399dfd5e.jpg` },
     { id: 2, title: props.t('lakiPoster2'), img: `${baseUrl}static/img/b67d7fb0-5715-490d-8482-2d8252ea7ad3.jpg` },
-    { id: 3, title: props.t('lakiPoster3'), img: `${baseUrl}static/img/9c4be885-1bf0-4a93-ba83-9cafe6e79c91-591x456.jpg` },
-    { id: 4, title: props.t('lakiPoster4'), img: `${baseUrl}static/img/0c672357-323e-4792-8605-0e4f67c43db9.jpg` },
-    { id: 5, title: props.t('lakiPoster5'), img: `${baseUrl}static/img/45a473c7-debf-48cc-9a41-b9d61c38a0f1.jpg` }
+    { id: 3, title: props.t('lakiPoster3'), img: `${baseUrl}static/img/9c4be885-1bf0-4a93-ba83-9cafe6e79c91-591x456.jpg` }
   ]
 
   return (
@@ -940,7 +966,6 @@ function LakiPage(props) {
         <div class="laki-hero-inner container">
           <div class="laki-hero-text">
             <div class="laki-logo-row">
-              <img src={`${baseUrl}static/img/G%20-%20Care-01.svg`} alt="Laki Logo" class="laki-hero-logo" />
               <div class="laki-hero-badge">{props.t('lakiBadge')}</div>
             </div>
             <h1 class="laki-hero-title">{props.t('lakiHeroTitle')}</h1>
@@ -1018,19 +1043,6 @@ function LakiPage(props) {
         </div>
       </section>
 
-      <section class="section laki-signup">
-        <div class="container">
-          <div class="laki-signup-card">
-            <h3>{props.t('lakiSignupTitle')}</h3>
-            <form class="laki-signup-form" onSubmit={e => e.preventDefault()}>
-              <input type="text" placeholder={props.t('lakiSignupName')} />
-              <input type="email" placeholder={props.t('lakiSignupEmail')} />
-              <button type="submit" class="btn btn-primary">{props.t('lakiSignupBtn')}</button>
-            </form>
-          </div>
-        </div>
-      </section>
-
       {selectedImg() && (
         <div class="lightbox" onClick={() => setSelectedImg(null)}>
           <img src={selectedImg()} alt="" />
@@ -1045,39 +1057,21 @@ function ExpertPage(props) {
   const baseUrl = import.meta.env.BASE_URL
 
   const advantages = [
-    {
-      title: props.t('expertWhy1Title'),
-      desc: props.t('expertWhy1Desc'),
-      icon: (
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
-        </svg>
-      )
-    },
-    {
-      title: props.t('expertWhy2Title'),
-      desc: props.t('expertWhy2Desc'),
-      icon: (
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-        </svg>
-      )
-    },
-    {
-      title: props.t('expertWhy3Title'),
-      desc: props.t('expertWhy3Desc'),
-      icon: (
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><polyline points="16 11 18 13 22 9" />
-        </svg>
-      )
-    }
+    { title: props.t('expertWhy1Title') },
+    { title: props.t('expertWhy2Title') },
+    { title: props.t('expertWhy3Title') },
+    { title: props.t('expertWhy4Title') },
+    { title: props.t('expertWhy5Title') },
+    { title: props.t('expertWhy6Title') }
   ]
 
   const steps = [
     { id: 1, title: props.t('expertStep1Title'), desc: props.t('expertStep1Desc') },
     { id: 2, title: props.t('expertStep2Title'), desc: props.t('expertStep2Desc') },
-    { id: 3, title: props.t('expertStep3Title'), desc: props.t('expertStep3Desc') }
+    { id: 3, title: props.t('expertStep3Title'), desc: props.t('expertStep3Desc') },
+    { id: 4, title: props.t('expertStep4Title'), desc: props.t('expertStep4Desc') },
+    { id: 5, title: props.t('expertStep5Title'), desc: props.t('expertStep5Desc') },
+    { id: 6, title: props.t('expertStep6Title'), desc: props.t('expertStep6Desc') }
   ]
 
   const experts = [
@@ -1110,12 +1104,16 @@ function ExpertPage(props) {
       <section class="section expert-why">
         <div class="container">
           <h2 class="expert-section-header">{props.t('expertWhyTitle')}</h2>
-          <div class="expert-why-grid">
+          <p class="expert-section-subheader">{props.t('expertWhySub')}</p>
+          <div class="expert-why-list">
             {advantages.map(adv => (
-              <div class="expert-why-card">
-                <div class="expert-why-icon">{adv.icon}</div>
+              <div class="expert-why-item">
+                <div class="expert-check-box">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                </div>
                 <h3>{adv.title}</h3>
-                <p>{adv.desc}</p>
               </div>
             ))}
           </div>
@@ -1129,8 +1127,10 @@ function ExpertPage(props) {
             {steps.map(step => (
               <div class="expert-step-card">
                 <div class="expert-step-num">{step.id}</div>
-                <h3>{step.title}</h3>
-                <p>{step.desc}</p>
+                <div class="step-text-content">
+                  <h3>{step.title}</h3>
+                  <p>{step.desc}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -1191,6 +1191,7 @@ function EducationPage(props) {
 
               <div class="education-programs-grid">
                 <div class="program-card laki-card">
+                  <div class="program-card-overlay"></div>
                   <div class="program-content">
                     <h3>{props.t('educationTopic2Title')}</h3>
                     <p>{props.t('educationTopic2Body')}</p>
@@ -1201,6 +1202,7 @@ function EducationPage(props) {
                 </div>
 
                 <div class="program-card expert-card">
+                  <div class="program-card-overlay"></div>
                   <div class="program-content">
                     <h3>{props.t('educationTopic1Title')}</h3>
                     <p>{props.t('educationTopic1Body')}</p>
@@ -1278,7 +1280,7 @@ function Contact(props) {
               <svg class="info-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l2.27-2.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
               <span class="info-label">{props.t('footerPhoneTitle')}</span>
             </div>
-            <a href="tel:+966552527862" class="info-value phone-number">+966 55 252 7862</a>
+            <a href="tel:+966552527862" class="info-value phone-number">{props.t('contactPhoneValue')}</a>
           </div>
 
           <div class="info-group">

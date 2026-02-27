@@ -116,7 +116,7 @@ export const products = [
             ar: "Ipas MVA Plus®",
             en: "Ipas MVA Plus®"
         },
-        category: "Surgical",
+        category: "IUS",
         mainImage: "static/img/Products/DSC04620.png",
         images: ["static/img/Products/DSC04620.png"],
         overview: {
