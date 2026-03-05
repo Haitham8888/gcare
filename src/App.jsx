@@ -706,21 +706,26 @@ function ContactPage(props) {
                 </div>
               </div>
 
-              <div class="contact-form-side">
-                <div class="contact-map-section">
-                  <div class="map-wrapper" style={{ height: '100%', "min-height": '400px' }}>
-                    <iframe
-                      title="G-Care Location"
-                      src="https://maps.google.com/maps?q=24.6869930,46.6866840&z=15&output=embed"
-                      width="100%"
-                      height="100%"
-                      style={{ border: 0, "border-radius": "20px" }}
-                      allowfullscreen=""
-                      loading="lazy"
-                      referrerpolicy="no-referrer-when-downgrade"
-                    ></iframe>
-                  </div>
-                </div>
+              <div class="contact-form-side" style={{ display: 'flex', "flex-direction": 'column', height: '100%' }}>
+                <a
+                  href="https://www.google.com/maps/place/24%C2%B041'13.2%22N+46%C2%B041'12.1%22E/@24.686993,46.686684,17z"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="map-wrapper"
+                  style={{ flex: '1', "min-height": '400px', height: '100%', display: 'block', "text-decoration": 'none', cursor: 'pointer' }}
+                  aria-label="Open G-Care location in Google Maps"
+                >
+                  <iframe
+                    title="G-Care Location"
+                    src="https://maps.google.com/maps?q=24.6869930,46.6866840&z=15&output=embed"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0, "border-radius": "20px", "pointer-events": 'none' }}
+                    allowfullscreen=""
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"
+                  ></iframe>
+                </a>
               </div>
             </div>
 
@@ -731,7 +736,7 @@ function ContactPage(props) {
                 { title: props.t('contactPhone'), value: props.t('contactPhoneValue'), href: 'tel:+966552527862', note: props.t('contactPhoneNote'), isLtr: true },
                 { title: props.t('contactEmailLabel'), value: 'info@gcare.sa', href: 'mailto:info@gcare.sa', note: props.t('contactEmailNote'), isLtr: true },
                 { title: props.t('contactEmailHealthLabel'), value: 'hep@gcare.sa', href: 'mailto:hep@gcare.sa', note: props.t('contactEmailHealthNote'), isLtr: true },
-                { title: props.t('contactAddress'), value: props.t('contactAddressValue'), note: props.t('contactVisitNote'), isLtr: false }
+                { title: props.t('contactAddress'), value: props.t('contactAddressValue'), href: 'https://www.google.com/maps/place/24%C2%B041\'13.2%22N+46%C2%B041\'12.1%22E/@24.686993,46.686684,17z', note: props.t('contactVisitNote'), isLtr: false }
               ].map((card) => (
                 <div class="info-card">
                   <span class="info-card-title">{card.title}</span>
@@ -1091,7 +1096,7 @@ function LakiPage(props) {
             <div class="laki-section-intro">
               <h2 class="laki-section-title">{props.t('lakiContentSeriesTitle')}</h2>
               <p class="laki-section-subtitle">{props.t('lakiLearnMore')}</p>
-              <button class="btn btn-primary laki-explore-btn">{props.t('lakiLearnMoreAction')}</button>
+              <button class="btn btn-pink laki-explore-btn">{props.t('lakiLearnMoreAction')}</button>
             </div>
             <div class="laki-series-grid">
               {contentSeries.map(item => (
@@ -1323,12 +1328,12 @@ function EducationPage(props) {
                     <h3 class="appointment-title">{props.t('contactAppointmentTitle')}</h3>
                     <p class="appointment-sub">{props.t('contactAppointmentSub')}</p>
                   </div>
-                  <div class="appointment-actions" style={{ display: 'flex', gap: '1rem', "flex-wrap": 'wrap', "justify-content": 'center' }}>
+                  <div class="appointment-actions">
                     <a href="https://outlook.office.com/book/Bookings@gcare.sa/?ismsaljsauthenabled=true" class="btn appointment-btn" target="_blank" rel="noopener noreferrer">
                       {props.t('contactAppointmentBtn')}
                     </a>
-                    <a href="https://wa.me/966555849237" class="btn appointment-btn whatsapp-btn" target="_blank" rel="noopener noreferrer" style={{ background: '#25D366', color: '#fff' }}>
-                      <img src={`${baseUrl}static/img/whatsapp.svg`} alt="" style={{ width: '20px', height: '20px', "margin-inline-end": '8px', filter: 'brightness(0) invert(1)' }} />
+                    <a href="https://wa.me/966555849237" class="btn appointment-btn whatsapp-btn" target="_blank" rel="noopener noreferrer">
+                      <img src={`${baseUrl}static/img/whatsapp.svg`} alt="" />
                       WhatsApp (0555849237)
                     </a>
                   </div>
@@ -1388,13 +1393,13 @@ function Contact(props) {
 
         {/* Middle Col: Contact Info with Icons */}
         <div class="foot-col foot-info-col">
-          <div class="info-group">
+          <a href="https://www.google.com/maps/place/24%C2%B041\'13.2%22N+46%C2%B041\'12.1%22E/@24.686993,46.686684,17z" target="_blank" rel="noopener noreferrer" class="info-group" style={{ "text-decoration": 'none' }}>
             <div class="info-label-row">
               <svg class="info-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
               <span class="info-label">{props.t('contactAddress')}</span>
             </div>
             <address class="info-value-text">{props.t('footerAddress')}</address>
-          </div>
+          </a>
 
           <div class="info-group">
             <div class="info-label-row">

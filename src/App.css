@@ -536,12 +536,12 @@ html[dir="ltr"] .hero-gallery-track {
 }
 
 .btn-pink {
-  background: #F47D71;
+  background: #ff6491;
   color: #fff;
 }
 
 .btn-pink:hover {
-  background: #f6948a;
+  background: #ff85a9;
 }
 
 .btn-ghost {
@@ -1511,59 +1511,114 @@ html[dir="ltr"] .footer-about-text {
 
 .appointment-card {
   height: 100%;
-  background: linear-gradient(135deg, #1e293b 0%, #1093a5 100%);
-  border-radius: 20px;
-  padding: 1.5rem;
-  /* Reduced padding */
+  background: #ffffff;
+  border: 1px solid #eef2f6;
+  border-radius: 30px;
+  padding: 3rem 2rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
-  color: #fff;
-  transition: transform 0.3s ease;
+  color: var(--ink);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   position: relative;
   overflow: hidden;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.03);
+}
+
+.appointment-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+  border-color: var(--brand);
 }
 
 .appointment-card::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: url('../static/img/media.svg') no-repeat center;
-  background-size: cover;
-  opacity: 0.1;
+  top: -40px;
+  right: -40px;
+  width: 150px;
+  height: 150px;
+  background: var(--brand);
+  opacity: 0.03;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.appointment-card::after {
+  content: '';
+  position: absolute;
+  bottom: -60px;
+  left: -60px;
+  width: 200px;
+  height: 200px;
+  background: #ff6491;
+  opacity: 0.03;
+  border-radius: 50%;
   pointer-events: none;
 }
 
 .appointment-title {
-  font-size: 1.5rem;
-  /* Reduced */
-  font-weight: 800;
-  margin-bottom: 0.35rem;
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
 }
 
 .appointment-sub {
-  font-size: 1.1rem;
-  font-weight: 500;
-  opacity: 0.9;
-  margin-bottom: 1rem;
-  /* Reduced */
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 2.5rem;
 }
 
-
+.appointment-actions {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
 
 .appointment-btn {
-  background: #fff;
-  color: #1093a5;
-  padding: 0.75rem 2rem;
-  border-radius: 999px;
-  font-weight: 800;
+  background: var(--brand);
+  color: #fff;
+  padding: 1rem 2.25rem;
+  border-radius: 16px;
+  font-weight: 700;
   text-decoration: none;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(16, 147, 165, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.appointment-btn:hover {
+  background: #0d7a8a;
+  box-shadow: 0 8px 20px rgba(16, 147, 165, 0.25);
+  transform: translateY(-2px);
+}
+
+.whatsapp-btn {
+  background: #588157 !important;
+  color: #fff !important;
+  box-shadow: 0 4px 12px rgba(88, 129, 87, 0.15) !important;
+}
+
+.whatsapp-btn:hover {
+  background: #3a5a40 !important;
+  box-shadow: 0 8px 20px rgba(58, 90, 64, 0.25) !important;
+}
+
+.whatsapp-btn img {
+  width: 20px;
+  height: 20px;
+  margin-inline-end: 10px;
+  filter: brightness(0) invert(1);
 }
 
 .contact-form-card {
@@ -2807,13 +2862,17 @@ html[dir="ltr"] .coe-value-content {
 .program-card.laki-card {
   background: url('/static/img/ HealthEducation/health_edu_1.png') no-repeat center center;
   background-size: cover;
-  border-bottom: 8px solid #F47D71;
+  border-bottom: 8px solid #ff6491;
+}
+
+.program-card.laki-card::before {
+  background: #ff6491;
 }
 
 .program-card.laki-card .program-card-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 20%, rgba(246, 186, 182, 0.8) 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 20%, rgba(255, 100, 145, 0.15) 100%);
   z-index: 1;
 }
 
@@ -2821,6 +2880,10 @@ html[dir="ltr"] .coe-value-content {
   background: url('/static/img/ HealthEducation/health_edu_2.png') no-repeat center center;
   background-size: cover;
   border-bottom: 8px solid #85c1af;
+}
+
+.program-card.expert-card::before {
+  background: #85c1af;
 }
 
 .program-card.expert-card .program-card-overlay {
@@ -3739,7 +3802,34 @@ html[dir="ltr"] .coe-value-content {
   height: 100%;
   object-fit: contain;
   padding: 0.5rem;
-  transition: transform 0.6s ease;
+  transition: transform 0.6s ease, opacity 0.4s ease;
+  opacity: 0;
+}
+
+.catalog-card-img img[src] {
+  opacity: 1;
+}
+
+/* Skeleton Loading Pulse */
+@keyframes imgPulse {
+  0% {
+    background-color: #f1f5f9;
+  }
+
+  50% {
+    background-color: #e2e8f0;
+  }
+
+  100% {
+    background-color: #f1f5f9;
+  }
+}
+
+.catalog-card-img,
+.stage-inner,
+.thumb-box {
+  background-color: #f1f5f9;
+  animation: imgPulse 2s infinite ease-in-out;
 }
 
 .catalog-card:hover .catalog-card-img img {
@@ -3832,9 +3922,13 @@ html[dir="ltr"] .coe-value-content {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
-  transition: transform 0.1s ease-out;
-  /* Faster for mouse tracking */
+  transition: transform 0.1s ease-out, opacity 0.4s ease;
   will-change: transform;
+  opacity: 0;
+}
+
+.stage-inner img[src] {
+  opacity: 1;
 }
 
 .product-thumbs {
