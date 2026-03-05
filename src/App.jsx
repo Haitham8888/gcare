@@ -707,14 +707,19 @@ function ContactPage(props) {
               </div>
 
               <div class="contact-form-side">
-                <div class="appointment-card">
-                  <div class="appointment-content">
-                    <h3 class="appointment-title">{props.t('contactAppointmentTitle')}</h3>
-                    <p class="appointment-sub">{props.t('contactAppointmentSub')}</p>
+                <div class="contact-map-section">
+                  <div class="map-wrapper" style={{ height: '100%', "min-height": '400px' }}>
+                    <iframe
+                      title="G-Care Location"
+                      src="https://maps.google.com/maps?q=24.6869930,46.6866840&z=15&output=embed"
+                      width="100%"
+                      height="100%"
+                      style={{ border: 0, "border-radius": "20px" }}
+                      allowfullscreen=""
+                      loading="lazy"
+                      referrerpolicy="no-referrer-when-downgrade"
+                    ></iframe>
                   </div>
-                  <a href="https://outlook.office.com/book/Bookings@gcare.sa/?ismsaljsauthenabled=true" class="btn appointment-btn" target="_blank" rel="noopener noreferrer">
-                    {props.t('contactAppointmentBtn')}
-                  </a>
                 </div>
               </div>
             </div>
@@ -740,21 +745,6 @@ function ContactPage(props) {
                   <p class="info-card-note">{card.note}</p>
                 </div>
               ))}
-            </div>
-
-            <div class="contact-map-section">
-              <div class="map-wrapper">
-                <iframe
-                  title="G-Care Location"
-                  src="https://maps.google.com/maps?q=24.6869930,46.6866840&z=15&output=embed"
-                  width="100%"
-                  height="400"
-                  style={{ border: 0 }}
-                  allowfullscreen=""
-                  loading="lazy"
-                  referrerpolicy="no-referrer-when-downgrade"
-                ></iframe>
-              </div>
             </div>
           </div>
         </div>
@@ -856,14 +846,7 @@ function ClientsSlider(props) {
           <h2 class="section-title">{props.t('clientsTitle')}</h2>
         </div>
         <div class="clients-slider">
-          <div class="clients-track" style={{ animation: props.t('brand') === 'G-Care' && document.documentElement.dir === 'ltr' ? 'clientsMarqueeLTR 35s linear infinite' : 'clientsMarqueeRTL 35s linear infinite' }}>
-            <div class="clients-group">
-              {clients.map((url) => (
-                <div class="client-logo">
-                  <img src={url} alt="" loading="lazy" />
-                </div>
-              ))}
-            </div>
+          <div class="clients-track">
             <div class="clients-group">
               {clients.map((url) => (
                 <div class="client-logo">
@@ -1314,7 +1297,7 @@ function EducationPage(props) {
                   <div class="program-content">
                     <h3>{props.t('educationTopic2Title')}</h3>
                     <p>{props.t('educationTopic2Body')}</p>
-                    <button class="btn btn-primary" onClick={() => setEduRoute('laki')}>
+                    <button class="btn btn-pink" onClick={() => setEduRoute('laki')}>
                       {props.t('eduLakiExploreBtn')}
                     </button>
                   </div>
@@ -1331,6 +1314,24 @@ function EducationPage(props) {
                   </div>
                 </div>
 
+              </div>
+
+              <div class="education-footer-booking mt-12">
+                <div class="appointment-card">
+                  <div class="appointment-content">
+                    <h3 class="appointment-title">{props.t('contactAppointmentTitle')}</h3>
+                    <p class="appointment-sub">{props.t('contactAppointmentSub')}</p>
+                  </div>
+                  <div class="appointment-actions" style={{ display: 'flex', gap: '1rem', "flex-wrap": 'wrap', "justify-content": 'center' }}>
+                    <a href="https://outlook.office.com/book/Bookings@gcare.sa/?ismsaljsauthenabled=true" class="btn appointment-btn" target="_blank" rel="noopener noreferrer">
+                      {props.t('contactAppointmentBtn')}
+                    </a>
+                    <a href="https://wa.me/966555849237" class="btn appointment-btn whatsapp-btn" target="_blank" rel="noopener noreferrer" style={{ background: '#25D366', color: '#fff' }}>
+                      <img src={`${baseUrl}static/img/whatsapp.svg`} alt="" style={{ width: '20px', height: '20px', "margin-inline-end": '8px', filter: 'brightness(0) invert(1)' }} />
+                      WhatsApp (0555849237)
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
           </section>
@@ -1349,9 +1350,9 @@ function Contact(props) {
     <footer class="footer" id="contact">
       <div class="footer-top-divider"></div>
 
-      {/* <div class="footer-watermark">
+      <div class="footer-watermark">
         <img src={`${baseUrl}static/img/G%20-%20Care-50.svg`} alt="" aria-hidden="true" />
-      </div> */}
+      </div>
 
       <div class="container foot-main">
         {/* Right Col: About & Brand */}
