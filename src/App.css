@@ -535,6 +535,15 @@ html[dir="ltr"] .hero-gallery-track {
   filter: brightness(0.95);
 }
 
+.btn-pink {
+  background: #F47D71;
+  color: #fff;
+}
+
+.btn-pink:hover {
+  background: #f6948a;
+}
+
 .btn-ghost {
   background: #fff;
   color: var(--ink);
@@ -798,12 +807,12 @@ html[dir="ltr"] .about-bullets li::before {
 }
 
 .clients-track {
-  --clients-gap: 6rem;
   display: flex;
-  gap: var(--clients-gap);
-  width: max-content;
-  /* Animation handled in JSX via style */
-  will-change: transform;
+  gap: 3rem;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  width: 100%;
 }
 
 .clients-group {
@@ -1101,11 +1110,10 @@ html[dir="rtl"] .search-field input {
 
 .footer-watermark {
   position: absolute;
-  top: 50%;
-  left: -70px;
-  transform: translateY(-50%);
-  width: 280px;
-  opacity: 0.4;
+  bottom: -50px;
+  left: -200px;
+  width: 450px;
+  opacity: 0.1;
   pointer-events: none;
   z-index: 0;
 }
