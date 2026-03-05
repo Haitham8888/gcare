@@ -807,12 +807,11 @@ html[dir="ltr"] .about-bullets li::before {
 }
 
 .clients-track {
+  --clients-gap: 6rem;
   display: flex;
-  gap: 3rem;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  width: 100%;
+  gap: var(--clients-gap);
+  width: max-content;
+  will-change: transform;
 }
 
 .clients-group {
