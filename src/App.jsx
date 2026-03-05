@@ -1275,6 +1275,7 @@ function ExpertPage(props) {
 
 function EducationPage(props) {
   const [eduRoute, setEduRoute] = createSignal('main')
+  const baseUrl = import.meta.env.BASE_URL
 
   return (
     <>
