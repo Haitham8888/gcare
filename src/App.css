@@ -1110,7 +1110,8 @@ html[dir="rtl"] .search-field input {
 
 .footer-watermark {
   position: absolute;
-  bottom: -50px;
+  top: 50%;
+  transform: translateY(-50%);
   left: -200px;
   width: 450px;
   opacity: 0.1;
