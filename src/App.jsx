@@ -851,7 +851,14 @@ function ClientsSlider(props) {
           <h2 class="section-title">{props.t('clientsTitle')}</h2>
         </div>
         <div class="clients-slider">
-          <div class="clients-track">
+          <div class="clients-track" style={{ animation: props.t('brand') === 'G-Care' && document.documentElement.dir === 'ltr' ? 'clientsMarqueeLTR 35s linear infinite' : 'clientsMarqueeRTL 35s linear infinite' }}>
+            <div class="clients-group">
+              {clients.map((url) => (
+                <div class="client-logo">
+                  <img src={url} alt="" loading="lazy" />
+                </div>
+              ))}
+            </div>
             <div class="clients-group">
               {clients.map((url) => (
                 <div class="client-logo">
