@@ -28,7 +28,7 @@ function NavBar(props) {
   return (
     <header class="navbar">
       <div class="container nav-inner">
-        <a href="#hero" class="brand" aria-label={props.t('brand')}>
+        <a href={baseUrl} class="brand" aria-label={props.t('brand')}>
           <img class="brand-logo" src={`${baseUrl}static/img/G%20-%20Care-01.svg`} alt="" aria-hidden="true" />
         </a>
 
@@ -59,7 +59,7 @@ function NavBar(props) {
         </div>
 
         <nav class={`nav-links ${open() ? 'open' : ''}`} aria-label={props.t('navLabel')}>
-          <a href="#hero" onClick={() => setOpen(false)}>{props.t('navHome')}</a>
+          <a href={baseUrl} onClick={() => setOpen(false)}>{props.t('navHome')}</a>
           <a href="#about-page" onClick={() => setOpen(false)}>{props.t('navAbout')}</a>
           <a href="#products" onClick={() => setOpen(false)}>{props.t('navProducts')}</a>
           <a href="#education-page" onClick={() => setOpen(false)}>{props.t('navEducation')}</a>
@@ -498,7 +498,7 @@ function HomePage(props) {
       <SectionDivider />
       <HomeAbout t={props.t} />
       <SectionDivider />
-      <ClientsSlider t={props.t} />
+      <ClientsSlider t={props.t} lang={props.lang} />
       <SectionDivider />
       <Visitors t={props.t} />
       <SectionDivider />
@@ -851,7 +851,10 @@ function ClientsSlider(props) {
           <h2 class="section-title">{props.t('clientsTitle')}</h2>
         </div>
         <div class="clients-slider">
-          <div class="clients-track" style={{ animation: props.t('brand') === 'G-Care' && document.documentElement.dir === 'ltr' ? 'clientsMarqueeLTR 35s linear infinite' : 'clientsMarqueeRTL 35s linear infinite' }}>
+          <div class="clients-track" classList={{
+            'en': (props.lang ? props.lang() === 'en' : document.documentElement.dir === 'ltr'),
+            'ar': (props.lang ? props.lang() === 'ar' : document.documentElement.dir === 'rtl')
+          }}>
             <div class="clients-group">
               {clients.map((url) => (
                 <div class="client-logo">
@@ -1030,35 +1033,23 @@ function LakiPage(props) {
     {
       id: 1,
       title: props.t('lakiSeries1Title'),
-      subtitle: props.t('lakiSeries1Sub'),
-      icon: (
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
-        </svg>
-      ),
-      color: "#6b7280"
+      category: props.t('lakiSeries1Cat'),
+      excerpt: props.t('lakiSeries1Ex'),
+      img: `${baseUrl}static/img/ HealthEducation/health_edu_3.png`
     },
     {
       id: 2,
       title: props.t('lakiSeries2Title'),
-      subtitle: props.t('lakiSeries2Sub'),
-      icon: (
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><path d="m9 12 2 2 4-4" />
-        </svg>
-      ),
-      color: "#1093a5"
+      category: props.t('lakiSeries2Cat'),
+      excerpt: props.t('lakiSeries2Ex'),
+      img: `${baseUrl}static/img/ HealthEducation/health_edu_4.png`
     },
     {
       id: 3,
       title: props.t('lakiSeries3Title'),
-      subtitle: props.t('lakiSeries3Sub'),
-      icon: (
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16z" /><path d="M12 14v6" /><path d="M12 14L8 10" /><path d="M12 14l4-4" />
-        </svg>
-      ),
-      color: "#f97316"
+      category: props.t('lakiSeries3Cat'),
+      excerpt: props.t('lakiSeries3Ex'),
+      img: `${baseUrl}static/img/ HealthEducation/health_edu_5.png`
     }
   ]
 
@@ -1097,44 +1088,75 @@ function LakiPage(props) {
         </div>
       </section>
 
-      <section class="section laki-series">
+      <section class="section laki-articles-section">
         <div class="container">
-          <div class="laki-section-layout">
-            <div class="laki-section-intro">
+          <div class="articles-header">
+            <div class="articles-title-block">
               <h2 class="laki-section-title">{props.t('lakiContentSeriesTitle')}</h2>
               <p class="laki-section-subtitle">{props.t('lakiLearnMore')}</p>
-              <button class="btn btn-pink laki-explore-btn">{props.t('lakiLearnMoreAction')}</button>
             </div>
-            <div class="laki-series-grid">
+            <button class="btn btn-pink laki-explore-btn">{props.t('lakiLearnMoreAction')}</button>
+          </div>
+
+          <div class="articles-slider-container">
+            <div class="laki-articles-grid">
               {contentSeries.map(item => (
-                <div class="laki-series-card" style={{ "--card-color": item.color }}>
-                  <div class="laki-series-icon">
-                    {item.icon}
+                <div class="article-modern-card" onClick={() => setSelectedImg(item.img)}>
+                  <div class="article-card-media">
+                    <img src={item.img} alt="" />
+                    <div class="article-media-overlay">
+                      <h4>{item.title}</h4>
+                    </div>
                   </div>
-                  <h3>{item.title}</h3>
-                  <p>{item.subtitle}</p>
+                  <div class="article-card-body">
+                    <h3 class="article-cat">{item.category}</h3>
+                    <p class="article-ex">{item.excerpt}</p>
+                  </div>
                 </div>
               ))}
             </div>
+
+            <button class="article-nav-arrow next">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6" /></svg>
+            </button>
           </div>
         </div>
       </section>
 
-      <section class="section laki-latest">
+      <section class="section laki-guides-v2">
         <div class="container">
-          <h2 class="laki-section-title text-center mb-4">{props.t('lakiLatestAdditions')}</h2>
-          <div class="laki-latest-grid">
-            {latestAdditions.map(item => (
-              <div class="laki-latest-card" onClick={() => setSelectedImg(item.img)}>
-                <div class="laki-latest-thumb">
-                  <img src={item.img} alt="" />
+          <div class="guides-premium-layout">
+            <div class="guides-gallery-col">
+              <div class="guides-slider-wrapper-v2">
+                <button class="guide-nav-btn prev">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="15 18 9 12 15 6" /></svg>
+                </button>
+
+                <div class="guides-portrait-grid">
+                  {latestAdditions.map(item => (
+                    <div class="port-guide-card" onClick={() => setSelectedImg(item.img)}>
+                      <div class="port-guide-visual">
+                        <img src={item.img} alt="" />
+                        <div class="port-guide-overlay"></div>
+                      </div>
+                      <div class="port-guide-footer">
+                        <span class="port-read-more">{props.t('lakiReadMore')}</span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div class="laki-latest-info">
-                  <h3>{item.title}</h3>
-                  <button class="laki-link">{props.t('lakiReadMore')}</button>
-                </div>
+
+                <button class="guide-nav-btn next">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6" /></svg>
+                </button>
               </div>
-            ))}
+            </div>
+
+            <div class="guides-info-col">
+              <h2 class="laki-section-title">{props.t('lakiLatestAdditions')}</h2>
+              <p class="laki-section-subtitle-v2">{props.t('lakiGuidesDesc')}</p>
+              <button class="btn btn-pink laki-explore-btn mt-6">{props.t('lakiLearnMoreAction')}</button>
+            </div>
           </div>
         </div>
       </section>
@@ -1171,12 +1193,54 @@ function ExpertPage(props) {
   const baseUrl = import.meta.env.BASE_URL
 
   const advantages = [
-    { title: props.t('expertWhy1Title') },
-    { title: props.t('expertWhy2Title') },
-    { title: props.t('expertWhy3Title') },
-    { title: props.t('expertWhy4Title') },
-    { title: props.t('expertWhy5Title') },
-    { title: props.t('expertWhy6Title') }
+    {
+      title: props.t('expertWhy1Title'),
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+        </svg>
+      )
+    },
+    {
+      title: props.t('expertWhy2Title'),
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+      )
+    },
+    {
+      title: props.t('expertWhy3Title'),
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+        </svg>
+      )
+    },
+    {
+      title: props.t('expertWhy4Title'),
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        </svg>
+      )
+    },
+    {
+      title: props.t('expertWhy5Title'),
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+        </svg>
+      )
+    },
+    {
+      title: props.t('expertWhy6Title'),
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+        </svg>
+      )
+    }
   ]
 
   const steps = [
@@ -1223,9 +1287,7 @@ function ExpertPage(props) {
             {advantages.map(adv => (
               <div class="expert-why-item">
                 <div class="expert-check-box">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                  </svg>
+                  {adv.icon}
                 </div>
                 <h3>{adv.title}</h3>
               </div>
@@ -1239,7 +1301,7 @@ function ExpertPage(props) {
           <h2 class="expert-section-header">{props.t('expertHowTitle')}</h2>
           <div class="expert-how-steps">
             {steps.map(step => (
-              <div class="expert-step-card">
+              <div class="expert-step-card" style={{ "animation-delay": `${step.id * 0.2}s` }}>
                 <div class="expert-step-num">{step.id}</div>
                 <div class="step-text-content">
                   <h3>{step.title}</h3>
@@ -1295,9 +1357,9 @@ function EducationPage(props) {
         {eduRoute() === 'main' && (
           <section class="section education-page" id="education-page">
             <div class="container">
-              <div class="section-head text-center">
-                <h2 class="section-title">{props.t('educationTitle')}</h2>
-                <p class="hero-subtitle-large">{props.t('educationSubtitle')}</p>
+              <div class="section-head edu-header-inline">
+                <img src={`${baseUrl}static/img/ HealthEducation/health_edu_5.png`} alt="Laki Wa Biwai Logo" class="edu-logo-inline" />
+                <h2 class="edu-tagline-text">{props.t('educationSubtitle')}</h2>
               </div>
 
               <div class="education-intro-block">
@@ -1330,19 +1392,31 @@ function EducationPage(props) {
               </div>
 
               <div class="education-footer-booking mt-12">
-                <div class="appointment-card">
-                  <div class="appointment-content">
-                    <h3 class="appointment-title">{props.t('contactAppointmentTitle')}</h3>
-                    <p class="appointment-sub">{props.t('contactAppointmentSub')}</p>
+                <div class="edu-booking-premium-row">
+                  <div class="booking-premium-card">
+                    <div class="booking-card-body">
+                      <h3 class="booking-card-title">{props.t('contactAppointmentTitle')}</h3>
+                      <p class="booking-card-desc">{props.t('contactAppointmentSub')}</p>
+                      <a class="btn btn-booking-main" href="https://outlook.office.com/book/Bookings@gcare.sa/?ismsaljsauthenabled=true" target="_blank" rel="noopener noreferrer">
+                        {props.t('contactAppointmentBtn')}
+                      </a>
+                    </div>
                   </div>
-                  <div class="appointment-actions">
-                    <a href="https://outlook.office.com/book/Bookings@gcare.sa/?ismsaljsauthenabled=true" class="btn appointment-btn" target="_blank" rel="noopener noreferrer">
-                      {props.t('contactAppointmentBtn')}
-                    </a>
-                    <a href="https://wa.me/966555849237" class="btn appointment-btn whatsapp-btn" target="_blank" rel="noopener noreferrer">
-                      <img src={`${baseUrl}static/img/whatsapp.svg`} alt="" />
-                      WhatsApp (0555849237)
-                    </a>
+
+                  <div class="edu-contacts-premium-card">
+                    <div class="edu-contact-card-body">
+                      <h4 class="edu-contact-card-title">{props.t('eduContactTitle')}</h4>
+                      <div class="edu-contact-methods-v2">
+                        <a href="https://wa.me/966555849237" target="_blank" rel="noopener noreferrer" class="wa-premium-action">
+                          <img src={`${baseUrl}static/img/whatsapp.svg`} alt="" class="wa-mid-icon" />
+                          <span class="wa-number-mid" dir="ltr">0555849237</span>
+                        </a>
+                        <div class="edu-email-box">
+                          <span class="email-label">{props.t('eduEmailLabel')}</span>
+                          <a href="mailto:hep@gcare.sa" class="email-link-v2">hep@gcare.sa</a>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
