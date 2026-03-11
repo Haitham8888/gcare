@@ -553,15 +553,14 @@ html[dir="ltr"] .hero-gallery-track {
   margin-top: 2rem;
   padding: 1.25rem 2.5rem;
   border-radius: 20px;
-  background: #FF6491;
+  background: #F67C71;
   border: none;
   font-weight: 800;
   color: #fff;
 }
 
 .laki-explore-btn:hover {
-  background: #e54b78;
-  /* Adjusted to match btn-pink hover for consistency */
+  background: #e3695f;
   transform: translateY(-3px);
 }
 
@@ -575,12 +574,12 @@ html[dir="ltr"] .hero-gallery-track {
 }
 
 .btn-pink {
-  background: #FF6491;
+  background: #F67C71;
   color: #fff;
 }
 
 .btn-pink:hover {
-  background: #e54b78;
+  background: #e3695f;
 }
 
 .btn-ghost {
@@ -833,6 +832,7 @@ html[dir="ltr"] .about-bullets li::before {
   overflow: hidden;
   position: relative;
   padding: 2rem 0;
+  direction: ltr !important;
   mask-image: linear-gradient(to right,
       transparent,
       black 10%,
@@ -1555,14 +1555,16 @@ html[dir="ltr"] .footer-about-text {
 
 .booking-premium-card {
   flex: 1;
-  background: #1B3A57;
-  /* Matches Contact Form style */
+  background: linear-gradient(135deg, #1B3A57 0%, #2a5a84 50%, #ffffff 150%);
   color: #fff;
   padding: 2.5rem 3rem;
   border-radius: 30px;
   box-shadow: 0 20px 40px rgba(27, 58, 87, 0.1);
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .booking-premium-card::after {
@@ -1572,9 +1574,8 @@ html[dir="ltr"] .footer-about-text {
   right: -50px;
   width: 150px;
   height: 150px;
-  background: #FF6491;
-  /* Laki Pink accent */
-  opacity: 0.1;
+  background: #F67C71;
+  opacity: 0.15;
   border-radius: 50%;
 }
 
@@ -1594,7 +1595,7 @@ html[dir="ltr"] .footer-about-text {
 }
 
 .btn-booking-main {
-  background: #FF6491;
+  background: #F67C71;
   color: #fff;
   padding: 1rem 2.5rem;
   border-radius: 16px;
@@ -1603,27 +1604,32 @@ html[dir="ltr"] .footer-about-text {
   font-size: 1.1rem;
   display: inline-block;
   transition: all 0.3s ease;
+  align-self: flex-start;
 }
 
 .btn-booking-main:hover {
   background: #fff;
-  color: #FF6491;
+  color: #F67C71;
   transform: translateY(-3px);
 }
 
 .edu-contacts-premium-card {
-  flex: 0 0 auto;
-  min-width: 380px;
+  flex: 1;
+  min-width: 320px;
 }
 
 .edu-contact-card-body {
-  background: #fff;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
   border-radius: 30px;
   padding: 2.5rem;
   box-shadow: 0 15px 45px rgba(0, 0, 0, 0.04);
   border: 1px solid #e2e8f0;
   text-align: center;
   position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .edu-contact-card-title {
@@ -1686,7 +1692,7 @@ html[dir="ltr"] .footer-about-text {
 }
 
 .email-link-v2:hover {
-  color: #FF6491;
+  color: #F67C71;
 }
 
 @media (max-width: 900px) {
@@ -1782,7 +1788,7 @@ html[dir="ltr"] .footer-about-text {
   left: -60px;
   width: 200px;
   height: 200px;
-  background: #FF6491;
+  background: #F67C71;
   opacity: 0.03;
   border-radius: 50%;
   pointer-events: none;
@@ -3141,17 +3147,17 @@ html[dir="ltr"] .coe-value-content {
 .program-card.laki-card {
   background: url('/static/img/ HealthEducation/health_edu_1.png') no-repeat center center;
   background-size: cover;
-  border-bottom: 8px solid #FF6491;
+  border-bottom: 8px solid #F67C71;
 }
 
 .program-card.laki-card::before {
-  background: #FF6491;
+  background: #F67C71;
 }
 
 .program-card.laki-card .program-card-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 20%, rgba(255, 100, 145, 0.1) 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 20%, rgba(246, 124, 113, 0.1) 100%);
   z-index: 1;
 }
 
@@ -3178,7 +3184,7 @@ html[dir="ltr"] .coe-value-content {
 }
 
 .program-card.laki-card:hover {
-  box-shadow: 0 40px 80px rgba(255, 100, 145, 0.3);
+  box-shadow: 0 40px 80px rgba(246, 124, 113, 0.3);
 }
 
 .program-card.expert-card:hover {
@@ -3426,20 +3432,20 @@ html[dir="ltr"] .coe-value-content {
 
 .laki-hero-badge {
   font-family: 'Noto Sans Arabic', sans-serif;
-  background: rgba(255, 100, 145, 0.1);
-  color: #FF6491;
+  background: rgba(246, 124, 113, 0.1);
+  color: #F67C71;
   padding: 0.5rem 1.75rem;
   border-radius: 999px;
   font-weight: 900;
   font-size: 1rem;
-  border: 1px solid rgba(255, 100, 145, 0.2);
+  border: 1px solid rgba(246, 124, 113, 0.2);
 }
 
 .laki-hero-title {
   font-family: 'Noto Sans Arabic', sans-serif;
   font-size: 4.5rem;
   font-weight: 950;
-  color: #FF6491;
+  color: #F67C71;
   line-height: 1.1;
   margin-bottom: 2rem;
   letter-spacing: normal;
@@ -3675,7 +3681,7 @@ html[dir="rtl"] .article-nav-arrow:hover {
 .guide-nav-btn {
   background: none;
   border: none;
-  color: #FF6491;
+  color: #F67C71;
   cursor: pointer;
   padding: 0.5rem;
   transition: all 0.3s ease;
@@ -3720,7 +3726,7 @@ html[dir="rtl"] .guide-nav-btn svg {
 .port-guide-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(255, 100, 145, 0.1);
+  background: rgba(246, 124, 113, 0.1);
   opacity: 0;
   transition: all 0.3s ease;
 }
@@ -4786,4 +4792,167 @@ html[dir="ltr"] .suggestion-info {
   color: var(--brand);
   text-transform: uppercase;
   opacity: 0.8;
+}
+
+/* Laki Articles Layout Adjustments */
+.laki-section-title.large {
+  font-size: 3rem;
+  font-weight: 900;
+}
+
+.laki-articles-footer {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+html[dir="rtl"] .laki-articles-footer {
+  justify-content: flex-end;
+  /* In RTL flex-end is LEFT side */
+}
+
+.laki-explore-btn-lower {
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  background: #F67C71;
+  color: #fff;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.laki-explore-btn-lower:hover {
+  background: #e3695f;
+  transform: translateY(-2px);
+}
+
+/* Expert How-it-works Slider */
+.expert-how-slider {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.expert-slider-container {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  background: #fff;
+  padding: 3rem;
+  border-radius: 30px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
+  min-height: 300px;
+}
+
+.expert-step-display {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  height: 200px;
+}
+
+.expert-step-slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  opacity: 0;
+  transform: translateX(30px);
+  pointer-events: none;
+  transition: all 0.5s ease;
+}
+
+html[dir="rtl"] .expert-step-slide {
+  transform: translateX(-30px);
+}
+
+.expert-step-slide.active {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.expert-step-number-heavy {
+  font-size: 5rem;
+  font-weight: 900;
+  color: rgba(27, 58, 87, 0.1);
+  line-height: 1;
+}
+
+.expert-step-info-large h3 {
+  font-size: 2rem;
+  font-weight: 900;
+  color: #1B3A57;
+  margin-bottom: 0.75rem;
+}
+
+.expert-step-info-large p {
+  font-size: 1.15rem;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.expert-nav-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #1B3A57;
+  transition: all 0.3s ease;
+}
+
+.expert-nav-btn:hover {
+  background: #1B3A57;
+  color: #fff;
+}
+
+html[dir="rtl"] .expert-nav-btn svg {
+  transform: rotate(180deg);
+}
+
+.expert-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+.expert-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: none;
+  background: #e2e8f0;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.3s ease;
+}
+
+.expert-dot.active {
+  background: #1B3A57;
+  transform: scale(1.3);
+}
+
+@media (max-width: 768px) {
+  .expert-slider-container {
+    flex-direction: column;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .expert-step-slide {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .expert-step-display {
+    height: 300px;
+  }
 }

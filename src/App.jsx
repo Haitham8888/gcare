@@ -482,8 +482,8 @@ function Products(props) {
             </div>
           </div>
         </Show>
-      </div>
-    </section>
+      </div >
+    </section >
   )
 }
 
@@ -1092,10 +1092,8 @@ function LakiPage(props) {
         <div class="container">
           <div class="articles-header">
             <div class="articles-title-block">
-              <h2 class="laki-section-title">{props.t('lakiContentSeriesTitle')}</h2>
-              <p class="laki-section-subtitle">{props.t('lakiLearnMore')}</p>
+              <h2 class="laki-section-title large">{props.t('lakiContentSeriesTitle')}</h2>
             </div>
-            <button class="btn btn-pink laki-explore-btn">{props.t('lakiLearnMoreAction')}</button>
           </div>
 
           <div class="articles-slider-container">
@@ -1120,12 +1118,22 @@ function LakiPage(props) {
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6" /></svg>
             </button>
           </div>
+
+          <div class="laki-articles-footer">
+            <button class="btn btn-pink laki-explore-btn-lower">{props.t('lakiLearnMoreAction')}</button>
+          </div>
         </div>
       </section>
 
       <section class="section laki-guides-v2">
         <div class="container">
           <div class="guides-premium-layout">
+            <div class="guides-info-col">
+              <h2 class="laki-section-title">{props.t('lakiLatestAdditions')}</h2>
+              <p class="laki-section-subtitle-v2">{props.t('lakiGuidesDesc')}</p>
+              <button class="btn btn-pink laki-explore-btn mt-6">{props.t('lakiBrowseGuides')}</button>
+            </div>
+
             <div class="guides-gallery-col">
               <div class="guides-slider-wrapper-v2">
                 <button class="guide-nav-btn prev">
@@ -1150,12 +1158,6 @@ function LakiPage(props) {
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6" /></svg>
                 </button>
               </div>
-            </div>
-
-            <div class="guides-info-col">
-              <h2 class="laki-section-title">{props.t('lakiLatestAdditions')}</h2>
-              <p class="laki-section-subtitle-v2">{props.t('lakiGuidesDesc')}</p>
-              <button class="btn btn-pink laki-explore-btn mt-6">{props.t('lakiLearnMoreAction')}</button>
             </div>
           </div>
         </div>
@@ -1191,8 +1193,9 @@ function LakiPage(props) {
 
 function ExpertPage(props) {
   const baseUrl = import.meta.env.BASE_URL
+  const [stepIndex, setStepIndex] = createSignal(0)
 
-  const advantages = [
+  const advantages = createMemo(() => [
     {
       title: props.t('expertWhy1Title'),
       icon: (
@@ -1241,22 +1244,22 @@ function ExpertPage(props) {
         </svg>
       )
     }
-  ]
+  ])
 
-  const steps = [
+  const steps = createMemo(() => [
     { id: 1, title: props.t('expertStep1Title'), desc: props.t('expertStep1Desc') },
     { id: 2, title: props.t('expertStep2Title'), desc: props.t('expertStep2Desc') },
     { id: 3, title: props.t('expertStep3Title'), desc: props.t('expertStep3Desc') },
     { id: 4, title: props.t('expertStep4Title'), desc: props.t('expertStep4Desc') },
     { id: 5, title: props.t('expertStep5Title'), desc: props.t('expertStep5Desc') },
     { id: 6, title: props.t('expertStep6Title'), desc: props.t('expertStep6Desc') }
-  ]
+  ])
 
-  const experts = [
+  const experts = createMemo(() => [
     { name: props.t('expertDocName'), role: props.t('expertDocRole'), img: `${baseUrl}static/img/0c672357-323e-4792-8605-0e4f67c43db9.jpg` },
     { name: props.t('expertDocName'), role: props.t('expertDocRole'), img: `${baseUrl}static/img/45a473c7-debf-48cc-9a41-b9d61c38a0f1.jpg` },
     { name: props.t('expertDocName'), role: props.t('expertDocRole'), img: `${baseUrl}static/img/ba862794-b872-49ac-be68-d173678fcbed.jpg` }
-  ]
+  ])
 
   return (
     <div class="expert-page-content">
@@ -1284,7 +1287,7 @@ function ExpertPage(props) {
           <h2 class="expert-section-header">{props.t('expertWhyTitle')}</h2>
           <p class="expert-section-subheader">{props.t('expertWhySub')}</p>
           <div class="expert-why-list">
-            {advantages.map(adv => (
+            {advantages().map(adv => (
               <div class="expert-why-item">
                 <div class="expert-check-box">
                   {adv.icon}
@@ -1299,16 +1302,40 @@ function ExpertPage(props) {
       <section class="section expert-how">
         <div class="container">
           <h2 class="expert-section-header">{props.t('expertHowTitle')}</h2>
-          <div class="expert-how-steps">
-            {steps.map(step => (
-              <div class="expert-step-card" style={{ "animation-delay": `${step.id * 0.2}s` }}>
-                <div class="expert-step-num">{step.id}</div>
-                <div class="step-text-content">
-                  <h3>{step.title}</h3>
-                  <p>{step.desc}</p>
-                </div>
+
+          <div class="expert-how-slider">
+            <div class="expert-slider-container">
+              <button class="expert-nav-btn prev" onClick={() => setStepIndex((prev) => (prev - 1 + steps().length) % steps().length)}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="15 18 9 12 15 6" /></svg>
+              </button>
+
+              <div class="expert-step-display">
+                <For each={steps()}>
+                  {(step, index) => (
+                    <div class={`expert-step-slide ${stepIndex() === index() ? 'active' : ''}`}>
+                      <div class="expert-step-number-heavy">{step.id}</div>
+                      <div class="expert-step-info-large">
+                        <h3>{step.title}</h3>
+                        <p>{step.desc}</p>
+                      </div>
+                    </div>
+                  )}
+                </For>
               </div>
-            ))}
+
+              <button class="expert-nav-btn next" onClick={() => setStepIndex((prev) => (prev + 1) % steps().length)}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6" /></svg>
+              </button>
+            </div>
+
+            <div class="expert-dots">
+              {steps().map((_, i) => (
+                <button
+                  class={`expert-dot ${stepIndex() === i ? 'active' : ''}`}
+                  onClick={() => setStepIndex(i)}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -1317,7 +1344,7 @@ function ExpertPage(props) {
         <div class="container">
           <h2 class="expert-section-header">{props.t('expertTeamTitle')}</h2>
           <div class="expert-team-grid">
-            {experts.map(doc => (
+            {experts().map(doc => (
               <div class="expert-doc-card">
                 <div class="doc-img-box">
                   <img src={doc.img} alt={doc.name} />
