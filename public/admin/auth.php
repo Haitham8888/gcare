@@ -59,12 +59,12 @@ if (isset($_GET['code'])) {
                 
                 // Send to parent window
                 if (window.opener) {
-                    window.opener.postMessage(message, '*');
+                    window.opener.postMessage(message, \"*\");
                     
                     // Close this popup after a short delay
                     setTimeout(() => {
                         window.close();
-                    }, 500);
+                    }, 1000);
                 } else {
                     // Fail-safe: if opener is lost, try to redirect back
                     window.location.href = '../index.html';
