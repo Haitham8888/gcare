@@ -1,9 +1,6 @@
 backend:
-  name: github
-  repo: Haitham8888/gcare
-  branch: main
-  base_url: https://gcare.sa/admin
-  auth_endpoint: auth.php
+  name: git-gateway
+  branch: main # تأكد أن هذا هو فرعك الأساسي
 
 local_backend:
   url: http://localhost:8081/api/v1
