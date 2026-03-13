@@ -6,7 +6,16 @@
 
 // GitHub App Credentials
 $client_id = 'Iv23liLrsifJ4qrkBMdT';
+// نستخدم الـ Secret الموجود حالياً كاحتياطي، لكن الأفضل وضعه في ملف سري أونلاين
 $client_secret = 'be90c730dea9fd56ef29369682c33ed35c8a004d';
+
+// تأمين إضافي: ابحث عن ملف سري أونلاين لا يراه GitHub
+if (file_exists('.env.php')) {
+    $extra_secrets = include('.env.php');
+    if (isset($extra_secrets['secret'])) {
+        $client_secret = $extra_secrets['secret'];
+    }
+}
 
 // Disable error reporting for cleaner output in production
 error_reporting(0);
@@ -32,21 +41,27 @@ if (isset($_GET['code'])) {
     $token = $data['access_token'] ?? '';
 
     if ($token) {
-        // Return token to Decap CMS via postMessage
+        // Return token to Decap CMS via postMessage (The standard Decap/Netlify format)
+        $output = json_encode([
+            'token' => $token,
+            'provider' => 'github'
+        ]);
+        
         echo "<!DOCTYPE html><html><body>
         <script>
-            const token = '$token';
-            const provider = 'github';
-            // Send message back to the CMS opener window
-            window.opener.postMessage(
-                'authorization:github:success:' + JSON.stringify({token: token, provider: provider}),
-                window.location.origin
-            );
-            // Optional: Close this popup
-            setTimeout(() => window.close(), 1000);
+            (function() {
+                const response = 'authorization:github:success:' + '$output';
+                // Try to send to the opener
+                if (window.opener) {
+                    window.opener.postMessage(response, window.location.origin);
+                    setTimeout(() => window.close(), 1000);
+                } else {
+                    document.body.innerHTML = 'Opener window not found. Please close this and try again.';
+                }
+            })();
         </script>
-        <p style='font-family: sans-serif; text-align: center; margin-top: 50px;'>
-            Success! Authenticated. Returning to dashboard...
+        <p style='font-family: sans-serif; text-align: center; margin-top: 50px; color: #1a56db;'>
+            Successfully Authenticated. Returning to dashboard...
         </p>
         </body></html>";
     } else {
