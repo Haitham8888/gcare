@@ -41,30 +41,39 @@ if (isset($_GET['code'])) {
     $token = $data['access_token'] ?? '';
 
     if ($token) {
-        // Return token to Decap CMS via postMessage (The standard Decap/Netlify format)
+        // Return token to Decap CMS via postMessage (Standard Format)
         $output = json_encode([
             'token' => $token,
             'provider' => 'github'
         ]);
         
-        echo "<!DOCTYPE html><html><body>
+        echo "<!DOCTYPE html><html><head><title>Authenticated</title></head><body>
+        <div style='text-align:center; margin-top:50px; font-family:sans-serif;'>
+            <h2 style='color: #059669;'>✓ Authenticated</h2>
+            <p>Returning to dashboard, please wait...</p>
+        </div>
         <script>
             (function() {
-                const response = 'authorization:github:success:' + '$output';
-                // Try to send to the opener
+                // The expected message format for Decap CMS
+                const message = 'authorization:github:success:' + '$output';
+                
+                // Send to parent window
                 if (window.opener) {
-                    window.opener.postMessage(response, window.location.origin);
-                    setTimeout(() => window.close(), 1000);
+                    window.opener.postMessage(message, '*');
+                    
+                    // Close this popup after a short delay
+                    setTimeout(() => {
+                        window.close();
+                    }, 500);
                 } else {
-                    document.body.innerHTML = 'Opener window not found. Please close this and try again.';
+                    // Fail-safe: if opener is lost, try to redirect back
+                    window.location.href = '../index.html';
                 }
             })();
         </script>
-        <p style='font-family: sans-serif; text-align: center; margin-top: 50px; color: #1a56db;'>
-            Successfully Authenticated. Returning to dashboard...
-        </p>
         </body></html>";
-    } else {
+    }
+ else {
         echo "Authentication failed. Error: " . ($data['error_description'] ?? 'Unknown error');
     }
 } else {
