@@ -2,10 +2,10 @@ backend:
   name: github
   repo: Haitham8888/gcare
   branch: main
-  base_url: https://gcare.sa
-  auth_endpoint: admin/auth.php # المسار الصحيح للوصول للملف
+  auth_endpoint: auth.php # سيقوم المحرر بالبحث عنه في نفس مجلد ملف config.yml
 
-local_backend: true
+local_backend:
+  url: http://localhost:8081/api/v1
 
 media_folder: "public/static/img"
 public_folder: "/static/img"
