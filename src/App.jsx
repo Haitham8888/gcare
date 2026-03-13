@@ -1,6 +1,10 @@
 import { createEffect, createSignal, onCleanup, For, Show, createMemo } from 'solid-js'
 import './App.css'
-import { products } from './data/products'
+import productsData from './data/products.json'
+import expertsData from './data/experts.json'
+import educationData from './data/education.json'
+import Dashboard from './Dashboard'
+import LoginPage from './LoginPage'
 
 // Shared social media helpers
 const getSocialIcon = (key) => {
@@ -101,8 +105,8 @@ function GlobalSearch(props) {
       return label.includes(q)
     }).map(p => ({ ...p, type: 'page', label: props.t(p.key) }))
 
-    // Search products
-    const prods = products.filter(p => {
+    // Search productsData.products
+    const prods = productsData.products.filter(p => {
       const nameMatch = p.name.en.toLowerCase().includes(q)
       const catMatch = props.t(`cat${p.category}`).toLowerCase().includes(q)
       return nameMatch || catMatch
@@ -231,22 +235,22 @@ function Products(props) {
     }
   });
 
-  const uniqueCategories = ['All', ...new Set(products.map(p => p.category))]
+  const uniqueCategories = ['All', ...new Set(productsData.products.map(p => p.category))]
 
   // Independent suggestions list for better performance
   const suggestionResults = createMemo(() => {
     const query = searchQuery().toLowerCase().trim()
     if (query.length < 1) return []
-    return products.filter(p => p.name.en.toLowerCase().includes(query)).slice(0, 6)
+    return productsData.products.filter(p => p.name.en.toLowerCase().includes(query)).slice(0, 6)
   })
 
-  // Filtered products for the grid - with a slight debounce/delay if needed, 
+  // Filtered productsData.products for the grid - with a slight debounce/delay if needed, 
   // but for now just decoupling it from the immediate suggestions
   const filteredProducts = createMemo(() => {
     const cat = selectedCategory()
     const query = searchQuery().toLowerCase().trim()
 
-    return products.filter(p => {
+    return productsData.products.filter(p => {
       const matchCat = (cat === 'All' || p.category === cat)
       const matchQuery = p.name.en.toLowerCase().includes(query)
       return matchCat && matchQuery
@@ -269,7 +273,7 @@ function Products(props) {
   }
 
   return (
-    <section class="section catalog-section" id="products">
+    <section class="section catalog-section" id="productsData.products">
       <div class="container">
         <Show when={!(props.activeProduct ? props.activeProduct() : false)}>
           <div class="section-head text-center">
@@ -1029,35 +1033,19 @@ function LakiPage(props) {
   const baseUrl = import.meta.env.BASE_URL
   const [selectedImg, setSelectedImg] = createSignal(null)
 
-  const contentSeries = [
-    {
-      id: 1,
-      title: props.t('lakiSeries1Title'),
-      category: props.t('lakiSeries1Cat'),
-      excerpt: props.t('lakiSeries1Ex'),
-      img: `${baseUrl}static/img/ HealthEducation/health_edu_3.png`
-    },
-    {
-      id: 2,
-      title: props.t('lakiSeries2Title'),
-      category: props.t('lakiSeries2Cat'),
-      excerpt: props.t('lakiSeries2Ex'),
-      img: `${baseUrl}static/img/ HealthEducation/health_edu_4.png`
-    },
-    {
-      id: 3,
-      title: props.t('lakiSeries3Title'),
-      category: props.t('lakiSeries3Cat'),
-      excerpt: props.t('lakiSeries3Ex'),
-      img: `${baseUrl}static/img/ HealthEducation/health_edu_5.png`
-    }
-  ]
+  const contentSeries = educationData.articles.map(item => ({
+    ...item,
+    title: props.t(item.title_key),
+    category: props.t(item.category_key),
+    excerpt: props.t(item.excerpt_key),
+    img: `${baseUrl}${item.img}`
+  }))
 
-  const latestAdditions = [
-    { id: 1, title: props.t('lakiLatest1'), img: `${baseUrl}static/img/ HealthEducation/health_edu_3.png` },
-    { id: 2, title: props.t('lakiLatest2'), img: `${baseUrl}static/img/ HealthEducation/health_edu_4.png` },
-    { id: 3, title: props.t('lakiLatest3'), img: `${baseUrl}static/img/ HealthEducation/health_edu_5.png` }
-  ]
+  const latestAdditions = educationData.posters.map(item => ({
+    ...item,
+    title: props.t(item.title_key),
+    img: `${baseUrl}${item.img}`
+  }))
 
   const posters = [
     { id: 1, title: props.t('lakiPoster1'), img: `${baseUrl}static/img/d263efc0-0a5b-4029-aa7d-a12a399dfd5e.jpg` },
@@ -1255,11 +1243,11 @@ function ExpertPage(props) {
     { id: 6, title: props.t('expertStep6Title'), desc: props.t('expertStep6Desc') }
   ])
 
-  const experts = createMemo(() => [
-    { name: props.t('expertDocName'), role: props.t('expertDocRole'), img: `${baseUrl}static/img/0c672357-323e-4792-8605-0e4f67c43db9.jpg` },
-    { name: props.t('expertDocName'), role: props.t('expertDocRole'), img: `${baseUrl}static/img/45a473c7-debf-48cc-9a41-b9d61c38a0f1.jpg` },
-    { name: props.t('expertDocName'), role: props.t('expertDocRole'), img: `${baseUrl}static/img/ba862794-b872-49ac-be68-d173678fcbed.jpg` }
-  ])
+  const experts = createMemo(() => expertsData.experts.map(doc => ({
+    name: props.lang() === 'ar' ? doc.name_ar : doc.name_en,
+    role: props.lang() === 'ar' ? doc.role_ar : doc.role_en,
+    img: `${baseUrl}${doc.img}`
+  })))
 
   return (
     <div class="expert-page-content">
@@ -1558,6 +1546,7 @@ export default function App() {
   const [route, setRoute] = createSignal('home')
   const [prefilledMessage, setPrefilledMessage] = createSignal('')
   const [activeProduct, setActiveProduct] = createSignal(null)
+  const [isLoggedIn, setLoggedIn] = createSignal(false)
 
   const translations = translationsData
 
@@ -1575,6 +1564,7 @@ export default function App() {
     if (hash === '#contact-page') return 'contact'
     if (hash === '#education-page') return 'education'
     if (hash === '#about-page') return 'about'
+    if (hash === '#dashboard') return 'dashboard'
     return 'home'
   }
 
@@ -1599,10 +1589,15 @@ export default function App() {
   return (
     <div class="page">
       <NavBar t={t} lang={lang} setLang={setLang} />
-      {route() === 'products' ? <ProductsPage t={t} setRoute={setRoute} setPrefilledMessage={setPrefilledMessage} lang={lang} activeProduct={activeProduct} setActiveProduct={setActiveProduct} /> : null}
+      {route() === 'products' ? <ProductsPage t={t} setRoute={setRoute} setPrefilledMessage={setPrefilledMessage} lang={lang} activeProduct={activeProduct} setActiveProduct={setActiveProduct} products={productsData.products} /> : null}
       {route() === 'contact' ? <ContactPage t={t} prefilledMessage={prefilledMessage} setPrefilledMessage={setPrefilledMessage} /> : null}
       {route() === 'education' ? <EducationPage t={t} /> : null}
       {route() === 'about' ? <AboutPage t={t} /> : null}
+      {route() === 'dashboard' ? (
+        <Show when={isLoggedIn()} fallback={<LoginPage t={t} setLoggedIn={setLoggedIn} lang={lang} />}>
+          <Dashboard t={t} setRoute={setRoute} lang={lang} setLang={setLang} />
+        </Show>
+      ) : null}
       {route() === 'home' ? <HomePage t={t} lang={lang} setActiveProduct={setActiveProduct} /> : null}
     </div>
   )

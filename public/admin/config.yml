@@ -2,34 +2,78 @@ backend:
   name: github
   repo: Haitham8888/gcare
   branch: main
-  base_url: https://cms-oauth-gh.pockethost.io
+  base_url: https://gcare.sa
+  auth_endpoint: admin/auth.php # المسار الصحيح للوصول للملف
+
+local_backend: true
 
 media_folder: "public/static/img"
 public_folder: "/static/img"
 
 collections:
-  - name: "content"
-    label: "المحتوى"
+  - name: "site_data"
+    label: "إدارة بيانات الموقع"
     files:
       - name: "translations"
-        label: "الترجمات والنصوص"
+        label: "النصوص والترجمات"
         file: "src/data/translations.json"
         fields:
-          - { label: "النصوص العربية", name: "ar", widget: "object", fields: [
-              { label: "عنوان الهيرو", name: "heroTitle", widget: "string" },
-              { label: "وصف الهيرو", name: "heroSubtitle", widget: "string" },
-              { label: "نبذة عنا (فقرة 1)", name: "aboutP1", widget: "text" },
-              { label: "نبذة عنا (فقرة 2)", name: "aboutP2", widget: "text" },
-              { label: "هاتف التواصل", name: "contactPhoneValue", widget: "string" },
-              { label: "حقوق الفوتر", name: "footerRights", widget: "string" },
-              { label: "مكان البحث", name: "searchGlobalPlaceholder", widget: "string" }
-            ]}
-          - { label: "English Texts", name: "en", widget: "object", fields: [
+          - { label: "AR", name: "ar", widget: "object", fields: [
               { label: "Hero Title", name: "heroTitle", widget: "string" },
               { label: "Hero Subtitle", name: "heroSubtitle", widget: "string" },
-              { label: "About Us (P1)", name: "aboutP1", widget: "text" },
-              { label: "About Us (P2)", name: "aboutP2", widget: "text" },
-              { label: "Contact Phone", name: "contactPhoneValue", widget: "string" },
-              { label: "Footer Rights", name: "footerRights", widget: "string" },
-              { label: "Search Placeholder", name: "searchGlobalPlaceholder", widget: "string" }
+              { label: "About P1", name: "aboutP1", widget: "text" }
             ]}
+          - { label: "EN", name: "en", widget: "object", fields: [
+              { label: "Hero Title", name: "heroTitle", widget: "string" },
+              { label: "Hero Subtitle", name: "heroSubtitle", widget: "string" },
+              { label: "About P1", name: "aboutP1", widget: "text" }
+            ]}
+      
+      - name: "experts"
+        label: "الأطباء والخبراء"
+        file: "src/data/experts.json"
+        fields:
+          - name: "experts"
+            label: "قائمة الخبراء"
+            widget: "list"
+            fields:
+              - { label: "الاسم (عربي)", name: "name_ar", widget: "string" }
+              - { label: "Name (English)", name: "name_en", widget: "string" }
+              - { label: "التخصص (عربي)", name: "role_ar", widget: "string" }
+              - { label: "Role (English)", name: "role_en", widget: "string" }
+              - { label: "الصورة", name: "img", widget: "image" }
+
+      - name: "products"
+        label: "إدارة المنتجات"
+        file: "src/data/products.json"
+        fields:
+          - name: "products"
+            label: "قائمة المنتجات"
+            widget: "list"
+            fields:
+              - { label: "ID", name: "id", widget: "string" }
+              - { label: "الاسم (عربي)", name: "name_ar", widget: "string" }
+              - { label: "Name (English)", name: "name_en", widget: "string" }
+              - { label: "القسم", name: "category", widget: "select", options: ["IUD", "IUS", "WomanCare", "IVD"] }
+              - { label: "الصورة الرئيسية", name: "mainImage", widget: "image" }
+              - { label: "وصف المنتج (عربي)", name: "overview_ar", widget: "text" }
+              - { label: "English Overview", name: "overview_en", widget: "text" }
+
+      - name: "education"
+        label: "قسم التثقيف الصحي"
+        file: "src/data/education.json"
+        fields:
+          - name: "articles"
+            label: "المقالات"
+            widget: "list"
+            fields:
+              - { label: "الاسم (للتعريف)", name: "title_key", widget: "string" }
+              - { label: "القسم (للتعريف)", name: "category_key", widget: "string" }
+              - { label: "مقتطف (للتعريف)", name: "excerpt_key", widget: "string" }
+              - { label: "الصورة", name: "img", widget: "image" }
+          - name: "posters"
+            label: "البوسترات والمعروضات"
+            widget: "list"
+            fields:
+              - { label: "العنوان", name: "title_key", widget: "string" }
+              - { label: "الصورة", name: "img", widget: "image" }

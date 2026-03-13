@@ -216,7 +216,8 @@
         "lakiPoster2": "بوستر 2",
         "lakiPoster3": "بوستر 3",
         "lakiPoster4": "بوستر 4",
-        "lakiPoster5": "بوستر 5"
+        "lakiPoster5": "بوستر 5",
+        "navDashboard": "لوحة التحكم"
     },
     "en": {
         "brand": "G-Care",
@@ -435,6 +436,7 @@
         "lakiPoster2": "Poster 2",
         "lakiPoster3": "Poster 3",
         "lakiPoster4": "Poster 4",
-        "lakiPoster5": "Poster 5"
+        "lakiPoster5": "Poster 5",
+        "navDashboard": "Dashboard"
     }
 }

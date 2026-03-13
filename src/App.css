@@ -1553,6 +1553,19 @@ html[dir="ltr"] .footer-about-text {
   margin: 0 auto;
 }
 
+@media (max-width: 900px) {
+  .edu-booking-premium-row {
+    flex-direction: column;
+    gap: 2rem;
+    padding-inline: 1rem;
+  }
+
+  .booking-premium-card,
+  .edu-contacts-premium-card {
+    width: 100%;
+  }
+}
+
 .booking-premium-card {
   flex: 1;
   background: linear-gradient(135deg, #1B3A57 0%, #2a5a84 50%, #ffffff 150%);
@@ -2630,7 +2643,7 @@ html[dir="rtl"] .resource-search-bar {
 
 .resource-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 2.5rem;
   margin-top: 3rem;
 }
@@ -3277,8 +3290,20 @@ html[dir="ltr"] .coe-value-content {
 
 .resource-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
+}
+
+@media (max-width: 1024px) {
+  .resource-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .resource-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .resource-card {
@@ -3287,9 +3312,9 @@ html[dir="ltr"] .coe-value-content {
 }
 
 .resource-thumb {
-  aspect-ratio: 3/4;
+  aspect-ratio: 1 / 1.1;
   background: #f1f5f9;
-  border-radius: 18px;
+  border-radius: 20px;
   overflow: hidden;
   margin-bottom: 1rem;
   border: 1px solid #e2e8f0;
@@ -3576,7 +3601,7 @@ html[dir="ltr"] .coe-value-content {
 
 .article-ex {
   color: #64748b;
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   line-height: 1.7;
   font-weight: 500;
   display: -webkit-box;
@@ -3673,8 +3698,9 @@ html[dir="rtl"] .article-nav-arrow:hover {
 }
 
 .guides-portrait-grid {
-  display: flex;
-  gap: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
   flex: 1;
 }
 
@@ -3699,7 +3725,6 @@ html[dir="rtl"] .guide-nav-btn svg {
 
 .port-guide-card {
   flex: 1;
-  max-width: 200px;
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -3708,9 +3733,9 @@ html[dir="rtl"] .guide-nav-btn svg {
 
 .port-guide-visual {
   position: relative;
-  aspect-ratio: 1 / 1.4;
+  aspect-ratio: 1 / 1.1;
   background: #f8fafc;
-  border-radius: 12px;
+  border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
   transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
@@ -4954,5 +4979,29 @@ html[dir="rtl"] .expert-nav-btn svg {
 
   .expert-step-display {
     height: 300px;
+  }
+}
+
+/* Enhancing subtext font sizes for larger screens (Laptops/Desktops) */
+@media (min-width: 1024px) {
+
+  .hero-subtitle,
+  .hero-main-subtitle,
+  .laki-hero-subtitle,
+  .expert-hero-subtitle,
+  .laki-section-subtitle-v2,
+  .subpage-intro,
+  .about-content p,
+  .education-intro-block p {
+    font-size: 1.4rem !important;
+    line-height: 1.8 !important;
+  }
+
+  .laki-hero-subtitle {
+    font-size: 1.75rem !important;
+  }
+
+  .hero-main-subtitle {
+    font-size: 1.5rem !important;
   }
 }
