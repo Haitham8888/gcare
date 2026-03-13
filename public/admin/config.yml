@@ -1,7 +1,7 @@
 backend:
   name: github
   repo: Haitham8888/gcare
-  branch: main
+  branch: master # قمت بتغييره من main إلى master ليطابق المستودع الخاص بك
   base_url: https://gcare.sa/admin
   auth_endpoint: auth.php
 
@@ -63,7 +63,7 @@ collections:
       - name: "education"
         label: "قسم التثقيف الصحي"
         file: "src/data/education.json"
-        fields:
+        fields:٫
           - name: "articles"
             label: "المقالات"
             widget: "list"

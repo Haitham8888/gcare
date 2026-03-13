@@ -1,7 +1,7 @@
 backend:
   name: github
   repo: Haitham8888/gcare
-  branch: main
+  branch: master # قمت بتغييره من main إلى master ليطابق المستودع الخاص بك
   base_url: https://gcare.sa/admin
   auth_endpoint: auth.php
 
