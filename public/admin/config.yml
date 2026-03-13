@@ -63,7 +63,7 @@ collections:
       - name: "education"
         label: "قسم التثقيف الصحي"
         file: "src/data/education.json"
-        fields:٫
+        fields:
           - name: "articles"
             label: "المقالات"
             widget: "list"
