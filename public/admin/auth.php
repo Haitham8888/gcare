@@ -4,9 +4,14 @@
  * This file handles GitHub OAuth for Decap CMS directly on your server.
  */
 
-// GitHub App Credentials
-$client_id = 'Iv23liLrsifJ4qrkBMdT';
-$client_secret = 'YOUR_SECRET_HERE'; // سأترك هذا لك لتضعه بأمان أو سأضعه إذا زودتني به
+// Load Secrets safely
+$secrets = include('env.php');
+if (!$secrets) {
+    die("Security Error: env.php not found. Please upload it via FTP.");
+}
+
+$client_id = $secrets['GITHUB_CLIENT_ID'];
+$client_secret = $secrets['GITHUB_CLIENT_SECRET'];
 
 // Disable error reporting for cleaner output in production
 error_reporting(0);
