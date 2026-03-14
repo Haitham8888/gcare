@@ -4,6 +4,9 @@ import './Dashboard.css'
 
 export default function Dashboard(props) {
     const [activeTab, setActiveTab] = createSignal('overview')
+    const [sidebarOpen, setSidebarOpen] = createSignal(false)
+
+    const toggleSidebar = () => setSidebarOpen(!sidebarOpen())
 
     // Professional SVG Icons
     const Icon = (iconProps) => {
@@ -43,7 +46,12 @@ export default function Dashboard(props) {
 
     return (
         <div class="dashboard-wrapper" dir={props.lang() === 'ar' ? 'rtl' : 'ltr'}>
-            <aside class="dashboard-sidebar">
+            <div 
+                class={`sidebar-overlay ${sidebarOpen() ? 'active' : ''}`} 
+                onClick={() => setSidebarOpen(false)} 
+            />
+            
+            <aside class={`dashboard-sidebar ${sidebarOpen() ? 'open' : ''}`}>
                 <div class="sidebar-header">
                     <img src={`${import.meta.env.BASE_URL}static/img/G%20-%20Care-01.svg`} alt="Logo" class="sidebar-logo" />
                     <span class="sidebar-title">G-Care DEEP</span>
@@ -53,7 +61,10 @@ export default function Dashboard(props) {
                         {(tab) => (
                             <button
                                 class={activeTab() === tab.id ? 'active' : ''}
-                                onClick={() => setActiveTab(tab.id)}
+                                onClick={() => {
+                                    setActiveTab(tab.id);
+                                    setSidebarOpen(false);
+                                }}
                             >
                                 <span class="nav-icon"><Icon name={tab.icon} /></span> {tab.label}
                             </button>
@@ -69,8 +80,13 @@ export default function Dashboard(props) {
 
             <main class="dashboard-main">
                 <header class="dashboard-topbar">
-                    <div>
-                        <h2>{tabs.find(t => t.id === activeTab())?.label}</h2>
+                    <div class="topbar-left">
+                        <div style={{display: 'flex', 'align-items': 'center', gap: '12px'}}>
+                            <button class="mobile-menu-btn" onClick={toggleSidebar}>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                            </button>
+                            <h2>{tabs.find(t => t.id === activeTab())?.label}</h2>
+                        </div>
                         <p style={{color: 'var(--dash-text-muted)', "margin-top": '4px'}}>
                             {props.lang() === 'ar' ? 'أهلاً بك في لوحة التحكم العميقة' : 'Welcome to the deep control panel'}
                         </p>
