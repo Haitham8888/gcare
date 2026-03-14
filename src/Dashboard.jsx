@@ -54,7 +54,7 @@ export default function Dashboard(props) {
             <aside class={`dashboard-sidebar ${sidebarOpen() ? 'open' : ''}`}>
                 <div class="sidebar-header">
                     <img src={`${import.meta.env.BASE_URL}static/img/G%20-%20Care-01.svg`} alt="Logo" class="sidebar-logo" />
-                    <span class="sidebar-title">G-Care DEEP</span>
+                    <span class="sidebar-title">{props.lang() === 'ar' ? 'لوحة التحكم' : 'Dashboard'}</span>
                 </div>
                 <nav class="sidebar-nav">
                     <For each={tabs}>
