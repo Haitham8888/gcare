@@ -1563,6 +1563,11 @@ export default function App() {
     return data || [];
   });
 
+  const [profiles] = createResource(async () => {
+    const { data } = await supabase.from('profiles').select('*');
+    return data || [];
+  });
+
   const [education] = createResource(async () => {
     const { data: articles } = await supabase.from('articles').select('*');
     const { data: posters } = await supabase.from('posters').select('*');
@@ -1628,7 +1633,7 @@ export default function App() {
       {route() === 'about' ? <AboutPage t={t} /> : null}
       {route() === 'dashboard' ? (
         <Show when={isLoggedIn()} fallback={<LoginPage t={t} lang={lang} />}>
-          <Dashboard t={t} setRoute={setRoute} lang={lang} setLang={setLang} products={products()} experts={experts()} />
+          <Dashboard t={t} setRoute={setRoute} lang={lang} setLang={setLang} products={products()} experts={experts()} profiles={profiles()} />
         </Show>
       ) : null}
       {route() === 'home' ? <HomePage t={t} lang={lang} setActiveProduct={setActiveProduct} products={products()} education={education()} /> : null}
