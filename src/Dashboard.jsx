@@ -244,6 +244,14 @@ export default function Dashboard(props) {
                                     <label>{props.lang() === 'ar' ? 'رابط الصورة' : 'Image Path'}</label>
                                     <input name="mainImage" value={editingItem()?.mainImage || ''} placeholder="static/img/product.webp" required />
                                 </div>
+                                <div class="form-group" style={{"grid-column": "1 / -1"}}>
+                                    <label>{props.lang() === 'ar' ? 'الوصف (عربي)' : 'Description (AR)'}</label>
+                                    <textarea name="overview_ar" rows="3" value={editingItem()?.overview?.ar || ''}></textarea>
+                                </div>
+                                <div class="form-group" style={{"grid-column": "1 / -1"}}>
+                                    <label>{props.lang() === 'ar' ? 'الوصف (English)' : 'Description (EN)'}</label>
+                                    <textarea name="overview_en" rows="3" value={editingItem()?.overview?.en || ''}></textarea>
+                                </div>
                             </Show>
                             
                             <Show when={modalType() === 'doctor'}>
