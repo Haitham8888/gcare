@@ -242,26 +242,37 @@ export default function Dashboard(props) {
                                         <For each={listData()} fallback={
                                             <tr><td colspan="3" style={{"text-align":"center", padding: "40px"}}>{props.lang() === 'ar' ? 'لا يوجد بيانات حالياً' : 'No data found'}</td></tr>
                                         }>
-                                            {(item) => (
-                                                <tr>
-                                                    <td>
-                                                        <div style={{display: 'flex', 'align-items': 'center', gap: '12px'}}>
-                                                            {(item.main_image || item.img || item.mainImage || item.image) ? 
-                                                                <img src={(item.main_image || item.img || item.mainImage || item.image).startsWith('http') ? (item.main_image || item.img || item.mainImage || item.image) : `${import.meta.env.BASE_URL}${item.main_image || item.img || item.mainImage || item.image}`} class="table-img" /> : 
-                                                                <div class="table-img" style={{display:'flex','align-items':'center','justify-content':'center',background:'#f1f5f9'}}><Icon name="users" /></div>
-                                                            }
-                                                            <span style={{"font-weight": 700}}>
-                                                                {props.lang() === 'ar' ? (item.name_ar || item.full_name || item.name?.ar) : (item.name_en || item.full_name || item.name?.en)}
-                                                            </span>
-                                                        </div>
-                                                    </td>
-                                                    <td class="dash-text-muted">{item.category || (props.lang() === 'ar' ? (item.role_ar || item.role?.ar) : (item.role_en || item.role?.en)) || item.role || '---'}</td>
-                                                    <td>
-                                                        <button class="action-icon-btn edit" onClick={() => openModal(activeTab().slice(0, -1), item)}><Icon name="edit" /></button>
-                                                        <button class="action-icon-btn delete" onClick={() => handleDelete(activeTab() === 'products' ? 'products' : (activeTab() === 'experts' ? 'doctors' : 'profiles'), item.id)}><Icon name="trash" /></button>
-                                                    </td>
-                                                </tr>
-                                            )}
+                                            {(item) => {
+                                                const imageUrl = item.main_image || item.img || item.mainImage || item.image || '';
+                                                const displayName = props.lang() === 'ar' ? (item.name_ar || item.full_name || item.name?.ar) : (item.name_en || item.full_name || item.name?.en);
+                                                const details = item.category || (props.lang() === 'ar' ? (item.role_ar || item.role?.ar) : (item.role_en || item.role?.en)) || item.role || '---';
+
+                                                return (
+                                                    <tr>
+                                                        <td>
+                                                            <div style={{display: 'flex', 'align-items': 'center', gap: '12px'}}>
+                                                                <Show when={imageUrl} fallback={
+                                                                    <div class="table-img" style={{display:'flex','align-items':'center','justify-content':'center'}}><Icon name="package" /></div>
+                                                                }>
+                                                                    <img src={imageUrl.startsWith('http') ? imageUrl : `${import.meta.env.BASE_URL}${imageUrl}`} class="table-img" />
+                                                                </Show>
+                                                                <span style={{"font-weight": 700}}>{displayName}</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="dash-text-muted">{details}</td>
+                                                        <td>
+                                                            <div style={{display: 'flex', gap: '8px'}}>
+                                                                <button class="action-icon-btn edit" onClick={() => openModal(activeTab().slice(0, -1), item)}>
+                                                                    <Icon name="edit" />
+                                                                </button>
+                                                                <button class="action-icon-btn delete" onClick={() => handleDelete(activeTab() === 'products' ? 'products' : (activeTab() === 'experts' ? 'doctors' : 'profiles'), item.id)}>
+                                                                    <Icon name="trash" />
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                )
+                                            }}
                                         </For>
                                     </tbody>
                                 </table>
