@@ -73,7 +73,7 @@ export default function Dashboard(props) {
     const openModal = (type, item = null) => {
         setModalType(type)
         setEditingItem(item)
-        setUploadURL(item?.main_image || item?.img || item?.image || '')
+        setUploadURL(item?.main_image || item?.img || item?.mainImage || item?.image || '')
         setIsModalOpen(true)
     }
 
@@ -168,6 +168,13 @@ export default function Dashboard(props) {
         </div>
     )
 
+    const listData = createMemo(() => {
+        if (activeTab() === 'products') return props.products
+        if (activeTab() === 'experts') return props.experts
+        if (activeTab() === 'users') return props.profiles
+        return []
+    })
+
     return (
         <div class="dashboard-wrapper" dir={props.lang() === 'ar' ? 'rtl' : 'ltr'}>
             <div class={`sidebar-overlay ${sidebarOpen() ? 'active' : ''}`} onClick={() => setSidebarOpen(false)} />
@@ -228,7 +235,7 @@ export default function Dashboard(props) {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <Show when={activeTab() === 'products' ? props.products : (activeTab() === 'experts' ? props.experts : props.profiles)} fallback={
+                                        <Show when={listData()} fallback={
                                             <tr><td colspan="3" style={{"text-align":"center", padding: "40px"}}>{props.lang() === 'ar' ? 'جاري التحميل...' : 'Loading...'}</td></tr>
                                         }>
                                             {(list) => (
@@ -240,16 +247,16 @@ export default function Dashboard(props) {
                                                             <tr>
                                                                 <td>
                                                                     <div style={{display: 'flex', 'align-items': 'center', gap: '12px'}}>
-                                                                        {(item.main_image || item.img || item.image) ? 
-                                                                            <img src={(item.main_image || item.img || item.image).startsWith('http') ? (item.main_image || item.img || item.image) : `${import.meta.env.BASE_URL}${item.main_image || item.img || item.image}`} class="table-img" /> : 
+                                                                        {(item.main_image || item.img || item.mainImage || item.image) ? 
+                                                                            <img src={(item.main_image || item.img || item.mainImage || item.image).startsWith('http') ? (item.main_image || item.img || item.mainImage || item.image) : `${import.meta.env.BASE_URL}${item.main_image || item.img || item.mainImage || item.image}`} class="table-img" /> : 
                                                                             <div class="table-img" style={{display:'flex','align-items':'center','justify-content':'center',background:'#f1f5f9'}}><Icon name="users" /></div>
                                                                         }
                                                                         <span style={{"font-weight": 700}}>
-                                                                            {props.lang() === 'ar' ? (item.name_ar || item.full_name) : (item.name_en || item.full_name)}
+                                                                            {props.lang() === 'ar' ? (item.name_ar || item.full_name || item.name?.ar) : (item.name_en || item.full_name || item.name?.en)}
                                                                         </span>
                                                                     </div>
                                                                 </td>
-                                                                <td class="dash-text-muted">{item.category || (props.lang() === 'ar' ? item.role_ar : item.role_en) || item.role || '---'}</td>
+                                                                <td class="dash-text-muted">{item.category || (props.lang() === 'ar' ? (item.role_ar || item.role?.ar) : (item.role_en || item.role?.en)) || item.role || '---'}</td>
                                                                 <td>
                                                                     <button class="action-icon-btn edit" onClick={() => openModal(activeTab().slice(0, -1), item)}><Icon name="edit" /></button>
                                                                     <button class="action-icon-btn delete" onClick={() => handleDelete(activeTab() === 'products' ? 'products' : (activeTab() === 'experts' ? 'doctors' : 'profiles'), item.id)}><Icon name="trash" /></button>
@@ -317,6 +324,10 @@ export default function Dashboard(props) {
                                     <input name="category" value={editingItem()?.category || ''} placeholder="e.g. skin, hair" required />
                                 </div>
                                 <div class="form-group">
+                                    <label>{props.lang() === 'ar' ? 'رابط خارجي للصورة (اختياري)' : 'External Image URL (Optional)'}</label>
+                                    <input value={uploadURL()} onInput={(e) => setUploadURL(e.target.value)} placeholder="https://..." />
+                                </div>
+                                <div class="form-group" style={{"grid-column": "1 / -1"}}>
                                     <label>{props.lang() === 'ar' ? 'الوصف (عربي)' : 'Description (AR)'}</label>
                                     <textarea name="overview_ar" rows="3" value={editingItem()?.overview_ar || editingItem()?.overview?.ar || ''}></textarea>
                                 </div>
