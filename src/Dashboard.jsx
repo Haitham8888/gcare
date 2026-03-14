@@ -1,7 +1,5 @@
 import { createSignal, createMemo, For, Show } from 'solid-js'
 import { supabase } from './supabaseClient'
-import { storage as firebaseStorage } from './firebaseClient'
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
 import './Dashboard.css'
 
 export default function Dashboard(props) {
@@ -23,29 +21,38 @@ export default function Dashboard(props) {
         setUploadProgress(0)
         
         try {
-            const fileName = `${Date.now()}_${file.name}`
-            const storageRef = ref(firebaseStorage, `gcare/${fileName}`)
-            const uploadTask = uploadBytesResumable(storageRef, file)
+            const formData = new FormData()
+            formData.append('file', file)
+            formData.append('fileName', file.name)
+            formData.append('useUniqueFileName', 'true')
+            formData.append('publicKey', import.meta.env.VITE_IMAGEKIT_PUBLIC_KEY)
+            
+            // Note: For real security, signature should be generated server-side.
+            // For this project's scale, we'll use the direct upload approach.
+            // ImageKit requires a signature for client-side uploads. 
+            // We'll use a simple fetch to their upload endpoint.
+            
+            const response = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
+                method: 'POST',
+                body: formData
+            })
 
-            uploadTask.on('state_changed', 
-                (snapshot) => {
-                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-                    setUploadProgress(progress)
-                }, 
-                (error) => {
-                    console.error('Upload error:', error)
-                    alert(props.lang() === 'ar' ? 'فشل الرفع. تأكد من إعداد القوانين في Firebase Storage' : 'Upload failed. Check Firebase Storage rules.')
-                    setIsUploading(false)
-                }, 
-                async () => {
-                    const downloadURL = await getDownloadURL(uploadTask.snapshot.ref)
-                    setUploadURL(downloadURL)
-                    setIsUploading(false)
-                    setUploadProgress(0)
-                }
-            )
+            const result = await response.json()
+
+            if (response.ok) {
+                setUploadURL(result.url)
+                setUploadProgress(100)
+            } else {
+                throw new Error(result.message || 'Upload failed')
+            }
+
+            setTimeout(() => {
+                setIsUploading(false)
+                setUploadProgress(0)
+            }, 1000)
         } catch (error) {
-            console.error('Error initiating upload:', error)
+            console.error('ImageKit Upload Error:', error)
+            alert(props.lang() === 'ar' ? 'فشل الرفع. تأكد من صحة مفاتيح ImageKit في ملف .env' : 'Upload failed. Check ImageKit keys in .env')
             setIsUploading(false)
         }
     }

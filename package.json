@@ -15,7 +15,8 @@
     "@fontsource/noto-sans-arabic": "^5.2.10",
     "@supabase/supabase-js": "^2.99.1",
     "dotenv": "^17.3.1",
-    "firebase": "^12.10.0",
+    "imagekit": "^6.0.0",
+    "imagekit-javascript": "^4.0.1",
     "node-fetch": "^3.3.2",
     "simple-icons": "^16.4.0",
     "solid-js": "^1.9.10"
