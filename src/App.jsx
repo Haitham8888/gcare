@@ -1562,6 +1562,10 @@ export default function App() {
         overview: { ar: p.overview_ar, en: p.overview_en }
       })) || [];
       console.log('Fetched products:', mapped.length);
+      if (mapped.length === 0) {
+          // Diagnostic alert for the user to help me debug
+          // window.alert('Products fetched: 0. Check console for fetch logs.');
+      }
       return mapped;
     } catch (e) {
       console.error('Fetch exception:', e);
