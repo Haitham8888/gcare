@@ -13,7 +13,11 @@
     justify-content: center;
     background: var(--bg);
     padding: 2rem;
-    font-family: 'Inter', 'Outfit', sans-serif;
+    font-family: 'Inter', 'Noto Sans Arabic', sans-serif;
+}
+
+.login-page-wrapper[dir="rtl"] {
+    font-family: 'Noto Sans Arabic', sans-serif;
 }
 
 .login-card {

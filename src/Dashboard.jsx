@@ -118,7 +118,7 @@ export default function Dashboard(props) {
                             <button class="mobile-menu-btn" onClick={toggleSidebar}><Icon name="layout" /></button>
                             <h2>{tabs.find(t => t.id === activeTab())?.label}</h2>
                         </div>
-                        <p>{props.lang() === 'ar' ? 'أهلاً بك في الجيل الجديد لإدارة المحتوى' : 'Welcome to the new generation of CMS'}</p>
+                        <p>{props.lang() === 'ar' ? 'أهلاً بك في لوحة التحكم' : 'Welcome to the Control Panel'}</p>
                     </div>
                     <div class="user-profile">
                         <button class="lang-toggle-dash" onClick={() => props.setLang(l => l === 'ar' ? 'en' : 'ar')}>{props.lang() === 'ar' ? 'English' : 'العربية'}</button>

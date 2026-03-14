@@ -15,8 +15,12 @@
   min-height: 100vh;
   background-color: var(--dash-bg);
   color: var(--dash-ink);
-  font-family: 'Inter', 'Outfit', system-ui, sans-serif;
+  font-family: 'Inter', 'Noto Sans Arabic', sans-serif;
   overflow: hidden;
+}
+
+[dir="rtl"] .dashboard-wrapper {
+  font-family: 'Noto Sans Arabic', sans-serif;
 }
 
 /* Sidebar Styling - White Glassmorphism */
