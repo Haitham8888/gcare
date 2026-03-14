@@ -1,5 +1,5 @@
 import { createSignal, createMemo, For, Show } from 'solid-js'
-import { supabase } from './supabaseClient'
+import { supabase, getAssetUrl } from './supabaseClient'
 import './Dashboard.css'
 
 export default function Dashboard(props) {
@@ -185,7 +185,7 @@ export default function Dashboard(props) {
             
             <aside class={`dashboard-sidebar ${sidebarOpen() ? 'open' : ''}`}>
                 <div class="sidebar-header">
-                    <img src={`${import.meta.env.BASE_URL}static/img/G%20-%20Care-01.svg`} alt="Logo" class="sidebar-logo" />
+                    <img src={getAssetUrl('static/img/G - Care-01.svg')} alt="Logo" class="sidebar-logo" />
                     <span class="sidebar-title">{props.lang() === 'ar' ? 'لوحة التحكم' : 'Dashboard'}</span>
                 </div>
                 <nav class="sidebar-nav">

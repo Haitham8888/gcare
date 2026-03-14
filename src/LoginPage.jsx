@@ -1,5 +1,5 @@
 import { createSignal } from 'solid-js'
-import { supabase } from './supabaseClient'
+import { supabase, getAssetUrl } from './supabaseClient'
 import './LoginPage.css'
 
 export default function LoginPage(props) {
@@ -40,7 +40,7 @@ export default function LoginPage(props) {
         <div class="login-page-wrapper" dir={props.lang() === 'ar' ? 'rtl' : 'ltr'}>
             <div class="login-card">
                 <div class="login-header">
-                    <img src={`${import.meta.env.BASE_URL}static/img/G%20-%20Care-01.svg`} alt="Logo" class="login-logo" />
+                    <img src={getAssetUrl('static/img/G - Care-01.svg')} alt="Logo" class="login-logo" />
                     <h1>{props.lang() === 'ar' ? 'تسجيل الدخول' : 'Login'}</h1>
                     <p>{props.lang() === 'ar' ? 'يرجى تسجيل الدخول للمتابعة' : 'Please login to continue'}</p>
                 </div>

@@ -1,20 +1,19 @@
 import { createEffect, createSignal, onCleanup, For, Show, createMemo, createResource } from 'solid-js'
 import './App.css'
-import { supabase } from './supabaseClient'
+import { supabase, getAssetUrl } from './supabaseClient'
 import Dashboard from './Dashboard'
 import LoginPage from './LoginPage'
 
 // Shared social media helpers
 const getSocialIcon = (key) => {
-  const baseUrl = import.meta.env.BASE_URL
   const icons = {
-    linkedin: 'in.svg',
-    x: 'x.svg',
-    whatsapp: 'whatsapp.svg',
-    tiktok: 'tiktok.svg',
-    instagram: 'insta.svg'
+    linkedin: 'static/img/in.svg',
+    x: 'static/img/x.svg',
+    whatsapp: 'static/img/whatsapp.svg',
+    tiktok: 'static/img/tiktok.svg',
+    instagram: 'static/img/insta.svg'
   }
-  return icons[key] ? `${baseUrl}static/img/${icons[key]}` : null
+  return icons[key] ? getAssetUrl(icons[key]) : null
 }
 
 const socialLinks = [
@@ -31,7 +30,7 @@ function NavBar(props) {
     <header class="navbar">
       <div class="container nav-inner">
         <a href={baseUrl} class="brand" aria-label={props.t('brand')}>
-          <img class="brand-logo" src={`${baseUrl}static/img/G%20-%20Care-01.svg`} alt="" aria-hidden="true" />
+          <img class="brand-logo" src={getAssetUrl('static/img/G - Care-01.svg')} alt="" aria-hidden="true" />
         </a>
 
         <div class="nav-actions">
@@ -777,7 +776,7 @@ function HomeAbout(props) {
             </div>
           </div>
           <div class="about-logo-v2">
-            <img class="about-event-img" src={`${baseUrl}static/img/G%20-%20Care-01.svg`} alt="G-Care Logo" style={{ maxWidth: '280px', borderRadius: '0', boxShadow: 'none' }} />
+            <img class="about-event-img" src={getAssetUrl('static/img/G - Care-01.svg')} alt="G-Care Logo" style={{ maxWidth: '280px', borderRadius: '0', boxShadow: 'none' }} />
           </div>
         </div>
       </div>
@@ -821,7 +820,7 @@ function About(props) {
           <div class="about-logo-v2">
             <img
               class="about-event-img rounded-card"
-              src={`${baseUrl}static/img/${images[current()]}`}
+              src={getAssetUrl(`static/img/${images[current()]}`)}
               alt="G-Care Event"
               style={{ transition: 'opacity 0.5s ease-in-out' }}
             />
@@ -835,15 +834,15 @@ function About(props) {
 function ClientsSlider(props) {
   const baseUrl = import.meta.env.BASE_URL
   const clients = [
-    `${baseUrl}static/img/partners/dallahrevampedLogo.svg`,
-    `${baseUrl}static/img/partners/dkt.png`,
-    `${baseUrl}static/img/partners/euro.png`,
-    `${baseUrl}static/img/partners/Fakkeh.webp`,
-    `${baseUrl}static/img/partners/logo_valmed_alt.svg`,
-    `${baseUrl}static/img/partners/PCD.png`,
-    `${baseUrl}static/img/partners/pregnalogo.png`,
-    `${baseUrl}static/img/partners/saudi_german.svg`,
-    `${baseUrl}static/img/partners/sulaiman.svg`
+    getAssetUrl('static/img/partners/dallahrevampedLogo.svg'),
+    getAssetUrl('static/img/partners/dkt.png'),
+    getAssetUrl('static/img/partners/euro.png'),
+    getAssetUrl('static/img/partners/Fakkeh.webp'),
+    getAssetUrl('static/img/partners/logo_valmed_alt.svg'),
+    getAssetUrl('static/img/partners/PCD.png'),
+    getAssetUrl('static/img/partners/pregnalogo.png'),
+    getAssetUrl('static/img/partners/saudi_german.svg'),
+    getAssetUrl('static/img/partners/sulaiman.svg')
   ]
 
   return (
@@ -938,12 +937,12 @@ function Visitors(props) {
 function Education(props) {
   const baseUrl = import.meta.env.BASE_URL
   const galleryImages = [
-    { src: `${baseUrl}static/img/d263efc0-0a5b-4029-aa7d-a12a399dfd5e.jpg`, title: props.t('galleryItem1Title'), alt: 'MedGo Conference' },
-    { src: `${baseUrl}static/img/45a473c7-debf-48cc-9a41-b9d61c38a0f1.jpg`, title: props.t('galleryItem2Title'), alt: 'Medical Tech Workshop' },
-    { src: `${baseUrl}static/img/9c4be885-1bf0-4a93-ba83-9cafe6e79c91-591x456.jpg`, title: props.t('galleryItem3Title'), alt: 'Medical Delegation Visit' },
-    { src: `${baseUrl}static/img/0c672357-323e-4792-8605-0e4f67c43db9.jpg`, title: props.t('galleryItem4Title'), alt: 'Global Health Exhibition' },
-    { src: `${baseUrl}static/img/ba862794-b872-49ac-be68-d173678fcbed.jpg`, title: props.t('galleryItem5Title'), alt: 'Strategic Partnership' },
-    { src: `${baseUrl}static/img/b67d7fb0-5715-490d-8482-2d8252ea7ad3.jpg`, title: props.t('galleryItem6Title'), alt: 'Medical Training Session' }
+    { src: getAssetUrl('static/img/d263efc0-0a5b-4029-aa7d-a12a399dfd5e.jpg'), title: props.t('galleryItem1Title'), alt: 'MedGo Conference' },
+    { src: getAssetUrl('static/img/45a473c7-debf-48cc-9a41-b9d61c38a0f1.jpg'), title: props.t('galleryItem2Title'), alt: 'Medical Tech Workshop' },
+    { src: getAssetUrl('static/img/9c4be885-1bf0-4a93-ba83-9cafe6e79c91-591x456.jpg'), title: props.t('galleryItem3Title'), alt: 'Medical Delegation Visit' },
+    { src: getAssetUrl('static/img/0c672357-323e-4792-8605-0e4f67c43db9.jpg'), title: props.t('galleryItem4Title'), alt: 'Global Health Exhibition' },
+    { src: getAssetUrl('static/img/ba862794-b872-49ac-be68-d173678fcbed.jpg'), title: props.t('galleryItem5Title'), alt: 'Strategic Partnership' },
+    { src: getAssetUrl('static/img/b67d7fb0-5715-490d-8482-2d8252ea7ad3.jpg'), title: props.t('galleryItem6Title'), alt: 'Medical Training Session' }
   ]
 
   const [currentIndex, setCurrentIndex] = createSignal(0)
@@ -1042,13 +1041,13 @@ function LakiPage(props) {
   const latestAdditions = createMemo(() => (props.education?.posters || []).map(item => ({
     ...item,
     title: props.t(item.title_key),
-    img: `${baseUrl}${item.img}`
+    img: getAssetUrl(item.img)
   })))
 
   const posters = [
-    { id: 1, title: props.t('lakiPoster1'), img: `${baseUrl}static/img/d263efc0-0a5b-4029-aa7d-a12a399dfd5e.jpg` },
-    { id: 2, title: props.t('lakiPoster2'), img: `${baseUrl}static/img/b67d7fb0-5715-490d-8482-2d8252ea7ad3.jpg` },
-    { id: 3, title: props.t('lakiPoster3'), img: `${baseUrl}static/img/9c4be885-1bf0-4a93-ba83-9cafe6e79c91-591x456.jpg` }
+    { id: 1, title: props.t('lakiPoster1'), img: getAssetUrl('static/img/d263efc0-0a5b-4029-aa7d-a12a399dfd5e.jpg') },
+    { id: 2, title: props.t('lakiPoster2'), img: getAssetUrl('static/img/b67d7fb0-5715-490d-8482-2d8252ea7ad3.jpg') },
+    { id: 3, title: props.t('lakiPoster3'), img: getAssetUrl('static/img/9c4be885-1bf0-4a93-ba83-9cafe6e79c91-591x456.jpg') }
   ]
 
   return (
@@ -1069,7 +1068,7 @@ function LakiPage(props) {
             </button>
           </div>
           <div class="laki-hero-image">
-            <img src={`${baseUrl}static/img/ HealthEducation/health_edu_1.png`} alt="Women Health" />
+            <img src={getAssetUrl('static/img/ HealthEducation/health_edu_1.png')} alt="Women Health" />
           </div>
         </div>
       </section>
@@ -1263,7 +1262,7 @@ function ExpertPage(props) {
             <a href="https://wa.me/966552527862" class="btn btn-primary expert-cta-btn">{props.t('expertJoinAction')}</a>
           </div>
           <div class="expert-hero-image">
-            <img src={`${baseUrl}static/img/ HealthEducation/health_edu_2.png`} alt="Medical Expert" />
+            <img src={getAssetUrl('static/img/ HealthEducation/health_edu_2.png')} alt="Medical Expert" />
           </div>
         </div>
       </section>
@@ -1371,7 +1370,7 @@ function EducationPage(props) {
           <section class="section education-page" id="education-page">
             <div class="container">
               <div class="section-head edu-header-inline">
-                <img src={`${baseUrl}static/img/ HealthEducation/health_edu_5.png`} alt="Laki Wa Biwai Logo" class="edu-logo-inline" />
+                <img src={getAssetUrl('static/img/ HealthEducation/health_edu_5.png')} alt="Laki Wa Biwai Logo" class="edu-logo-inline" />
                 <h2 class="edu-tagline-text">{props.t('educationSubtitle')}</h2>
               </div>
 
@@ -1421,7 +1420,7 @@ function EducationPage(props) {
                       <h4 class="edu-contact-card-title">{props.t('eduContactTitle')}</h4>
                       <div class="edu-contact-methods-v2">
                         <a href="https://wa.me/966555849237" target="_blank" rel="noopener noreferrer" class="wa-premium-action">
-                          <img src={`${baseUrl}static/img/whatsapp.svg`} alt="" class="wa-mid-icon" />
+                          <img src={getAssetUrl('static/img/whatsapp.svg')} alt="" class="wa-mid-icon" />
                           <span class="wa-number-mid" dir="ltr">0555849237</span>
                         </a>
                         <div class="edu-email-box">
@@ -1451,14 +1450,14 @@ function Contact(props) {
       <div class="footer-top-divider"></div>
 
       <div class="footer-watermark">
-        <img src={`${baseUrl}static/img/G%20-%20Care-50.svg`} alt="" aria-hidden="true" />
+        <img src={getAssetUrl('static/img/G - Care-50.svg')} alt="" aria-hidden="true" />
       </div>
 
       <div class="container foot-main">
         {/* Right Col: About & Brand */}
         <div class="foot-col foot-brand-col">
           <div class="footer-brand-logo">
-            <img src={`${baseUrl}static/img/whitelogo.svg`} alt="G-Care Logo" aria-hidden="true" />
+            <img src={getAssetUrl('static/img/whitelogo.svg')} alt="G-Care Logo" aria-hidden="true" />
           </div>
           <p class="footer-about-text">
             {props.t('footerAbout')}
