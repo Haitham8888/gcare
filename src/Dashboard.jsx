@@ -27,11 +27,6 @@ export default function Dashboard(props) {
             formData.append('useUniqueFileName', 'true')
             formData.append('publicKey', import.meta.env.VITE_IMAGEKIT_PUBLIC_KEY)
             
-            // Note: For real security, signature should be generated server-side.
-            // For this project's scale, we'll use the direct upload approach.
-            // ImageKit requires a signature for client-side uploads. 
-            // We'll use a simple fetch to their upload endpoint.
-            
             const response = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
                 method: 'POST',
                 body: formData
@@ -79,7 +74,7 @@ export default function Dashboard(props) {
     const openModal = (type, item = null) => {
         setModalType(type)
         setEditingItem(item)
-        setUploadURL(item?.mainImage || item?.image || item?.img || '')
+        setUploadURL(item?.main_image || item?.img || item?.image || '')
         setIsModalOpen(true)
     }
 
@@ -101,11 +96,11 @@ export default function Dashboard(props) {
         
         if (modalType() === 'product') {
             finalData = {
-                id: editingItem()?.id || data.name_en.toLowerCase().replace(/\s+/g, '-'), // Basic slug logic for new items
+                id: editingItem()?.id || data.name_en.toLowerCase().replace(/\s+/g, '-'),
                 name_ar: data.name_ar,
                 name_en: data.name_en,
                 category: data.category,
-                main_image: data.mainImage,
+                main_image: data.mainImage || uploadURL(),
                 overview_ar: data.overview_ar || '',
                 overview_en: data.overview_en || ''
             }
@@ -113,9 +108,9 @@ export default function Dashboard(props) {
             finalData = {
                 name_ar: data.name_ar,
                 name_en: data.name_en,
-                role_ar: data.role_ar, // match col name
+                role_ar: data.role_ar, 
                 role_en: data.role_en,
-                img: data.img
+                img: data.img || uploadURL()
             }
         }
 
@@ -216,7 +211,6 @@ export default function Dashboard(props) {
                 </header>
 
                 <div class="dashboard-content">
-                    {/* TABLE VIEW FOR PRODUCTS / EXPERTS / USERS */}
                     {(activeTab() === 'products' || activeTab() === 'experts' || activeTab() === 'users') && (
                         <div class="fade-in">
                             <div class="table-actions-header">
@@ -248,13 +242,16 @@ export default function Dashboard(props) {
                                                             <tr>
                                                                 <td>
                                                                     <div style={{display: 'flex', 'align-items': 'center', gap: '12px'}}>
-                                                                        {(item.mainImage || item.image) ? <img src={`${import.meta.env.BASE_URL}${item.mainImage || item.image}`} class="table-img" /> : <div class="table-img" style={{display:'flex','align-items':'center','justify-content':'center',background:'#f1f5f9'}}><Icon name="users" /></div>}
+                                                                        {(item.main_image || item.img || item.image) ? 
+                                                                            <img src={(item.main_image || item.img || item.image).startsWith('http') ? (item.main_image || item.img || item.image) : `${import.meta.env.BASE_URL}${item.main_image || item.img || item.image}`} class="table-img" /> : 
+                                                                            <div class="table-img" style={{display:'flex','align-items':'center','justify-content':'center',background:'#f1f5f9'}}><Icon name="users" /></div>
+                                                                        }
                                                                         <span style={{"font-weight": 700}}>
-                                                                            {item.name ? (props.lang() === 'ar' ? item.name.ar : item.name.en) : (item.full_name || 'No Name')}
+                                                                            {props.lang() === 'ar' ? (item.name_ar || item.full_name) : (item.name_en || item.full_name)}
                                                                         </span>
                                                                     </div>
                                                                 </td>
-                                                                <td class="dash-text-muted">{item.category || (item.role && (typeof item.role === 'object' ? (props.lang() === 'ar' ? item.role.ar : item.role.en) : item.role)) || '---'}</td>
+                                                                <td class="dash-text-muted">{item.category || (props.lang() === 'ar' ? item.role_ar : item.role_en) || item.role || '---'}</td>
                                                                 <td>
                                                                     <button class="action-icon-btn edit" onClick={() => openModal(activeTab().slice(0, -1), item)}><Icon name="edit" /></button>
                                                                     <button class="action-icon-btn delete" onClick={() => handleDelete(activeTab() === 'products' ? 'products' : (activeTab() === 'experts' ? 'doctors' : 'profiles'), item.id)}><Icon name="trash" /></button>
@@ -271,7 +268,6 @@ export default function Dashboard(props) {
                         </div>
                     )}
 
-                    {/* OVERVIEW (Dashboard Stats) */}
                     {activeTab() === 'overview' && (
                         <div class="dash-stats-grid fade-in">
                             <div class="dash-stat-dash-card">
@@ -293,7 +289,6 @@ export default function Dashboard(props) {
                 </div>
             </main>
 
-            {/* MODAL SYSTEM */}
             <Show when={isModalOpen()}>
                 <div class="modal-overlay">
                     <div class="modal-content fade-in">
@@ -305,11 +300,11 @@ export default function Dashboard(props) {
                             <Show when={modalType() === 'product' || modalType() === 'doctor'}>
                                 <div class="form-group">
                                     <label>{props.lang() === 'ar' ? 'الاسم (عربي)' : 'Name (AR)'}</label>
-                                    <input name="name_ar" value={editingItem()?.name?.ar || ''} required />
+                                    <input name="name_ar" value={editingItem()?.name_ar || editingItem()?.name?.ar || ''} required />
                                 </div>
                                 <div class="form-group">
                                     <label>{props.lang() === 'ar' ? 'الاسم (English)' : 'Name (EN)'}</label>
-                                    <input name="name_en" value={editingItem()?.name?.en || ''} required />
+                                    <input name="name_en" value={editingItem()?.name_en || editingItem()?.name?.en || ''} required />
                                 </div>
                             </Show>
                             
@@ -329,11 +324,11 @@ export default function Dashboard(props) {
                                 </div>
                                 <div class="form-group" style={{"grid-column": "1 / -1"}}>
                                     <label>{props.lang() === 'ar' ? 'الوصف (عربي)' : 'Description (AR)'}</label>
-                                    <textarea name="overview_ar" rows="3" value={editingItem()?.overview?.ar || editingItem()?.overview_ar || ''}></textarea>
+                                    <textarea name="overview_ar" rows="3" value={editingItem()?.overview_ar || editingItem()?.overview?.ar || ''}></textarea>
                                 </div>
                                 <div class="form-group" style={{"grid-column": "1 / -1"}}>
                                     <label>{props.lang() === 'ar' ? 'الوصف (English)' : 'Description (EN)'}</label>
-                                    <textarea name="overview_en" rows="3" value={editingItem()?.overview?.en || editingItem()?.overview_en || ''}></textarea>
+                                    <textarea name="overview_en" rows="3" value={editingItem()?.overview_en || editingItem()?.overview?.en || ''}></textarea>
                                 </div>
                             </Show>
                             
@@ -345,11 +340,11 @@ export default function Dashboard(props) {
                                 </div>
                                 <div class="form-group">
                                     <label>{props.lang() === 'ar' ? 'الرتبة (عربي)' : 'Role (AR)'}</label>
-                                    <input name="role_ar" value={(typeof editingItem()?.role === 'object' ? editingItem()?.role?.ar : editingItem()?.role) || ''} required />
+                                    <input name="role_ar" value={editingItem()?.role_ar || (typeof editingItem()?.role === 'object' ? editingItem()?.role?.ar : editingItem()?.role) || ''} required />
                                 </div>
                                 <div class="form-group">
                                     <label>{props.lang() === 'ar' ? 'الرتبة (English)' : 'Role (EN)'}</label>
-                                    <input name="role_en" value={(typeof editingItem()?.role === 'object' ? editingItem()?.role?.en : editingItem()?.role) || ''} required />
+                                    <input name="role_en" value={editingItem()?.role_en || (typeof editingItem()?.role === 'object' ? editingItem()?.role?.en : editingItem()?.role) || ''} required />
                                 </div>
                             </Show>
 
