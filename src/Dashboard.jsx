@@ -1,5 +1,7 @@
 import { createSignal, createMemo, For, Show } from 'solid-js'
 import { supabase } from './supabaseClient'
+import { storage as firebaseStorage } from './firebaseClient'
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
 import './Dashboard.css'
 
 export default function Dashboard(props) {
@@ -18,34 +20,32 @@ export default function Dashboard(props) {
     const handleFileUpload = async (file) => {
         if (!file) return
         setIsUploading(true)
-        setUploadProgress(10)
+        setUploadProgress(0)
         
         try {
-            const fileExt = file.name.split('.').pop()
-            const fileName = `${Math.random()}.${fileExt}`
-            const filePath = `uploads/${fileName}`
+            const fileName = `${Date.now()}_${file.name}`
+            const storageRef = ref(firebaseStorage, `gcare/${fileName}`)
+            const uploadTask = uploadBytesResumable(storageRef, file)
 
-            setUploadProgress(30)
-            const { data, error: uploadError } = await supabase.storage
-                .from('gcare')
-                .upload(filePath, file)
-
-            if (uploadError) throw uploadError
-
-            setUploadProgress(70)
-            const { data: { publicUrl } } = supabase.storage
-                .from('gcare')
-                .getPublicUrl(filePath)
-
-            setUploadURL(publicUrl)
-            setUploadProgress(100)
-            setTimeout(() => {
-                setIsUploading(false)
-                setUploadProgress(0)
-            }, 1000)
+            uploadTask.on('state_changed', 
+                (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                    setUploadProgress(progress)
+                }, 
+                (error) => {
+                    console.error('Upload error:', error)
+                    alert(props.lang() === 'ar' ? 'فشل الرفع. تأكد من إعداد القوانين في Firebase Storage' : 'Upload failed. Check Firebase Storage rules.')
+                    setIsUploading(false)
+                }, 
+                async () => {
+                    const downloadURL = await getDownloadURL(uploadTask.snapshot.ref)
+                    setUploadURL(downloadURL)
+                    setIsUploading(false)
+                    setUploadProgress(0)
+                }
+            )
         } catch (error) {
-            alert(props.lang() === 'ar' ? 'فشل الرفع. تأكد من إعداد Storage في Supabase' : 'Upload failed. Ensure Storage is set up in Supabase')
-            console.error('Error uploading image:', error)
+            console.error('Error initiating upload:', error)
             setIsUploading(false)
         }
     }
