@@ -62,7 +62,7 @@ export default function Dashboard(props) {
                     </For>
                 </nav>
                 <div class="sidebar-footer">
-                    <a href="https://github.com/Haitham8888/gcare" target="_blank" class="github-btn">
+                    <a href="https://github.com/Haitham8888/gcare" target="_blank" class="github-dash-btn">
                         <Icon name="github" /> GitHub
                     </a>
                 </div>
@@ -75,8 +75,8 @@ export default function Dashboard(props) {
                         <button class="lang-toggle-dash" onClick={() => props.setLang(l => l === 'ar' ? 'en' : 'ar')}>
                             {props.lang() === 'ar' ? 'EN' : 'AR'}
                         </button>
-                        <span class="admin-badge">{props.lang() === 'ar' ? 'مسؤول' : 'Admin'}</span>
-                        <button class="logout-btn" onClick={() => props.setRoute('home')}>
+                        <span class="admin-dash-badge">{props.lang() === 'ar' ? 'مسؤول' : 'Admin'}</span>
+                        <button class="logout-dash-btn" onClick={() => props.setRoute('home')}>
                             <Icon name="log-out" /> {props.lang() === 'ar' ? 'خروج' : 'Exit'}
                         </button>
                     </div>
@@ -85,16 +85,16 @@ export default function Dashboard(props) {
                 <div class="dashboard-content">
                     {activeTab() === 'overview' && (
                         <div class="overview-section">
-                            <div class="stats-grid">
+                            <div class="dash-stats-grid">
                                 <For each={stats()}>
                                     {(stat) => (
-                                        <div class="stat-card" style={{ '--accent': stat.color }}>
-                                            <div class="stat-icon-wrapper" style={{ color: stat.color }}>
+                                        <div class="dash-stat-dash-card" style={{ '--accent': stat.color }}>
+                                            <div class="dash-stat-icon-wrapper" style={{ color: stat.color }}>
                                                 <Icon name={stat.icon} />
                                             </div>
-                                            <div class="stat-info">
-                                                <span class="stat-label">{stat.label}</span>
-                                                <span class="stat-value">{stat.value}</span>
+                                            <div class="dash-stat-info">
+                                                <span class="dash-stat-label">{stat.label}</span>
+                                                <span class="dash-stat-value">{stat.value}</span>
                                             </div>
                                         </div>
                                     )}
@@ -102,12 +102,12 @@ export default function Dashboard(props) {
                             </div>
 
                             <div class="quick-cms-grid">
-                                <div class="card">
+                                <div class="dash-card">
                                     <h3>{props.lang() === 'ar' ? 'الوصول السريع للمحرر' : 'CMS Quick Access'}</h3>
                                     <div class="cms-links-list">
                                         <For each={cmsLinks()}>
                                             {(link) => (
-                                                <a href={`/admin/#/collections/site_data/entries/${link.collection}`} class="cms-link-item">
+                                                <a href={`https://supabase.com/dashboard/project/_/editor?table=${link.collection}`} target="_blank" rel="noopener noreferrer" class="cms-link-item">
                                                     <span>{link.label}</span>
                                                     <Icon name="external-link" />
                                                 </a>
@@ -116,7 +116,7 @@ export default function Dashboard(props) {
                                     </div>
                                 </div>
 
-                                <div class="card">
+                                <div class="dash-card">
                                     <h3>{props.lang() === 'ar' ? 'حالة الموقع' : 'Site Health'}</h3>
                                     <div class="health-status">
                                         <div class="status-indicator online"></div>
@@ -131,24 +131,24 @@ export default function Dashboard(props) {
                     )}
 
                     {activeTab() === 'cms' && (
-                        <div class="cms-manager-section card">
+                        <div class="cms-manager-section dash-card">
                             <div class="cms-hero">
-                                <h3>{props.lang() === 'ar' ? 'نظام إدارة المحتوى (Decap CMS)' : 'Decap CMS Manager'}</h3>
+                                <h3>{props.lang() === 'ar' ? 'نظام إدارة المحتوى (Supabase)' : 'Supabase Manager'}</h3>
                                 <p>{props.lang() === 'ar' ? 'تحكم كامل في جميع أقسام الموقع من خلال واجهة واحدة.' : 'Full control over all site sections through a unified interface.'}</p>
-                                <a href="/admin/index.html" class="btn btn-primary btn-large">
-                                    {props.lang() === 'ar' ? 'فتح لوحة التحكم الكاملة' : 'Open Full CMS Panel'}
+                                <a href="https://supabase.com/dashboard/project/_/editor" target="_blank" rel="noopener noreferrer" class="dash-btn dash-dash-btn-primary dash-dash-btn-large">
+                                    {props.lang() === 'ar' ? 'فتح لوحة التحكم الكاملة' : 'Open Full Supabase Panel'}
                                 </a>
                             </div>
                             <div class="cms-collections-grid">
-                                <div class="mini-card">
+                                <div class="mini-dash-card">
                                     <h4>{props.lang() === 'ar' ? 'الترجمات' : 'Translations'}</h4>
                                     <p>{props.lang() === 'ar' ? 'تعديل النصوص الأساسية.' : 'Edit main site strings.'}</p>
                                 </div>
-                                <div class="mini-card">
+                                <div class="mini-dash-card">
                                     <h4>{props.lang() === 'ar' ? 'الخبراء' : 'Experts'}</h4>
                                     <p>{props.lang() === 'ar' ? 'إضافة وتعديل الأطباء.' : 'Add or edit medical staff.'}</p>
                                 </div>
-                                <div class="mini-card">
+                                <div class="mini-dash-card">
                                     <h4>{props.lang() === 'ar' ? 'التثقيف' : 'Education'}</h4>
                                     <p>{props.lang() === 'ar' ? 'المقالات والبوسترات.' : 'Articles and posters.'}</p>
                                 </div>
@@ -157,11 +157,11 @@ export default function Dashboard(props) {
                     )}
 
                     {activeTab() === 'products' && (
-                        <div class="products-list card">
-                            <div class="table-header">
+                        <div class="products-list dash-card">
+                            <div class="dash-table-header">
                                 <h3>{props.lang() === 'ar' ? 'قائمة المنتجات' : 'Product List'}</h3>
-                                <a href="/admin/#/collections/site_data/entries/products" class="btn btn-secondary btn-sm">
-                                    {props.lang() === 'ar' ? 'تعديل في المحرر' : 'Edit in CMS'}
+                                <a href="https://supabase.com/dashboard/project/_/editor" target="_blank" rel="noopener noreferrer" class="dash-btn dash-dash-btn-secondary dash-dash-btn-sm">
+                                    {props.lang() === 'ar' ? 'تعديل في قاعدة البيانات' : 'Edit in Supabase'}
                                 </a>
                             </div>
                             <div class="dashboard-table-wrapper">
@@ -181,7 +181,7 @@ export default function Dashboard(props) {
                                                     <td><img src={`${import.meta.env.BASE_URL}${product.mainImage}`} alt="" class="table-img" /></td>
                                                     <td>{props.lang() === 'ar' ? (product.name.ar || product.name.en) : product.name.en}</td>
                                                     <td>{product.category}</td>
-                                                    <td><span class="badge status-active">{props.lang() === 'ar' ? 'نشط' : 'Active'}</span></td>
+                                                    <td><span class="dash-badge dash-status-active">{props.lang() === 'ar' ? 'نشط' : 'Active'}</span></td>
                                                 </tr>
                                             )}
                                         </For>
