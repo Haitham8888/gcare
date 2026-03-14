@@ -8,9 +8,47 @@ export default function Dashboard(props) {
     const [isModalOpen, setIsModalOpen] = createSignal(false)
     const [modalType, setModalType] = createSignal('') // 'product', 'doctor', 'user'
     const [editingItem, setEditingItem] = createSignal(null)
+    const [isUploading, setIsUploading] = createSignal(false)
+    const [uploadURL, setUploadURL] = createSignal('')
+    const [uploadProgress, setUploadProgress] = createSignal(0)
     const [loading, setLoading] = createSignal(false)
 
     const toggleSidebar = () => setSidebarOpen(!sidebarOpen())
+
+    const handleFileUpload = async (file) => {
+        if (!file) return
+        setIsUploading(true)
+        setUploadProgress(10)
+        
+        try {
+            const fileExt = file.name.split('.').pop()
+            const fileName = `${Math.random()}.${fileExt}`
+            const filePath = `uploads/${fileName}`
+
+            setUploadProgress(30)
+            const { data, error: uploadError } = await supabase.storage
+                .from('gcare')
+                .upload(filePath, file)
+
+            if (uploadError) throw uploadError
+
+            setUploadProgress(70)
+            const { data: { publicUrl } } = supabase.storage
+                .from('gcare')
+                .getPublicUrl(filePath)
+
+            setUploadURL(publicUrl)
+            setUploadProgress(100)
+            setTimeout(() => {
+                setIsUploading(false)
+                setUploadProgress(0)
+            }, 1000)
+        } catch (error) {
+            alert(props.lang() === 'ar' ? 'فشل الرفع. تأكد من إعداد Storage في Supabase' : 'Upload failed. Ensure Storage is set up in Supabase')
+            console.error('Error uploading image:', error)
+            setIsUploading(false)
+        }
+    }
 
     // UI Icons
     const Icon = (iconProps) => {
@@ -34,6 +72,7 @@ export default function Dashboard(props) {
     const openModal = (type, item = null) => {
         setModalType(type)
         setEditingItem(item)
+        setUploadURL(item?.mainImage || item?.image || item?.img || '')
         setIsModalOpen(true)
     }
 
@@ -96,6 +135,38 @@ export default function Dashboard(props) {
         { id: 'experts', label: props.lang() === 'ar' ? 'الخبراء' : 'Experts', icon: 'users' },
         { id: 'users', label: props.lang() === 'ar' ? 'المدراء' : 'Admins', icon: 'shield' }
     ]
+
+    const FileUploadZone = () => (
+        <div 
+            class={`upload-dropzone ${isUploading() ? 'dragging' : ''}`}
+            onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('dragging'); }}
+            onDragLeave={(e) => e.currentTarget.classList.remove('dragging')}
+            onDrop={(e) => {
+                e.preventDefault();
+                e.currentTarget.classList.remove('dragging');
+                const file = e.dataTransfer.files[0];
+                handleFileUpload(file);
+            }}
+            onClick={() => document.getElementById('fileInput').click()}
+        >
+            <input 
+                type="file" 
+                id="fileInput" 
+                style="display:none" 
+                accept="image/*"
+                onChange={(e) => handleFileUpload(e.target.files[0])}
+            />
+            <Show when={!uploadURL()} fallback={<img src={uploadURL()} class="upload-preview-thumb" />}>
+                <div class="upload-icon-big"><Icon name="package" stroke={2.5} /></div>
+                <p>{props.lang() === 'ar' ? 'اسحب الصورة هنا أو ' : 'Drag image here or '} <b>{props.lang() === 'ar' ? 'تصفح' : 'browse'}</b></p>
+            </Show>
+            <Show when={isUploading()}>
+                <div class="upload-progress">
+                    <div class="upload-progress-fill" style={{width: `${uploadProgress()}%`}}></div>
+                </div>
+            </Show>
+        </div>
+    )
 
     return (
         <div class="dashboard-wrapper" dir={props.lang() === 'ar' ? 'rtl' : 'ltr'}>
@@ -236,25 +307,35 @@ export default function Dashboard(props) {
                             </Show>
                             
                             <Show when={modalType() === 'product'}>
+                                <div class="form-group" style={{"grid-column": "1 / -1"}}>
+                                    <label>{props.lang() === 'ar' ? 'صورة المنتج' : 'Product Image'}</label>
+                                    <FileUploadZone />
+                                    <input type="hidden" name="mainImage" value={uploadURL()} />
+                                </div>
                                 <div class="form-group">
                                     <label>{props.lang() === 'ar' ? 'الفئة' : 'Category'}</label>
                                     <input name="category" value={editingItem()?.category || ''} placeholder="e.g. skin, hair" required />
                                 </div>
                                 <div class="form-group">
-                                    <label>{props.lang() === 'ar' ? 'رابط الصورة' : 'Image Path'}</label>
-                                    <input name="mainImage" value={editingItem()?.mainImage || ''} placeholder="static/img/product.webp" required />
+                                    <label>{props.lang() === 'ar' ? 'رابط خارجي للصورة (اختياري)' : 'External Image URL (Optional)'}</label>
+                                    <input value={uploadURL()} onInput={(e) => setUploadURL(e.target.value)} placeholder="https://..." />
                                 </div>
                                 <div class="form-group" style={{"grid-column": "1 / -1"}}>
                                     <label>{props.lang() === 'ar' ? 'الوصف (عربي)' : 'Description (AR)'}</label>
-                                    <textarea name="overview_ar" rows="3" value={editingItem()?.overview?.ar || ''}></textarea>
+                                    <textarea name="overview_ar" rows="3" value={editingItem()?.overview?.ar || editingItem()?.overview_ar || ''}></textarea>
                                 </div>
                                 <div class="form-group" style={{"grid-column": "1 / -1"}}>
                                     <label>{props.lang() === 'ar' ? 'الوصف (English)' : 'Description (EN)'}</label>
-                                    <textarea name="overview_en" rows="3" value={editingItem()?.overview?.en || ''}></textarea>
+                                    <textarea name="overview_en" rows="3" value={editingItem()?.overview?.en || editingItem()?.overview_en || ''}></textarea>
                                 </div>
                             </Show>
                             
                             <Show when={modalType() === 'doctor'}>
+                                <div class="form-group" style={{"grid-column": "1 / -1"}}>
+                                    <label>{props.lang() === 'ar' ? 'صورة الخبير' : 'Expert Image'}</label>
+                                    <FileUploadZone />
+                                    <input type="hidden" name="img" value={uploadURL()} />
+                                </div>
                                 <div class="form-group">
                                     <label>{props.lang() === 'ar' ? 'الرتبة (عربي)' : 'Role (AR)'}</label>
                                     <input name="role_ar" value={(typeof editingItem()?.role === 'object' ? editingItem()?.role?.ar : editingItem()?.role) || ''} required />
@@ -262,10 +343,6 @@ export default function Dashboard(props) {
                                 <div class="form-group">
                                     <label>{props.lang() === 'ar' ? 'الرتبة (English)' : 'Role (EN)'}</label>
                                     <input name="role_en" value={(typeof editingItem()?.role === 'object' ? editingItem()?.role?.en : editingItem()?.role) || ''} required />
-                                </div>
-                                <div class="form-group">
-                                    <label>{props.lang() === 'ar' ? 'رابط الصورة' : 'Image Path'}</label>
-                                    <input name="img" value={editingItem()?.img || editingItem()?.image || ''} placeholder="static/img/doc.webp" required />
                                 </div>
                             </Show>
 
