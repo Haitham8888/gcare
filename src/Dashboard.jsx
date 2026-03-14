@@ -1,14 +1,13 @@
 import { createSignal, createMemo, For } from 'solid-js'
 import './Dashboard.css'
-import productsData from './data/products.json'
-import expertsData from './data/experts.json'
+// Data is now passed via props from App.jsx
 
 export default function Dashboard(props) {
     const [activeTab, setActiveTab] = createSignal('overview')
 
     const stats = createMemo(() => [
-        { label: props.lang() === 'ar' ? 'إجمالي المنتجات' : 'Total Products', value: productsData.products.length, icon: 'package', color: 'var(--brand)' },
-        { label: props.lang() === 'ar' ? 'الخبراء' : 'Experts', value: expertsData.experts.length, icon: 'users', color: '#6366f1' },
+        { label: props.lang() === 'ar' ? 'إجمالي المنتجات' : 'Total Products', value: (props.products || []).length, icon: 'package', color: 'var(--brand)' },
+        { label: props.lang() === 'ar' ? 'الخبراء' : 'Experts', value: (props.experts || []).length, icon: 'users', color: '#6366f1' },
         { label: props.lang() === 'ar' ? 'الزيارات' : 'Visitors', value: '1,247+', icon: 'activity', color: '#F67C71' },
         { label: props.lang() === 'ar' ? 'حالة النظام' : 'System Status', value: props.lang() === 'ar' ? 'ممتاز' : 'Healthy', icon: 'check-circle', color: '#10b981' }
     ])
@@ -175,7 +174,7 @@ export default function Dashboard(props) {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <For each={productsData.products.slice(0, 5)}>
+                                        <For each={(props.products || []).slice(0, 5)}>
                                             {(product) => (
                                                 <tr>
                                                     <td><img src={`${import.meta.env.BASE_URL}${product.mainImage}`} alt="" class="table-img" /></td>

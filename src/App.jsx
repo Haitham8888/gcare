@@ -1,8 +1,6 @@
-import { createEffect, createSignal, onCleanup, For, Show, createMemo } from 'solid-js'
+import { createEffect, createSignal, onCleanup, For, Show, createMemo, createResource } from 'solid-js'
 import './App.css'
-import productsData from './data/products.json'
-import expertsData from './data/experts.json'
-import educationData from './data/education.json'
+import { supabase } from './supabaseClient'
 import Dashboard from './Dashboard'
 import LoginPage from './LoginPage'
 
@@ -105,8 +103,8 @@ function GlobalSearch(props) {
       return label.includes(q)
     }).map(p => ({ ...p, type: 'page', label: props.t(p.key) }))
 
-    // Search productsData.products
-    const prods = productsData.products.filter(p => {
+    // Search products
+    const prods = (props.products || []).filter(p => {
       const nameMatch = p.name.en.toLowerCase().includes(q)
       const catMatch = props.t(`cat${p.category}`).toLowerCase().includes(q)
       return nameMatch || catMatch
@@ -193,7 +191,7 @@ function Hero(props) {
         <div class="hero-search-overlay">
           <h1 class="hero-main-title">{props.t('heroTitle')}</h1>
           <p class="hero-main-subtitle">{props.t('heroSubtitle')}</p>
-          <GlobalSearch t={props.t} setActiveProduct={props.setActiveProduct} />
+          <GlobalSearch t={props.t} setActiveProduct={props.setActiveProduct} products={props.products} />
         </div>
       </div>
     </section>
@@ -235,13 +233,13 @@ function Products(props) {
     }
   });
 
-  const uniqueCategories = ['All', ...new Set(productsData.products.map(p => p.category))]
+  const uniqueCategories = createMemo(() => ['All', ...new Set((props.products || []).map(p => p.category))])
 
   // Independent suggestions list for better performance
   const suggestionResults = createMemo(() => {
     const query = searchQuery().toLowerCase().trim()
     if (query.length < 1) return []
-    return productsData.products.filter(p => p.name.en.toLowerCase().includes(query)).slice(0, 6)
+    return (props.products || []).filter(p => p.name.en.toLowerCase().includes(query)).slice(0, 6)
   })
 
   // Filtered productsData.products for the grid - with a slight debounce/delay if needed, 
@@ -250,7 +248,7 @@ function Products(props) {
     const cat = selectedCategory()
     const query = searchQuery().toLowerCase().trim()
 
-    return productsData.products.filter(p => {
+    return (props.products || []).filter(p => {
       const matchCat = (cat === 'All' || p.category === cat)
       const matchQuery = p.name.en.toLowerCase().includes(query)
       return matchCat && matchQuery
@@ -273,7 +271,7 @@ function Products(props) {
   }
 
   return (
-    <section class="section catalog-section" id="productsData.products">
+    <section class="section catalog-section" id="products">
       <div class="container">
         <Show when={!(props.activeProduct ? props.activeProduct() : false)}>
           <div class="section-head text-center">
@@ -498,7 +496,7 @@ function SectionDivider() {
 function HomePage(props) {
   return (
     <>
-      <Hero t={props.t} setActiveProduct={props.setActiveProduct} />
+      <Hero t={props.t} setActiveProduct={props.setActiveProduct} products={props.products} />
       <SectionDivider />
       <HomeAbout t={props.t} />
       <SectionDivider />
@@ -1033,19 +1031,19 @@ function LakiPage(props) {
   const baseUrl = import.meta.env.BASE_URL
   const [selectedImg, setSelectedImg] = createSignal(null)
 
-  const contentSeries = educationData.articles.map(item => ({
+  const contentSeries = createMemo(() => (props.education?.articles || []).map(item => ({
     ...item,
     title: props.t(item.title_key),
     category: props.t(item.category_key),
     excerpt: props.t(item.excerpt_key),
     img: `${baseUrl}${item.img}`
-  }))
+  })))
 
-  const latestAdditions = educationData.posters.map(item => ({
+  const latestAdditions = createMemo(() => (props.education?.posters || []).map(item => ({
     ...item,
     title: props.t(item.title_key),
     img: `${baseUrl}${item.img}`
-  }))
+  })))
 
   const posters = [
     { id: 1, title: props.t('lakiPoster1'), img: `${baseUrl}static/img/d263efc0-0a5b-4029-aa7d-a12a399dfd5e.jpg` },
@@ -1086,7 +1084,7 @@ function LakiPage(props) {
 
           <div class="articles-slider-container">
             <div class="laki-articles-grid">
-              {contentSeries.map(item => (
+              {contentSeries().map(item => (
                 <div class="article-modern-card" onClick={() => setSelectedImg(item.img)}>
                   <div class="article-card-media">
                     <img src={item.img} alt="" />
@@ -1129,7 +1127,7 @@ function LakiPage(props) {
                 </button>
 
                 <div class="guides-portrait-grid">
-                  {latestAdditions.map(item => (
+                  {latestAdditions().map(item => (
                     <div class="port-guide-card" onClick={() => setSelectedImg(item.img)}>
                       <div class="port-guide-visual">
                         <img src={item.img} alt="" />
@@ -1243,7 +1241,7 @@ function ExpertPage(props) {
     { id: 6, title: props.t('expertStep6Title'), desc: props.t('expertStep6Desc') }
   ])
 
-  const experts = createMemo(() => expertsData.experts.map(doc => ({
+  const experts = createMemo(() => (props.experts || []).map(doc => ({
     name: props.lang() === 'ar' ? doc.name_ar : doc.name_en,
     role: props.lang() === 'ar' ? doc.role_ar : doc.role_en,
     img: `${baseUrl}${doc.img}`
@@ -1438,8 +1436,8 @@ function EducationPage(props) {
             </div>
           </section>
         )}
-        {eduRoute() === 'laki' && <LakiPage t={props.t} setEduRoute={setEduRoute} />}
-        {eduRoute() === 'expert' && <ExpertPage t={props.t} setEduRoute={setEduRoute} />}
+        {eduRoute() === 'laki' && <LakiPage t={props.t} setEduRoute={setEduRoute} education={props.education} />}
+        {eduRoute() === 'expert' && <ExpertPage t={props.t} setEduRoute={setEduRoute} experts={props.experts} lang={props.lang} />}
       </div>
       <Contact t={props.t} />
     </>
@@ -1548,6 +1546,28 @@ export default function App() {
   const [activeProduct, setActiveProduct] = createSignal(null)
   const [isLoggedIn, setLoggedIn] = createSignal(false)
 
+  const [products] = createResource(async () => {
+    const { data } = await supabase.from('products').select('*');
+    return data?.map(p => ({
+      ...p,
+      name: { ar: p.name_ar, en: p.name_en },
+      mainImage: p.main_image,
+      images: p.images || [],
+      overview: { ar: p.overview_ar, en: p.overview_en }
+    })) || [];
+  });
+
+  const [experts] = createResource(async () => {
+    const { data } = await supabase.from('doctors').select('*');
+    return data || [];
+  });
+
+  const [education] = createResource(async () => {
+    const { data: articles } = await supabase.from('articles').select('*');
+    const { data: posters } = await supabase.from('posters').select('*');
+    return { articles: articles || [], posters: posters || [] };
+  });
+
   const translations = translationsData
 
   const t = (key) => translations[lang()]?.[key] ?? key
@@ -1589,16 +1609,16 @@ export default function App() {
   return (
     <div class="page">
       <NavBar t={t} lang={lang} setLang={setLang} />
-      {route() === 'products' ? <ProductsPage t={t} setRoute={setRoute} setPrefilledMessage={setPrefilledMessage} lang={lang} activeProduct={activeProduct} setActiveProduct={setActiveProduct} products={productsData.products} /> : null}
+      {route() === 'products' ? <ProductsPage t={t} setRoute={setRoute} setPrefilledMessage={setPrefilledMessage} lang={lang} activeProduct={activeProduct} setActiveProduct={setActiveProduct} products={products()} /> : null}
       {route() === 'contact' ? <ContactPage t={t} prefilledMessage={prefilledMessage} setPrefilledMessage={setPrefilledMessage} /> : null}
-      {route() === 'education' ? <EducationPage t={t} /> : null}
+      {route() === 'education' ? <EducationPage t={t} education={education()} experts={experts()} lang={lang} /> : null}
       {route() === 'about' ? <AboutPage t={t} /> : null}
       {route() === 'dashboard' ? (
         <Show when={isLoggedIn()} fallback={<LoginPage t={t} setLoggedIn={setLoggedIn} lang={lang} />}>
-          <Dashboard t={t} setRoute={setRoute} lang={lang} setLang={setLang} />
+          <Dashboard t={t} setRoute={setRoute} lang={lang} setLang={setLang} products={products()} experts={experts()} />
         </Show>
       ) : null}
-      {route() === 'home' ? <HomePage t={t} lang={lang} setActiveProduct={setActiveProduct} /> : null}
+      {route() === 'home' ? <HomePage t={t} lang={lang} setActiveProduct={setActiveProduct} products={products()} education={education()} /> : null}
     </div>
   )
 }
