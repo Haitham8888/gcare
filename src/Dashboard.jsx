@@ -50,16 +50,26 @@ export default function Dashboard(props) {
         const formData = new FormData(e.target)
         const data = Object.fromEntries(formData.entries())
 
-        // Handle JSON fields for products/doctors
+        // Map fields back to Supabase columns
         let finalData = { ...data }
-        if (modalType() === 'product' || modalType() === 'doctor') {
-            finalData.name = { ar: data.name_ar, en: data.name_en }
-            delete finalData.name_ar
-            delete finalData.name_en
-            if (modalType() === 'doctor') {
-                finalData.specialty = { ar: data.spec_ar, en: data.spec_en }
-                delete finalData.spec_ar
-                delete finalData.spec_en
+        
+        if (modalType() === 'product') {
+            finalData = {
+                id: editingItem()?.id || data.name_en.toLowerCase().replace(/\s+/g, '-'), // Basic slug logic for new items
+                name_ar: data.name_ar,
+                name_en: data.name_en,
+                category: data.category,
+                main_image: data.mainImage,
+                overview_ar: data.overview_ar || '',
+                overview_en: data.overview_en || ''
+            }
+        } else if (modalType() === 'doctor') {
+            finalData = {
+                name_ar: data.name_ar,
+                name_en: data.name_en,
+                role_ar: data.role_ar, // match col name
+                role_en: data.role_en,
+                img: data.img
             }
         }
 
@@ -148,23 +158,35 @@ export default function Dashboard(props) {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <For each={activeTab() === 'products' ? props.products : (activeTab() === 'experts' ? props.experts : props.profiles)}>
-                                            {(item) => (
-                                                <tr>
-                                                    <td>
-                                                        <div style={{display: 'flex', 'align-items': 'center', gap: '12px'}}>
-                                                            {(item.mainImage || item.image) ? <img src={`${import.meta.env.BASE_URL}${item.mainImage || item.image}`} class="table-img" /> : <div class="table-img" style={{display:'flex','align-items':'center','justify-content':'center',background:'#f1f5f9'}}><Icon name="users" /></div>}
-                                                            <span style={{"font-weight": 700}}>{typeof item.name === 'object' ? (props.lang() === 'ar' ? item.name.ar : item.name.en) : (item.full_name || 'No Name')}</span>
-                                                        </div>
-                                                    </td>
-                                                    <td class="dash-text-muted">{item.category || item.role || '---'}</td>
-                                                    <td>
-                                                        <button class="action-icon-btn edit" onClick={() => openModal(activeTab().slice(0, -1), item)}><Icon name="edit" /></button>
-                                                        <button class="action-icon-btn delete" onClick={() => handleDelete(activeTab() === 'products' ? 'products' : (activeTab() === 'experts' ? 'doctors' : 'profiles'), item.id)}><Icon name="trash" /></button>
-                                                    </td>
-                                                </tr>
+                                        <Show when={activeTab() === 'products' ? props.products : (activeTab() === 'experts' ? props.experts : props.profiles)} fallback={
+                                            <tr><td colspan="3" style={{"text-align":"center", padding: "40px"}}>{props.lang() === 'ar' ? 'جاري التحميل...' : 'Loading...'}</td></tr>
+                                        }>
+                                            {(list) => (
+                                                <Show when={list.length > 0} fallback={
+                                                    <tr><td colspan="3" style={{"text-align":"center", padding: "40px"}}>{props.lang() === 'ar' ? 'لا يوجد بيانات حالياً' : 'No data found'}</td></tr>
+                                                }>
+                                                    <For each={list}>
+                                                        {(item) => (
+                                                            <tr>
+                                                                <td>
+                                                                    <div style={{display: 'flex', 'align-items': 'center', gap: '12px'}}>
+                                                                        {(item.mainImage || item.image) ? <img src={`${import.meta.env.BASE_URL}${item.mainImage || item.image}`} class="table-img" /> : <div class="table-img" style={{display:'flex','align-items':'center','justify-content':'center',background:'#f1f5f9'}}><Icon name="users" /></div>}
+                                                                        <span style={{"font-weight": 700}}>
+                                                                            {item.name ? (props.lang() === 'ar' ? item.name.ar : item.name.en) : (item.full_name || 'No Name')}
+                                                                        </span>
+                                                                    </div>
+                                                                </td>
+                                                                <td class="dash-text-muted">{item.category || (item.role && (typeof item.role === 'object' ? (props.lang() === 'ar' ? item.role.ar : item.role.en) : item.role)) || '---'}</td>
+                                                                <td>
+                                                                    <button class="action-icon-btn edit" onClick={() => openModal(activeTab().slice(0, -1), item)}><Icon name="edit" /></button>
+                                                                    <button class="action-icon-btn delete" onClick={() => handleDelete(activeTab() === 'products' ? 'products' : (activeTab() === 'experts' ? 'doctors' : 'profiles'), item.id)}><Icon name="trash" /></button>
+                                                                </td>
+                                                            </tr>
+                                                        )}
+                                                    </For>
+                                                </Show>
                                             )}
-                                        </For>
+                                        </Show>
                                     </tbody>
                                 </table>
                             </div>
@@ -221,6 +243,21 @@ export default function Dashboard(props) {
                                 <div class="form-group">
                                     <label>{props.lang() === 'ar' ? 'رابط الصورة' : 'Image Path'}</label>
                                     <input name="mainImage" value={editingItem()?.mainImage || ''} placeholder="static/img/product.webp" required />
+                                </div>
+                            </Show>
+                            
+                            <Show when={modalType() === 'doctor'}>
+                                <div class="form-group">
+                                    <label>{props.lang() === 'ar' ? 'الرتبة (عربي)' : 'Role (AR)'}</label>
+                                    <input name="role_ar" value={(typeof editingItem()?.role === 'object' ? editingItem()?.role?.ar : editingItem()?.role) || ''} required />
+                                </div>
+                                <div class="form-group">
+                                    <label>{props.lang() === 'ar' ? 'الرتبة (English)' : 'Role (EN)'}</label>
+                                    <input name="role_en" value={(typeof editingItem()?.role === 'object' ? editingItem()?.role?.en : editingItem()?.role) || ''} required />
+                                </div>
+                                <div class="form-group">
+                                    <label>{props.lang() === 'ar' ? 'رابط الصورة' : 'Image Path'}</label>
+                                    <input name="img" value={editingItem()?.img || editingItem()?.image || ''} placeholder="static/img/doc.webp" required />
                                 </div>
                             </Show>
 

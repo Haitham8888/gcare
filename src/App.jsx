@@ -1560,7 +1560,12 @@ export default function App() {
 
   const [experts] = createResource(async () => {
     const { data } = await supabase.from('doctors').select('*');
-    return data || [];
+    return data?.map(d => ({
+      ...d,
+      name: { ar: d.name_ar, en: d.name_en },
+      role: { ar: d.role_ar, en: d.role_en },
+      image: d.img
+    })) || [];
   });
 
   const [profiles] = createResource(async () => {
