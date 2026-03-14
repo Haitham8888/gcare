@@ -1626,7 +1626,7 @@ export default function App() {
 
   return (
     <div class="page">
-      <NavBar t={t} lang={lang} setLang={setLang} />
+      {route() !== 'dashboard' && <NavBar t={t} lang={lang} setLang={setLang} />}
       {route() === 'products' ? <ProductsPage t={t} setRoute={setRoute} setPrefilledMessage={setPrefilledMessage} lang={lang} activeProduct={activeProduct} setActiveProduct={setActiveProduct} products={products()} /> : null}
       {route() === 'contact' ? <ContactPage t={t} prefilledMessage={prefilledMessage} setPrefilledMessage={setPrefilledMessage} /> : null}
       {route() === 'education' ? <EducationPage t={t} education={education()} experts={experts()} lang={lang} /> : null}
