@@ -52,7 +52,6 @@ export default function Dashboard(props) {
         }
     }
 
-    // UI Icons
     const Icon = (iconProps) => {
         const strokeWidth = iconProps.stroke || 2
         switch (iconProps.name) {
@@ -91,7 +90,6 @@ export default function Dashboard(props) {
         const formData = new FormData(e.target)
         const data = Object.fromEntries(formData.entries())
 
-        // Map fields back to Supabase columns
         let finalData = { ...data }
         
         if (modalType() === 'product') {
@@ -319,10 +317,6 @@ export default function Dashboard(props) {
                                     <input name="category" value={editingItem()?.category || ''} placeholder="e.g. skin, hair" required />
                                 </div>
                                 <div class="form-group">
-                                    <label>{props.lang() === 'ar' ? 'رابط خارجي للصورة (اختياري)' : 'External Image URL (Optional)'}</label>
-                                    <input value={uploadURL()} onInput={(e) => setUploadURL(e.target.value)} placeholder="https://..." />
-                                </div>
-                                <div class="form-group" style={{"grid-column": "1 / -1"}}>
                                     <label>{props.lang() === 'ar' ? 'الوصف (عربي)' : 'Description (AR)'}</label>
                                     <textarea name="overview_ar" rows="3" value={editingItem()?.overview_ar || editingItem()?.overview?.ar || ''}></textarea>
                                 </div>
