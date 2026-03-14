@@ -1548,24 +1548,43 @@ export default function App() {
   const isLoggedIn = () => !!session()
 
   const [products] = createResource(async () => {
-    const { data } = await supabase.from('products').select('*');
-    return data?.map(p => ({
-      ...p,
-      name: { ar: p.name_ar, en: p.name_en },
-      mainImage: p.main_image,
-      images: p.images || [],
-      overview: { ar: p.overview_ar, en: p.overview_en }
-    })) || [];
+    try {
+      const { data, error } = await supabase.from('products').select('*');
+      if (error) {
+        console.error('Supabase fetch error:', error);
+        return [];
+      }
+      const mapped = data?.map(p => ({
+        ...p,
+        name: { ar: p.name_ar, en: p.name_en },
+        mainImage: p.main_image,
+        images: p.images || [],
+        overview: { ar: p.overview_ar, en: p.overview_en }
+      })) || [];
+      console.log('Fetched products:', mapped.length);
+      return mapped;
+    } catch (e) {
+      console.error('Fetch exception:', e);
+      return [];
+    }
   });
 
   const [experts] = createResource(async () => {
-    const { data } = await supabase.from('doctors').select('*');
-    return data?.map(d => ({
-      ...d,
-      name: { ar: d.name_ar, en: d.name_en },
-      role: { ar: d.role_ar, en: d.role_en },
-      image: d.img
-    })) || [];
+    try {
+      const { data, error } = await supabase.from('doctors').select('*');
+      if (error) return [];
+      const mapped = data?.map(d => ({
+        ...d,
+        name: { ar: d.name_ar, en: d.name_en },
+        role: { ar: d.role_ar, en: d.role_en },
+        image: d.img
+      })) || [];
+      console.log('Fetched experts:', mapped.length);
+      return mapped;
+    } catch (e) {
+      console.error('Experts fetch exception:', e);
+      return [];
+    }
   });
 
   const [profiles] = createResource(async () => {
