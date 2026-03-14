@@ -1,13 +1,13 @@
 :root {
-  --dash-bg: #fafafa;
-  --dash-sidebar: #ffffff;
-  --dash-accent: #1093a5; /* Teal G-Care */
+  --dash-bg: #f0f4f8;
+  --dash-sidebar: #0e7490; /* Deep Teal */
+  --dash-accent: #0891b2; 
   --dash-accent-soft: #ecfeff;
-  --dash-ink: #1e293b;
+  --dash-ink: #0f172a;
   --dash-muted: #64748b;
   --dash-border: #e2e8f0;
-  --dash-radius: 20px;
-  --dash-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  --dash-radius: 16px;
+  --dash-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
 }
 
 .dashboard-wrapper {
@@ -26,17 +26,43 @@
 
 /* Sidebar Styling */
 .dashboard-sidebar {
-  width: 280px;
-  background: white;
+  width: 260px;
+  background: var(--dash-sidebar);
   display: flex;
   flex-direction: column;
-  padding: 2rem 1.5rem;
+  padding: 2rem 1.25rem;
   position: sticky;
   top: 0;
   height: 100vh;
-  border-inline-end: 1px solid var(--dash-border);
   z-index: 1000;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: white;
+  box-shadow: 4px 0 24px rgba(0,0,0,0.1);
+}
+
+.sidebar-title {
+  color: white;
+  font-weight: 800;
+}
+
+.sidebar-nav button {
+  color: rgba(255,255,255,0.7);
+  font-weight: 600;
+  border: none;
+  background: transparent;
+  padding: 12px 16px;
+  border-radius: 12px;
+  margin-bottom: 4px;
+}
+
+.sidebar-nav button:hover {
+  background: rgba(255,255,255,0.1);
+  color: white;
+}
+
+.sidebar-nav button.active {
+  background: white;
+  color: var(--dash-sidebar);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 .sidebar-header {
@@ -285,31 +311,40 @@
 }
 
 .action-icon-btn {
-  width: 36px;
-  height: 36px;
+  padding: 8px 12px;
   border-radius: 10px;
   border: 1px solid var(--dash-border);
   background: white;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 8px;
   cursor: pointer;
   transition: all 0.2s;
-  color: var(--dash-muted);
-  margin-inline-end: 8px;
+  color: var(--dash-ink);
+  font-weight: 700;
+  font-size: 0.85rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.action-icon-btn svg {
+  width: 16px;
+  height: 16px;
 }
 
 .action-icon-btn:hover {
-  background: var(--dash-accent-soft);
-  color: var(--dash-accent);
-  border-color: var(--dash-accent);
+  background: #f8fafc;
   transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-.action-icon-btn.delete:hover {
-  background: #fef2f2;
-  color: #ef4444;
-  border-color: #fecaca;
+.action-icon-btn.edit {
+  color: #0891b2;
+  border-color: #cffafe;
+}
+
+.action-icon-btn.delete {
+  color: #e11d48;
+  border-color: #ffe4e6;
 }
 
 .dash-text-muted {

@@ -261,12 +261,14 @@ export default function Dashboard(props) {
                                                         </td>
                                                         <td class="dash-text-muted">{details}</td>
                                                         <td>
-                                                            <div style={{display: 'flex', gap: '8px'}}>
+                                                            <div style={{display: 'flex', gap: '8px', 'justify-content': 'center'}}>
                                                                 <button class="action-icon-btn edit" onClick={() => openModal(activeTab().slice(0, -1), item)}>
                                                                     <Icon name="edit" />
+                                                                    <span>{props.lang() === 'ar' ? 'تعديل' : 'Edit'}</span>
                                                                 </button>
                                                                 <button class="action-icon-btn delete" onClick={() => handleDelete(activeTab() === 'products' ? 'products' : (activeTab() === 'experts' ? 'doctors' : 'profiles'), item.id)}>
                                                                     <Icon name="trash" />
+                                                                    <span>{props.lang() === 'ar' ? 'حذف' : 'Delete'}</span>
                                                                 </button>
                                                             </div>
                                                         </td>
