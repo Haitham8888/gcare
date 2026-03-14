@@ -131,7 +131,7 @@ export default function Dashboard(props) {
                     {/* TABLE VIEW FOR PRODUCTS / EXPERTS / USERS */}
                     {(activeTab() === 'products' || activeTab() === 'experts' || activeTab() === 'users') && (
                         <div class="fade-in">
-                            <div style={{display: 'flex', 'justify-content': 'space-between', 'align-items': 'center', 'margin-bottom': '2rem'}}>
+                            <div class="table-actions-header">
                                 <h3>{props.lang() === 'ar' ? 'القائمة الحالية' : 'Current List'}</h3>
                                 <button class="add-new-btn" onClick={() => openModal(activeTab().slice(0, -1))}>
                                     <Icon name="plus" /> {props.lang() === 'ar' ? 'إضافة جديد' : 'Add New'}

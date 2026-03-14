@@ -270,8 +270,70 @@
   border-bottom: 1px solid var(--dash-border);
 }
 
+/* Table Actions Header */
+.table-actions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2.5rem;
+  gap: 1.5rem;
+}
+
+.table-actions-header h3 {
+  font-size: 1.75rem;
+  font-weight: 900;
+  color: var(--dash-ink);
+  margin: 0;
+}
+
+.add-new-btn {
+  background: var(--dash-accent);
+  color: white;
+  padding: 12px 30px;
+  border-radius: 999px; /* Premium Pill Shape */
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 10px 25px rgba(16, 147, 165, 0.25);
+  white-space: nowrap;
+}
+
+.add-new-btn:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(16, 147, 165, 0.35);
+  filter: brightness(1.1);
+}
+
+.add-new-btn:active {
+  transform: translateY(-2px);
+}
+
+.add-new-btn .nav-icon {
+  font-size: 1.3rem;
+}
+
 /* Mobile Adjustments */
 @media (max-width: 992px) {
+  .table-actions-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .add-new-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 14px;
+  }
+
+  .table-actions-header h3 {
+    font-size: 1.4rem;
+  }
   .dashboard-wrapper {
     flex-direction: column;
   }
