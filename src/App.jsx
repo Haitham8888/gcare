@@ -1544,7 +1544,8 @@ export default function App() {
   const [route, setRoute] = createSignal('home')
   const [prefilledMessage, setPrefilledMessage] = createSignal('')
   const [activeProduct, setActiveProduct] = createSignal(null)
-  const [isLoggedIn, setLoggedIn] = createSignal(false)
+  const [session, setSession] = createSignal(null)
+  const isLoggedIn = () => !!session()
 
   const [products] = createResource(async () => {
     const { data } = await supabase.from('products').select('*');
@@ -1571,6 +1572,18 @@ export default function App() {
   const translations = translationsData
 
   const t = (key) => translations[lang()]?.[key] ?? key
+
+  createEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session)
+    })
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session)
+    })
+
+    onCleanup(() => subscription.unsubscribe())
+  })
 
   createEffect(() => {
     const nextLang = lang()
@@ -1614,7 +1627,7 @@ export default function App() {
       {route() === 'education' ? <EducationPage t={t} education={education()} experts={experts()} lang={lang} /> : null}
       {route() === 'about' ? <AboutPage t={t} /> : null}
       {route() === 'dashboard' ? (
-        <Show when={isLoggedIn()} fallback={<LoginPage t={t} setLoggedIn={setLoggedIn} lang={lang} />}>
+        <Show when={isLoggedIn()} fallback={<LoginPage t={t} lang={lang} />}>
           <Dashboard t={t} setRoute={setRoute} lang={lang} setLang={setLang} products={products()} experts={experts()} />
         </Show>
       ) : null}

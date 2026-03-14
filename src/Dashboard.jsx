@@ -1,4 +1,5 @@
 import { createSignal, createMemo, For } from 'solid-js'
+import { supabase } from './supabaseClient'
 import './Dashboard.css'
 // Data is now passed via props from App.jsx
 
@@ -75,7 +76,7 @@ export default function Dashboard(props) {
                             {props.lang() === 'ar' ? 'EN' : 'AR'}
                         </button>
                         <span class="admin-dash-badge">{props.lang() === 'ar' ? 'مسؤول' : 'Admin'}</span>
-                        <button class="logout-dash-btn" onClick={() => props.setRoute('home')}>
+                        <button class="logout-dash-btn" onClick={() => supabase.auth.signOut()}>
                             <Icon name="log-out" /> {props.lang() === 'ar' ? 'خروج' : 'Exit'}
                         </button>
                     </div>

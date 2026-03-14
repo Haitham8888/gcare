@@ -1,26 +1,30 @@
 import { createSignal } from 'solid-js'
+import { supabase } from './supabaseClient'
 import './LoginPage.css'
 
 export default function LoginPage(props) {
-    const [username, setUsername] = createSignal('')
+    const [email, setEmail] = createSignal('')
     const [password, setPassword] = createSignal('')
     const [error, setError] = createSignal('')
     const [loading, setLoading] = createSignal(false)
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault()
         setError('')
         setLoading(true)
 
-        // Simple hardcoded check as requested (No account creation)
-        setTimeout(() => {
-            if (username().toLowerCase() === 'admin' && password() === 'admin') {
-                props.setLoggedIn(true)
-            } else {
-                setError(props.lang() === 'ar' ? 'بيانات الاعتماد غير صحيحة' : 'Invalid credentials')
-                setLoading(false)
-            }
-        }, 800)
+        try {
+            const { error: authError } = await supabase.auth.signInWithPassword({
+                email: email(),
+                password: password(),
+            })
+
+            if (authError) throw authError
+            // Success: App.jsx listener will handle redirection/state
+        } catch (err) {
+            setError(props.lang() === 'ar' ? 'بيانات الاعتماد غير صحيحة أو الحساب غير موجود' : 'Invalid credentials or user not found')
+            setLoading(false)
+        }
     }
 
     const Icon = (iconProps) => {
@@ -45,10 +49,10 @@ export default function LoginPage(props) {
                     <div class="input-group">
                         <span class="input-icon"><Icon name="user" /></span>
                         <input
-                            type="text"
-                            placeholder={props.lang() === 'ar' ? 'اسم المستخدم' : 'Username'}
-                            value={username()}
-                            onInput={(e) => setUsername(e.target.value)}
+                            type="email"
+                            placeholder={props.lang() === 'ar' ? 'البريد الإلكتروني' : 'Email'}
+                            value={email()}
+                            onInput={(e) => setEmail(e.target.value)}
                             required
                         />
                     </div>
