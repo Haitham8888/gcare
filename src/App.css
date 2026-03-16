@@ -3158,7 +3158,7 @@ html[dir="ltr"] .coe-value-content {
 }
 
 .program-card.laki-card {
-  background: url('/static/img/ HealthEducation/health_edu_1.png') no-repeat center center;
+  background: url('https://ik.imagekit.io/gcare/static/img/HealthEducation/health_edu_1.png') no-repeat center center;
   background-size: cover;
   border-bottom: 8px solid #F67C71;
 }
@@ -3175,7 +3175,7 @@ html[dir="ltr"] .coe-value-content {
 }
 
 .program-card.expert-card {
-  background: url('/static/img/ HealthEducation/health_edu_2.png') no-repeat center center;
+  background: url('https://ik.imagekit.io/gcare/static/img/HealthEducation/health_edu_2.png') no-repeat center center;
   background-size: cover;
   border-bottom: 8px solid #1093a5;
 }

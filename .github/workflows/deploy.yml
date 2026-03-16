@@ -81,7 +81,7 @@ jobs:
           local-dir: ./dist/
           server-dir: ./
           dangerous-clean-slate: false
-          timeout: 60000
+          timeout: 120000
           exclude: |
             **/node_modules/**
             **/.git*
@@ -93,5 +93,3 @@ jobs:
             **/static/img/Products/**
             **/static/img/*HealthEducation/**
             **/static/img/experts/**
-
-

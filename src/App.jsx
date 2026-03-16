@@ -1068,7 +1068,7 @@ function LakiPage(props) {
             </button>
           </div>
           <div class="laki-hero-image">
-            <img src={getAssetUrl('static/img/ HealthEducation/health_edu_1.png')} alt="Women Health" />
+            <img src={getAssetUrl('static/img/HealthEducation/health_edu_1.png')} alt="Women Health" />
           </div>
         </div>
       </section>
