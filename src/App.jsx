@@ -1262,7 +1262,7 @@ function ExpertPage(props) {
             <a href="https://wa.me/966552527862" class="btn btn-primary expert-cta-btn">{props.t('expertJoinAction')}</a>
           </div>
           <div class="expert-hero-image">
-            <img src={getAssetUrl('static/img/ HealthEducation/health_edu_2.png')} alt="Medical Expert" />
+            <img src={getAssetUrl('static/img/HealthEducation/health_edu_2.png')} alt="Medical Expert" />
           </div>
         </div>
       </section>
@@ -1370,7 +1370,7 @@ function EducationPage(props) {
           <section class="section education-page" id="education-page">
             <div class="container">
               <div class="section-head edu-header-inline">
-                <img src={getAssetUrl('static/img/ HealthEducation/health_edu_5.png')} alt="Laki Wa Biwai Logo" class="edu-logo-inline" />
+                <img src={getAssetUrl('static/img/HealthEducation/health_edu_5.png')} alt="Laki Wa Biwai Logo" class="edu-logo-inline" />
                 <h2 class="edu-tagline-text">{props.t('educationSubtitle')}</h2>
               </div>
 

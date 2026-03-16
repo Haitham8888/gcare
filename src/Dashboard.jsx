@@ -198,7 +198,7 @@ export default function Dashboard(props) {
                     </For>
                 </nav>
                 <div class="sidebar-footer">
-                    <button class="logout-dash-btn" onClick={() => supabase.auth.signOut()} style={{width: '100%', "justify-content": 'center'}}>
+                    <button class="logout-dash-btn" onClick={() => supabase.auth.signOut()}>
                         <Icon name="log-out" /> {props.lang() === 'ar' ? 'تسجيل الخروج' : 'Logout'}
                     </button>
                 </div>

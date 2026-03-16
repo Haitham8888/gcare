@@ -89,3 +89,9 @@ jobs:
             **/admin/**
             **/cgi-bin/**
             **/.well-known/**
+            **/static/img/products/**
+            **/static/img/Products/**
+            **/static/img/*HealthEducation/**
+            **/static/img/experts/**
+
+
