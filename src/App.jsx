@@ -151,7 +151,7 @@ function GlobalSearch(props) {
                     {item.type === 'product' ? (
                       <div class="result-thumb-mini">
                         <img
-                          src={`${baseUrl}${item.img}`}
+                          src={getAssetUrl(item.img)}
                           alt=""
                         />
                       </div>
@@ -227,7 +227,7 @@ function Products(props) {
   createEffect(() => {
     const p = props.activeProduct ? props.activeProduct() : null;
     if (p) {
-      setMainImage(`${baseUrl}${p.mainImage}`);
+      setMainImage(getAssetUrl(p.mainImage));
       setActiveTab('overview');
     }
   });
@@ -258,7 +258,7 @@ function Products(props) {
     if (props.setActiveProduct) {
       props.setActiveProduct(p);
     }
-    setMainImage(`${baseUrl}${p.mainImage}`)
+    setMainImage(getAssetUrl(p.mainImage))
     setActiveTab('overview')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -279,7 +279,7 @@ function Products(props) {
           </div>
 
           <div class="category-filter-bar">
-            {uniqueCategories.map(cat => (
+            {uniqueCategories().map(cat => (
               <button
                 class={`filter-btn ${selectedCategory() === cat ? 'active' : ''}`}
                 onClick={() => setSelectedCategory(cat)}
@@ -317,7 +317,7 @@ function Products(props) {
                         setShowSuggestions(false);
                       }}>
                         <div class="suggestion-thumb">
-                          <img src={`${baseUrl}${product.mainImage}`} alt="" />
+                          <img src={getAssetUrl(product.mainImage)} alt="" />
                         </div>
                         <div class="suggestion-info">
                           <div class="suggestion-name">{product.name.en}</div>
@@ -336,7 +336,7 @@ function Products(props) {
               {(product) => (
                 <div class="catalog-card">
                   <div class="catalog-card-img">
-                    <img src={`${baseUrl}${product.mainImage}`} alt={product.name.en} loading="lazy" />
+                    <img src={getAssetUrl(product.mainImage)} alt={product.name.en} loading="lazy" />
                     <div class="catalog-card-overlay">
                       <button class="btn btn-brand-alt" onClick={() => openProduct(product)}>
                         {props.t('productViewDetails')}
@@ -385,14 +385,14 @@ function Products(props) {
                   </div>
                 </div>
                 <div class="product-thumbs">
-                  <For each={props.activeProduct().images}>
+                  <For each={props.activeProduct()?.images || []}>
                     {(img) => (
                       <div
-                        class={`thumb-box ${mainImage() === `${baseUrl}${img}` ? 'active' : ''}`}
-                        onClick={() => setMainImage(`${baseUrl}${img}`)}
+                        class={`thumb-box ${mainImage() === getAssetUrl(img) ? 'active' : ''}`}
+                        onClick={() => setMainImage(getAssetUrl(img))}
                       >
                         <img
-                          src={`${baseUrl}${img}`}
+                          src={getAssetUrl(img)}
                           alt="Thumbnail"
                         />
                       </div>
@@ -649,7 +649,15 @@ function AboutPage(props) {
 function ProductsPage(props) {
   return (
     <>
-      <Products t={props.t} setRoute={props.setRoute} setPrefilledMessage={props.setPrefilledMessage} lang={props.lang} activeProduct={props.activeProduct} setActiveProduct={props.setActiveProduct} />
+      <Products 
+        t={props.t} 
+        setRoute={props.setRoute} 
+        setPrefilledMessage={props.setPrefilledMessage} 
+        lang={props.lang} 
+        activeProduct={props.activeProduct} 
+        setActiveProduct={props.setActiveProduct}
+        products={props.products}
+      />
       <Contact t={props.t} />
     </>
   )
@@ -1035,7 +1043,7 @@ function LakiPage(props) {
     title: props.t(item.title_key),
     category: props.t(item.category_key),
     excerpt: props.t(item.excerpt_key),
-    img: `${baseUrl}${item.img}`
+    img: getAssetUrl(item.img)
   })))
 
   const latestAdditions = createMemo(() => (props.education?.posters || []).map(item => ({
@@ -1243,7 +1251,7 @@ function ExpertPage(props) {
   const experts = createMemo(() => (props.experts || []).map(doc => ({
     name: props.lang() === 'ar' ? doc.name_ar : doc.name_en,
     role: props.lang() === 'ar' ? doc.role_ar : doc.role_en,
-    img: `${baseUrl}${doc.img}`
+    img: getAssetUrl(doc.img)
   })))
 
   return (
@@ -1558,7 +1566,8 @@ export default function App() {
         name: { ar: p.name_ar, en: p.name_en },
         mainImage: p.main_image,
         images: p.images || [],
-        overview: { ar: p.overview_ar, en: p.overview_en }
+        overview: { ar: p.overview_ar, en: p.overview_en },
+        brochureUrl: p.brochure_url || ''
       })) || [];
       console.log('Fetched products:', mapped.length);
       if (mapped.length === 0) {

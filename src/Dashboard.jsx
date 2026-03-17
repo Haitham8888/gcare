@@ -21,14 +21,21 @@ export default function Dashboard(props) {
         setUploadProgress(0)
         
         try {
+            const privateKey = import.meta.env.VITE_IMAGEKIT_PRIVATE_KEY;
+            const authHeader = btoa(privateKey + ":");
+
             const formData = new FormData()
             formData.append('file', file)
             formData.append('fileName', file.name)
             formData.append('useUniqueFileName', 'true')
+            formData.append('folder', modalType() === 'product' ? '/static/img/products/' : '/static/img/experts/')
             formData.append('publicKey', import.meta.env.VITE_IMAGEKIT_PUBLIC_KEY)
             
             const response = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
                 method: 'POST',
+                headers: {
+                    'Authorization': `Basic ${authHeader}`
+                },
                 body: formData
             })
 
@@ -47,7 +54,7 @@ export default function Dashboard(props) {
             }, 1000)
         } catch (error) {
             console.error('ImageKit Upload Error:', error)
-            alert(props.lang() === 'ar' ? 'فشل الرفع. تأكد من صحة مفاتيح ImageKit في ملف .env' : 'Upload failed. Check ImageKit keys in .env')
+            alert(props.lang() === 'ar' ? `فشل الرفع: ${error.message}` : `Upload failed: ${error.message}`)
             setIsUploading(false)
         }
     }
@@ -98,9 +105,10 @@ export default function Dashboard(props) {
                 name_ar: data.name_ar,
                 name_en: data.name_en,
                 category: data.category,
-                main_image: data.mainImage || uploadURL(),
+                main_image: data.main_image || uploadURL(),
                 overview_ar: data.overview_ar || '',
-                overview_en: data.overview_en || ''
+                overview_en: data.overview_en || '',
+                brochure_url: data.brochure_url || ''
             }
         } else if (modalType() === 'doctor') {
             finalData = {
@@ -109,6 +117,12 @@ export default function Dashboard(props) {
                 role_ar: data.role_ar, 
                 role_en: data.role_en,
                 img: data.img || uploadURL()
+            }
+        } else if (modalType() === 'user') {
+            finalData = {
+                id: data.id || editingItem()?.id,
+                full_name: data.full_name,
+                role: data.role
             }
         }
 
@@ -254,7 +268,7 @@ export default function Dashboard(props) {
                                                                 <Show when={imageUrl} fallback={
                                                                     <div class="table-img" style={{display:'flex','align-items':'center','justify-content':'center'}}><Icon name="package" /></div>
                                                                 }>
-                                                                    <img src={imageUrl.startsWith('http') ? imageUrl : `${import.meta.env.BASE_URL}${imageUrl}`} class="table-img" />
+                                                                    <img src={getAssetUrl(imageUrl)} class="table-img" />
                                                                 </Show>
                                                                 <span style={{"font-weight": 700}}>{displayName}</span>
                                                             </div>
@@ -334,7 +348,11 @@ export default function Dashboard(props) {
                                 </div>
                                 <div class="form-group">
                                     <label>{props.lang() === 'ar' ? 'رابط خارجي للصورة (اختياري)' : 'External Image URL (Optional)'}</label>
-                                    <input value={uploadURL()} onInput={(e) => setUploadURL(e.target.value)} placeholder="https://..." />
+                                    <input name="main_image" value={uploadURL()} onInput={(e) => setUploadURL(e.target.value)} placeholder="https://..." />
+                                </div>
+                                <div class="form-group" style={{"grid-column": "1 / -1"}}>
+                                    <label>{props.lang() === 'ar' ? 'رابط البروشور PDF (Google Drive)' : 'PDF Brochure Link (Google Drive)'}</label>
+                                    <input name="brochure_url" value={editingItem()?.brochure_url || ''} placeholder="https://drive.google.com/..." />
                                 </div>
                                 <div class="form-group" style={{"grid-column": "1 / -1"}}>
                                     <label>{props.lang() === 'ar' ? 'الوصف (عربي)' : 'Description (AR)'}</label>
@@ -362,7 +380,14 @@ export default function Dashboard(props) {
                                 </div>
                             </Show>
 
-                            <Show when={modalType() === 'user'}>
+                             <Show when={modalType() === 'user'}>
+                                <div class="form-group" style={{"grid-column": "1 / -1"}}>
+                                    <label>{props.lang() === 'ar' ? 'رابط المستخدم (Supabase ID)' : 'User ID (Supabase ID)'}</label>
+                                    <input name="id" value={editingItem()?.id || ''} required placeholder="00000000-0000-0000-0000-000000000000" />
+                                    <small style={{display:'block', 'margin-top':'4px', opacity:0.7}}>
+                                        {props.lang() === 'ar' ? 'يجب أن يتطابق مع معرف المستخدم في Supabase Auth' : 'Must match the User ID in Supabase Auth'}
+                                    </small>
+                                </div>
                                 <div class="form-group">
                                     <label>{props.lang() === 'ar' ? 'الاسم الكامل' : 'Full Name'}</label>
                                     <input name="full_name" value={editingItem()?.full_name || ''} required />
