@@ -1146,7 +1146,7 @@ function LakiPage(props) {
             </button>
           </div>
           <div class="laki-hero-image">
-            <img src={getAssetUrl('static/img/G - Care-01.svg')} alt="Women Health" />
+            <img src={getAssetUrl('static/img/HealthEducation/health_edu_5.png')} alt="Women Health" />
           </div>
         </div>
       </section>
@@ -1226,20 +1226,7 @@ function LakiPage(props) {
               <h2 class="laki-section-title">{props.t('lakiPostersTitle')}</h2>
               <div class="laki-articles-grid same-as-articles">
                 <Show when={posterCards().length > 0} fallback={
-                  guideCards().map(item => (
-                    <div class="article-modern-card" onClick={() => setSelectedImg(item.img)}>
-                      <div class="article-card-media">
-                        <img src={item.img} alt="" />
-                        <div class="article-media-overlay">
-                          <h4>{item.title}</h4>
-                        </div>
-                      </div>
-                      <div class="article-card-body">
-                        <h3 class="article-cat">{props.t('lakiPostersTitle')}</h3>
-                        <p class="article-ex">{props.t('lakiGuidesDesc')}</p>
-                      </div>
-                    </div>
-                  ))
+                  <div class="article-empty-card">{props.lang() === 'ar' ? 'لا توجد بوسترات مضافة حالياً' : 'No posters available yet'}</div>
                 }>
                   {posterCards().map(item => (
                     <div class="article-modern-card" onClick={() => setSelectedImg(item.img)}>
@@ -1472,7 +1459,7 @@ function EducationPage(props) {
           <section class="section education-page" id="education-page">
             <div class="container">
               <div class="section-head edu-header-inline">
-                <img src={getAssetUrl('static/img/G - Care-01.svg')} alt="Laki Wa Biwai Logo" class="edu-logo-inline" />
+                <img src={getAssetUrl('static/img/HealthEducation/health_edu_5.png')} alt="Laki Wa Biwai Logo" class="edu-logo-inline" />
                 <h2 class="edu-tagline-text">{props.t('educationSubtitle')}</h2>
               </div>
 

@@ -3184,7 +3184,8 @@ html[dir="ltr"] .coe-value-content {
 }
 
 .program-card.laki-card {
-  background: linear-gradient(135deg, #fff7f6 0%, #ffe8e5 100%);
+  background: url('/static/img/12.png') no-repeat center center;
+  background-size: cover;
   border-bottom: 8px solid #F67C71;
 }
 
@@ -3200,7 +3201,8 @@ html[dir="ltr"] .coe-value-content {
 }
 
 .program-card.expert-card {
-  background: linear-gradient(135deg, #f5fcfd 0%, #e6f6f9 100%);
+  background: url('/static/img/13.png') no-repeat center center;
+  background-size: cover;
   border-bottom: 8px solid #1093a5;
 }
 
@@ -3650,6 +3652,19 @@ html[dir="ltr"] .coe-value-content {
 .article-link-btn:hover {
   color: #0d7a8a;
   border-bottom-color: #0d7a8a;
+}
+
+.article-empty-card {
+  grid-column: 1 / -1;
+  min-height: 180px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-weight: 700;
+  background: #f8fafc;
 }
 
 .article-nav-arrow {
@@ -5031,14 +5046,43 @@ html[dir="rtl"] .expert-nav-btn svg {
     text-align: center;
   }
 
+  .expert-step-display {
+    height: auto;
+    min-height: 320px;
+    width: 100%;
+    overflow: visible;
+  }
+
   .expert-step-slide {
+    position: static;
+    inset: auto;
     flex-direction: column;
     text-align: center;
     gap: 1rem;
+    transform: none;
+    transition: none;
+    display: none;
   }
 
-  .expert-step-display {
-    height: 300px;
+  .expert-step-slide.active {
+    display: flex;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .expert-step-number-heavy {
+    font-size: 3.2rem;
+  }
+
+  .expert-step-info-large h3 {
+    font-size: 1.35rem;
+    margin-bottom: 0.45rem;
+  }
+
+  .expert-step-info-large p {
+    font-size: 1rem;
+    line-height: 1.7;
+    margin: 0;
   }
 }
 
