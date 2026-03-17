@@ -28,6 +28,12 @@ export const getAssetUrl = (path) => {
         cleanPath = cleanPath.substring(baseUrl.length - 1);
     }
     
+    // Keep local video assets on the site origin (ImageKit does not host these paths)
+    if (cleanPath.startsWith('static/vid/')) {
+        const normalizedBase = baseUrl && baseUrl !== '/' ? baseUrl : '/';
+        return `${normalizedBase}${cleanPath}`;
+    }
+
     // Handle specific ImageKit sanitization (spaces to underscores)
     // and decode URI components if they were already encoded in source
     let finalPath = decodeURIComponent(cleanPath).replace(/ /g, '_');

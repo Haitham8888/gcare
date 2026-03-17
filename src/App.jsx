@@ -23,6 +23,19 @@ const socialLinks = [
   { label: 'Instagram', href: 'https://www.instagram.com/G_Careksa' }
 ]
 
+const PRODUCT_CATEGORY_OPTIONS = ['IVD', 'IUD', 'IUS', 'WomanCare']
+
+const normalizeProductCategory = (value) => {
+  const v = String(value || '').trim()
+  if (!v) return 'IVD'
+  const lower = v.toLowerCase()
+  if (lower === 'woman care' || lower === 'womancare' || lower === 'woman_care') return 'WomanCare'
+  if (lower === 'ivd') return 'IVD'
+  if (lower === 'iud') return 'IUD'
+  if (lower === 'ius') return 'IUS'
+  return PRODUCT_CATEGORY_OPTIONS.includes(v) ? v : 'IVD'
+}
+
 function NavBar(props) {
   const [open, setOpen] = createSignal(false)
   const baseUrl = import.meta.env.BASE_URL
@@ -186,7 +199,7 @@ function Hero(props) {
     <section class="section hero" id="hero" role="banner" aria-label={props.t('heroAria')}>
       <div class="hero-overlay" />
       <div class="container hero-content">
-        <HeroInfiniteSlider />
+        <HeroInfiniteSlider education={props.education} />
         <div class="hero-search-overlay">
           <h1 class="hero-main-title">{props.t('heroTitle')}</h1>
           <p class="hero-main-subtitle">{props.t('heroSubtitle')}</p>
@@ -197,19 +210,32 @@ function Hero(props) {
   )
 }
 
-function HeroInfiniteSlider() {
-  const baseUrl = import.meta.env.BASE_URL
+function HeroInfiniteSlider(props) {
+  const introMedia = () => {
+    const main = (props.education?.posters || []).find(p => p.title_ar === 'MAIN' || p.title_ar === 'INTRO');
+    return main ? getAssetUrl(main.img) : getAssetUrl('static/vid/intro.mp4');
+  }
+
+  const isVideo = () => {
+    const media = introMedia();
+    return media.endsWith('.mp4') || media.endsWith('.webm') || media.endsWith('.ogg');
+  }
+
   return (
-    <div class="hero-gallery" aria-label="Hero video">
-      <video
-        class="hero-video"
-        src={`${baseUrl}static/vid/intro.mp4`}
-        autoplay
-        loop
-        muted
-        playsinline
-        aria-label="Intro video"
-      />
+    <div class="hero-gallery" aria-label="Hero media">
+      <Show when={isVideo()} fallback={
+        <img src={introMedia()} class="hero-video" alt="Hero Background" style={{ "object-fit": "cover" }} />
+      }>
+        <video
+          class="hero-video"
+          src={introMedia()}
+          autoplay
+          loop
+          muted
+          playsinline
+          aria-label="Main site video"
+        />
+      </Show>
     </div>
   )
 }
@@ -493,17 +519,22 @@ function SectionDivider() {
 }
 
 function HomePage(props) {
+  /*
+    Website developed by Haitham Hattam
+    Website: https://haitham.info
+    LinkedIn: https://www.linkedin.com/in/haithamhattan/
+  */
   return (
     <>
-      <Hero t={props.t} setActiveProduct={props.setActiveProduct} products={props.products} />
+      <Hero t={props.t} setActiveProduct={props.setActiveProduct} products={props.products} education={props.education} />
       <SectionDivider />
       <HomeAbout t={props.t} />
       <SectionDivider />
-      <ClientsSlider t={props.t} lang={props.lang} />
+      <ClientsSlider t={props.t} partners={props.partners} />
       <SectionDivider />
       <Visitors t={props.t} />
       <SectionDivider />
-      <Education t={props.t} lang={props.lang} />
+      <Education t={props.t} lang={props.lang} education={props.education} />
       <SectionDivider />
       <Contact t={props.t} />
     </>
@@ -513,7 +544,7 @@ function HomePage(props) {
 function AboutPage(props) {
   return (
     <>
-      <About t={props.t} />
+      <About t={props.t} education={props.education} />
 
       {/* Mission Section */}
       <section class="section our-msg" id="mission">
@@ -793,19 +824,24 @@ function HomeAbout(props) {
 }
 
 function About(props) {
-  const baseUrl = import.meta.env.BASE_URL
-  const images = [
-    'd263efc0-0a5b-4029-aa7d-a12a399dfd5e.jpg',
-    '45a473c7-debf-48cc-9a41-b9d61c38a0f1.jpg',
-    '0c672357-323e-4792-8605-0e4f67c43db9.jpg',
-    'ba862794-b872-49ac-be68-d173678fcbed.jpg',
-    'b67d7fb0-5715-490d-8482-2d8252ea7ad3.jpg'
-  ]
+  const images = createMemo(() => {
+    const posters = (props.education?.posters || []).filter(
+      (p) => p.img && p.title_ar !== 'MAIN' && p.title_ar !== 'INTRO'
+    )
+    const media = posters
+      .filter((p) => {
+        const img = (p.img || '').toLowerCase()
+        return !img.endsWith('.mp4') && !img.endsWith('.webm')
+      })
+      .map((p) => getAssetUrl(p.img))
+    return media.length > 0 ? media : [getAssetUrl('static/img/G - Care-01.svg')]
+  })
   const [current, setCurrent] = createSignal(0)
 
   createEffect(() => {
+    if (images().length <= 1) return
     const timer = setInterval(() => {
-      setCurrent((c) => (c + 1) % images.length)
+      setCurrent((c) => (c + 1) % images().length)
     }, 3000)
     onCleanup(() => clearInterval(timer))
   })
@@ -828,7 +864,7 @@ function About(props) {
           <div class="about-logo-v2">
             <img
               class="about-event-img rounded-card"
-              src={getAssetUrl(`static/img/${images[current()]}`)}
+              src={images()[current()]}
               alt="G-Care Event"
               style={{ transition: 'opacity 0.5s ease-in-out' }}
             />
@@ -840,18 +876,7 @@ function About(props) {
 }
 
 function ClientsSlider(props) {
-  const baseUrl = import.meta.env.BASE_URL
-  const clients = [
-    getAssetUrl('static/img/partners/dallahrevampedLogo.svg'),
-    getAssetUrl('static/img/partners/dkt.png'),
-    getAssetUrl('static/img/partners/euro.png'),
-    getAssetUrl('static/img/partners/Fakkeh.webp'),
-    getAssetUrl('static/img/partners/logo_valmed_alt.svg'),
-    getAssetUrl('static/img/partners/PCD.png'),
-    getAssetUrl('static/img/partners/pregnalogo.png'),
-    getAssetUrl('static/img/partners/saudi_german.svg'),
-    getAssetUrl('static/img/partners/sulaiman.svg')
-  ]
+  const clients = () => (props.partners || []).map(p => getAssetUrl(p.img)).filter(Boolean)
 
   return (
     <section class="section clients-section" aria-label={props.t('clientsAria')}>
@@ -860,25 +885,27 @@ function ClientsSlider(props) {
           <h2 class="section-title">{props.t('clientsTitle')}</h2>
         </div>
         <div class="clients-slider">
-          <div class="clients-track" classList={{
-            'en': (props.lang ? props.lang() === 'en' : document.documentElement.dir === 'ltr'),
-            'ar': (props.lang ? props.lang() === 'ar' : document.documentElement.dir === 'rtl')
-          }}>
-            <div class="clients-group">
-              {clients.map((url) => (
-                <div class="client-logo">
-                  <img src={url} alt="" loading="lazy" />
-                </div>
-              ))}
+          <Show when={clients().length > 0} fallback={<p style={{"text-align": "center", color: "var(--muted)"}}>{props.t('loading')}</p>}>
+            <div class="clients-track" classList={{
+              'en': (props.lang ? props.lang() === 'en' : document.documentElement.dir === 'ltr'),
+              'ar': (props.lang ? props.lang() === 'ar' : document.documentElement.dir === 'rtl')
+            }}>
+              <div class="clients-group">
+                {clients().map((url) => (
+                  <div class="client-logo">
+                    <img src={url} alt="" loading="lazy" />
+                  </div>
+                ))}
+              </div>
+              <div class="clients-group">
+                {clients().map((url) => (
+                  <div class="client-logo">
+                    <img src={url} alt="" loading="lazy" />
+                  </div>
+                ))}
+              </div>
             </div>
-            <div class="clients-group">
-              {clients.map((url) => (
-                <div class="client-logo">
-                  <img src={url} alt="" loading="lazy" />
-                </div>
-              ))}
-            </div>
-          </div>
+          </Show>
         </div>
       </div>
     </section>
@@ -943,22 +970,34 @@ function Visitors(props) {
 }
 
 function Education(props) {
-  const baseUrl = import.meta.env.BASE_URL
-  const galleryImages = [
-    { src: getAssetUrl('static/img/d263efc0-0a5b-4029-aa7d-a12a399dfd5e.jpg'), title: props.t('galleryItem1Title'), alt: 'MedGo Conference' },
-    { src: getAssetUrl('static/img/45a473c7-debf-48cc-9a41-b9d61c38a0f1.jpg'), title: props.t('galleryItem2Title'), alt: 'Medical Tech Workshop' },
-    { src: getAssetUrl('static/img/9c4be885-1bf0-4a93-ba83-9cafe6e79c91-591x456.jpg'), title: props.t('galleryItem3Title'), alt: 'Medical Delegation Visit' },
-    { src: getAssetUrl('static/img/0c672357-323e-4792-8605-0e4f67c43db9.jpg'), title: props.t('galleryItem4Title'), alt: 'Global Health Exhibition' },
-    { src: getAssetUrl('static/img/ba862794-b872-49ac-be68-d173678fcbed.jpg'), title: props.t('galleryItem5Title'), alt: 'Strategic Partnership' },
-    { src: getAssetUrl('static/img/b67d7fb0-5715-490d-8482-2d8252ea7ad3.jpg'), title: props.t('galleryItem6Title'), alt: 'Medical Training Session' }
-  ]
+  const isPostersLoaded = () => Array.isArray(props.education?.posters)
+
+  const galleryImages = createMemo(() => {
+    if (!isPostersLoaded()) return []
+
+    const posters = (props.education?.posters || []).filter(
+      (p) => p.title_ar !== 'MAIN' && p.title_ar !== 'INTRO'
+    );
+    if (posters.length > 0) {
+      const sorted = [...posters].sort((a,b) => {
+        return 0;
+      });
+      return sorted.map(p => ({
+        src: getAssetUrl(p.img),
+        title: (p.title_ar === 'MAIN' || p.title_ar === 'INTRO' || p.title_ar === 'IMAGE' || p.title_ar === '---' || !p.title_ar) ? '' : (props.lang() === 'ar' ? p.title_ar : p.title_en),
+        alt: props.lang() === 'ar' ? p.title_ar : p.title_en,
+        type: (p.img.toLowerCase().endsWith('.mp4') || p.img.toLowerCase().endsWith('.webm')) ? 'video' : 'image'
+      }));
+    }
+    return []
+  })
 
   const [currentIndex, setCurrentIndex] = createSignal(0)
   const [isHovered, setIsHovered] = createSignal(false)
 
   // Auto-play switch
   createEffect(() => {
-    if (isHovered()) return
+    if (isHovered() || galleryImages().length <= 1) return
     const timer = setInterval(() => {
       nextSlide()
     }, 5000)
@@ -966,11 +1005,13 @@ function Education(props) {
   })
 
   const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % galleryImages.length)
+    if (galleryImages().length === 0) return
+    setCurrentIndex((prev) => (prev + 1) % galleryImages().length)
   }
 
   const prevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + galleryImages.length) % galleryImages.length)
+    if (galleryImages().length === 0) return
+    setCurrentIndex((prev) => (prev - 1 + galleryImages().length) % galleryImages().length)
   }
 
   return (
@@ -987,40 +1028,51 @@ function Education(props) {
         </div>
 
         <div class="gallery-slider-wrapper">
-          <button class="gallery-nav-btn prev" onClick={prevSlide} aria-label="Previous">
+          <button class="gallery-nav-btn prev" onClick={prevSlide} aria-label="Previous" disabled={galleryImages().length === 0}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="15 18 9 12 15 6"></polyline>
             </svg>
           </button>
 
           <div class="gallery-slider-container">
-            <div
-              class="gallery-slider-track"
-              style={{
-                transform: `translateX(-${currentIndex() * 100}%)`
-              }}
+            <Show
+              when={galleryImages().length > 0}
+              fallback={<div class="gallery-empty-state">{props.t('loading')}</div>}
             >
-              {galleryImages.map((image) => (
-                <div class="gallery-slide">
-                  <div class="slide-content-wrapper">
-                    <img src={image.src} alt={image.alt} class="gallery-slide-img" />
-                    <div class="slide-caption">
-                      <h3>{image.title}</h3>
+              <div
+                class="gallery-slider-track"
+                style={{
+                  transform: `translateX(-${currentIndex() * 100}%)`
+                }}
+              >
+                {galleryImages().map((image) => (
+                  <div class="gallery-slide">
+                    <div class="slide-content-wrapper">
+                      <Show when={image.type === 'video'} fallback={
+                        <img src={image.src} alt={image.alt} class="gallery-slide-img" />
+                      }>
+                        <video src={image.src} class="gallery-slide-img" autoplay loop muted playsinline />
+                      </Show>
+                      {image.title && (
+                        <div class="slide-caption">
+                          <h3>{image.title}</h3>
+                        </div>
+                      )}
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </Show>
           </div>
 
-          <button class="gallery-nav-btn next" onClick={nextSlide} aria-label="Next">
+          <button class="gallery-nav-btn next" onClick={nextSlide} aria-label="Next" disabled={galleryImages().length === 0}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="9 18 15 12 9 6"></polyline>
             </svg>
           </button>
 
           <div class="gallery-dots">
-            {galleryImages.map((_, index) => (
+            {galleryImages().map((_, index) => (
               <button
                 class={`gallery-dot ${currentIndex() === index ? 'active' : ''}`}
                 onClick={() => setCurrentIndex(index)}
@@ -1038,25 +1090,43 @@ function LakiPage(props) {
   const baseUrl = import.meta.env.BASE_URL
   const [selectedImg, setSelectedImg] = createSignal(null)
 
-  const contentSeries = createMemo(() => (props.education?.articles || []).map(item => ({
-    ...item,
-    title: props.t(item.title_key),
-    category: props.t(item.category_key),
-    excerpt: props.t(item.excerpt_key),
-    img: getAssetUrl(item.img)
-  })))
+  const contentSeries = createMemo(() => (props.education?.articles || []).map(item => {
+    const title = item.title_ar || item.title_en ? (props.lang() === 'ar' ? item.title_ar : item.title_en) : props.t(item.title_key);
+    const category = item.category_ar || item.category_en ? (props.lang() === 'ar' ? item.category_ar : item.category_en) : props.t(item.category_key);
+    const excerpt = item.excerpt_ar || item.excerpt_en ? (props.lang() === 'ar' ? item.excerpt_ar : item.excerpt_en) : props.t(item.excerpt_key);
+    
+    return {
+      ...item,
+      title,
+      category,
+      excerpt,
+      linkUrl: item.link_url || '',
+      img: getAssetUrl(item.img)
+    };
+  }))
 
-  const latestAdditions = createMemo(() => (props.education?.posters || []).map(item => ({
-    ...item,
-    title: props.t(item.title_key),
-    img: getAssetUrl(item.img)
-  })))
+  const guideCards = createMemo(() => contentSeries().slice(0, 3))
 
-  const posters = [
-    { id: 1, title: props.t('lakiPoster1'), img: getAssetUrl('static/img/d263efc0-0a5b-4029-aa7d-a12a399dfd5e.jpg') },
-    { id: 2, title: props.t('lakiPoster2'), img: getAssetUrl('static/img/b67d7fb0-5715-490d-8482-2d8252ea7ad3.jpg') },
-    { id: 3, title: props.t('lakiPoster3'), img: getAssetUrl('static/img/9c4be885-1bf0-4a93-ba83-9cafe6e79c91-591x456.jpg') }
-  ]
+  const posterCards = createMemo(() => {
+    const posters = (props.education?.posters || []).filter(
+      (p) => p.img && p.title_ar !== 'MAIN' && p.title_ar !== 'INTRO'
+    )
+
+    const imagePosters = posters
+      .filter((p) => {
+        const img = (p.img || '').toLowerCase()
+        return !img.endsWith('.mp4') && !img.endsWith('.webm')
+      })
+      .slice(0, 3)
+      .map((p, index) => ({
+        title: (props.lang() === 'ar' ? p.title_ar : p.title_en) || props.t(`lakiPoster${index + 1}`),
+        category: props.t('lakiPostersTitle'),
+        excerpt: props.t('lakiGuidesDesc'),
+        img: getAssetUrl(p.img)
+      }))
+
+    return imagePosters
+  })
 
   return (
     <div class="laki-page-content">
@@ -1076,7 +1146,7 @@ function LakiPage(props) {
             </button>
           </div>
           <div class="laki-hero-image">
-            <img src={getAssetUrl('static/img/HealthEducation/health_edu_1.png')} alt="Women Health" />
+            <img src={getAssetUrl('static/img/G - Care-01.svg')} alt="Women Health" />
           </div>
         </div>
       </section>
@@ -1092,7 +1162,7 @@ function LakiPage(props) {
           <div class="articles-slider-container">
             <div class="laki-articles-grid">
               {contentSeries().map(item => (
-                <div class="article-modern-card" onClick={() => setSelectedImg(item.img)}>
+                <div class="article-modern-card" onClick={() => item.linkUrl ? window.open(item.linkUrl, '_blank', 'noopener,noreferrer') : setSelectedImg(item.img)}>
                   <div class="article-card-media">
                     <img src={item.img} alt="" />
                     <div class="article-media-overlay">
@@ -1102,6 +1172,17 @@ function LakiPage(props) {
                   <div class="article-card-body">
                     <h3 class="article-cat">{item.category}</h3>
                     <p class="article-ex">{item.excerpt}</p>
+                    <Show when={item.linkUrl}>
+                      <a
+                        href={item.linkUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="article-link-btn"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {props.lang() === 'ar' ? 'رابط المقال' : 'Open Article'}
+                      </a>
+                    </Show>
                   </div>
                 </div>
               ))}
@@ -1120,55 +1201,68 @@ function LakiPage(props) {
 
       <section class="section laki-guides-v2">
         <div class="container">
-          <div class="guides-premium-layout">
-            <div class="guides-info-col">
+          <div class="laki-content-dual-layout">
+            <div class="laki-content-block">
               <h2 class="laki-section-title">{props.t('lakiLatestAdditions')}</h2>
-              <p class="laki-section-subtitle-v2">{props.t('lakiGuidesDesc')}</p>
-              <button class="btn btn-pink laki-explore-btn mt-6">{props.t('lakiBrowseGuides')}</button>
+              <div class="laki-articles-grid same-as-articles">
+                {guideCards().map(item => (
+                  <div class="article-modern-card" onClick={() => setSelectedImg(item.img)}>
+                    <div class="article-card-media">
+                      <img src={item.img} alt="" />
+                      <div class="article-media-overlay">
+                        <h4>{item.title}</h4>
+                      </div>
+                    </div>
+                    <div class="article-card-body">
+                      <h3 class="article-cat">{item.category}</h3>
+                      <p class="article-ex">{item.excerpt}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <div class="guides-gallery-col">
-              <div class="guides-slider-wrapper-v2">
-                <button class="guide-nav-btn prev">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="15 18 9 12 15 6" /></svg>
-                </button>
-
-                <div class="guides-portrait-grid">
-                  {latestAdditions().map(item => (
-                    <div class="port-guide-card" onClick={() => setSelectedImg(item.img)}>
-                      <div class="port-guide-visual">
+            <div class="laki-content-block">
+              <h2 class="laki-section-title">{props.t('lakiPostersTitle')}</h2>
+              <div class="laki-articles-grid same-as-articles">
+                <Show when={posterCards().length > 0} fallback={
+                  guideCards().map(item => (
+                    <div class="article-modern-card" onClick={() => setSelectedImg(item.img)}>
+                      <div class="article-card-media">
                         <img src={item.img} alt="" />
-                        <div class="port-guide-overlay"></div>
+                        <div class="article-media-overlay">
+                          <h4>{item.title}</h4>
+                        </div>
                       </div>
-                      <div class="port-guide-footer">
-                        <span class="port-read-more">{props.t('lakiReadMore')}</span>
+                      <div class="article-card-body">
+                        <h3 class="article-cat">{props.t('lakiPostersTitle')}</h3>
+                        <p class="article-ex">{props.t('lakiGuidesDesc')}</p>
+                      </div>
+                    </div>
+                  ))
+                }>
+                  {posterCards().map(item => (
+                    <div class="article-modern-card" onClick={() => setSelectedImg(item.img)}>
+                      <div class="article-card-media">
+                        <img src={item.img} alt="" />
+                        <div class="article-media-overlay">
+                          <h4>{item.title}</h4>
+                        </div>
+                      </div>
+                      <div class="article-card-body">
+                        <h3 class="article-cat">{item.category}</h3>
+                        <p class="article-ex">{item.excerpt}</p>
                       </div>
                     </div>
                   ))}
-                </div>
+                </Show>
+              </div>
 
-                <button class="guide-nav-btn next">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6" /></svg>
+              <div class="laki-articles-footer">
+                <button class="btn btn-pink laki-explore-btn-lower" onClick={() => (window.location.hash = '#contact-page')}>
+                  {props.t('lakiBrowseGuides')}
                 </button>
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="section laki-posters">
-        <div class="container">
-          <h2 class="laki-section-title text-center mb-4">{props.t('lakiPostersTitle')}</h2>
-          <div class="resource-grid">
-            {posters.map(item => (
-              <div class="resource-card" onClick={() => setSelectedImg(item.img)}>
-                <div class="resource-thumb"><img src={item.img} alt="" /></div>
-                <h3>{item.title}</h3>
-              </div>
-            ))}
-            <div class="resource-card more-card">
-              <div class="resource-thumb more-placeholder"><span>{props.t('lakiMore')}</span></div>
-              <h3>{props.t('lakiExploreMore')}</h3>
             </div>
           </div>
         </div>
@@ -1270,7 +1364,7 @@ function ExpertPage(props) {
             <a href="https://wa.me/966552527862" class="btn btn-primary expert-cta-btn">{props.t('expertJoinAction')}</a>
           </div>
           <div class="expert-hero-image">
-            <img src={getAssetUrl('static/img/HealthEducation/health_edu_2.png')} alt="Medical Expert" />
+            <img src={getAssetUrl('static/img/G - Care-01.svg')} alt="Medical Expert" />
           </div>
         </div>
       </section>
@@ -1378,7 +1472,7 @@ function EducationPage(props) {
           <section class="section education-page" id="education-page">
             <div class="container">
               <div class="section-head edu-header-inline">
-                <img src={getAssetUrl('static/img/HealthEducation/health_edu_5.png')} alt="Laki Wa Biwai Logo" class="edu-logo-inline" />
+                <img src={getAssetUrl('static/img/G - Care-01.svg')} alt="Laki Wa Biwai Logo" class="edu-logo-inline" />
                 <h2 class="edu-tagline-text">{props.t('educationSubtitle')}</h2>
               </div>
 
@@ -1443,7 +1537,7 @@ function EducationPage(props) {
             </div>
           </section>
         )}
-        {eduRoute() === 'laki' && <LakiPage t={props.t} setEduRoute={setEduRoute} education={props.education} />}
+        {eduRoute() === 'laki' && <LakiPage t={props.t} setEduRoute={setEduRoute} education={props.education} lang={props.lang} />}
         {eduRoute() === 'expert' && <ExpertPage t={props.t} setEduRoute={setEduRoute} experts={props.experts} lang={props.lang} />}
       </div>
       <Contact t={props.t} />
@@ -1564,6 +1658,7 @@ export default function App() {
       const mapped = data?.map(p => ({
         ...p,
         name: { ar: p.name_ar, en: p.name_en },
+        category: normalizeProductCategory(p.category),
         mainImage: p.main_image,
         images: p.images || [],
         overview: { ar: p.overview_ar, en: p.overview_en },
@@ -1605,9 +1700,14 @@ export default function App() {
   });
 
   const [education] = createResource(async () => {
-    const { data: articles } = await supabase.from('articles').select('*');
-    const { data: posters } = await supabase.from('posters').select('*');
+    const { data: articles } = await supabase.from('articles').select('*').order('created_at', { ascending: false });
+    const { data: posters } = await supabase.from('posters').select('*').order('created_at', { ascending: false });
     return { articles: articles || [], posters: posters || [] };
+  });
+
+  const [partners] = createResource(async () => {
+    const { data } = await supabase.from('partners').select('*');
+    return data || [];
   });
 
   const translations = translationsData
@@ -1660,19 +1760,34 @@ export default function App() {
     })
   })
 
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut()
+    } finally {
+      window.location.hash = '#dashboard'
+      setRoute('dashboard')
+    }
+  }
+
   return (
     <div class="page">
       {route() !== 'dashboard' && <NavBar t={t} lang={lang} setLang={setLang} />}
       {route() === 'products' ? <ProductsPage t={t} setRoute={setRoute} setPrefilledMessage={setPrefilledMessage} lang={lang} activeProduct={activeProduct} setActiveProduct={setActiveProduct} products={products()} /> : null}
       {route() === 'contact' ? <ContactPage t={t} prefilledMessage={prefilledMessage} setPrefilledMessage={setPrefilledMessage} /> : null}
       {route() === 'education' ? <EducationPage t={t} education={education()} experts={experts()} lang={lang} /> : null}
-      {route() === 'about' ? <AboutPage t={t} /> : null}
+      {route() === 'about' ? <AboutPage t={t} education={education()} /> : null}
       {route() === 'dashboard' ? (
         <Show when={isLoggedIn()} fallback={<LoginPage t={t} lang={lang} />}>
-          <Dashboard t={t} setRoute={setRoute} lang={lang} setLang={setLang} products={products()} experts={experts()} profiles={profiles()} />
+          <Dashboard t={t} setRoute={setRoute} lang={lang} setLang={setLang} onLogout={handleLogout} products={products()} experts={experts()} profiles={profiles()} education={education()} partners={partners()} refreshAll={() => {
+            products.refetch();
+            experts.refetch();
+            profiles.refetch();
+            education.refetch();
+            partners.refetch();
+          }} />
         </Show>
       ) : null}
-      {route() === 'home' ? <HomePage t={t} lang={lang} setActiveProduct={setActiveProduct} products={products()} education={education()} /> : null}
+      {route() === 'home' ? <HomePage t={t} lang={lang} setActiveProduct={setActiveProduct} products={products()} education={education()} partners={partners()} /> : null}
     </div>
   )
 }
