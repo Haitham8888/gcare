@@ -41,15 +41,20 @@ function Icon(props) {
     return icons[props.name] || null;
 }
 
+function SocialBadge(props) {
+    const labels = {
+        linkedin: 'in',
+        x: 'X',
+        tiktok: 'TT',
+        instagram: 'IG',
+        whatsapp: 'WA'
+    };
+
+    return <span class="dash-social-icon-badge" aria-hidden="true">{labels[props.platform] || '#'}</span>;
+}
+
 export default function Dashboard(props) {
     const productCategoryOptions = ['IVD', 'IUD', 'IUS', 'WomanCare'];
-    const socialIconMap = {
-        linkedin: 'static/img/in.svg',
-        x: 'static/img/x.svg',
-        tiktok: 'static/img/tiktok.svg',
-        instagram: 'static/img/insta.svg',
-        whatsapp: 'static/img/whatsapp.svg'
-    };
     const defaultContactSettings = {
         social_links: [
             { key: 'linkedin', label: 'LinkedIn', href: 'https://www.linkedin.com/company/goldencare-medical-company/', enabled: true },
@@ -668,7 +673,7 @@ export default function Dashboard(props) {
                                                         checked={item.enabled}
                                                         onChange={(e) => updateContactField('social_links', index(), 'enabled', e.currentTarget.checked)}
                                                     />
-                                                    <img src={getAssetUrl(socialIconMap[item.key])} alt="" class="dash-social-icon" />
+                                                    <SocialBadge platform={item.key} />
                                                     <span>{item.label}</span>
                                                 </div>
                                                 <input
