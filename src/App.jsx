@@ -1731,7 +1731,7 @@ export default function App() {
   const [session, setSession] = createSignal(null)
   const isLoggedIn = () => !!session()
 
-  const [products] = createResource(async () => {
+  const [products, { refetch: refetchProducts }] = createResource(async () => {
     try {
       const { data, error } = await supabase.from('products').select('*');
       if (error) {
@@ -1759,7 +1759,7 @@ export default function App() {
     }
   });
 
-  const [experts] = createResource(async () => {
+  const [experts, { refetch: refetchExperts }] = createResource(async () => {
     try {
       const { data, error } = await supabase.from('doctors').select('*');
       if (error) return [];
@@ -1777,23 +1777,23 @@ export default function App() {
     }
   });
 
-  const [profiles] = createResource(async () => {
+  const [profiles, { refetch: refetchProfiles }] = createResource(async () => {
     const { data } = await supabase.from('profiles').select('*');
     return data || [];
   });
 
-  const [education] = createResource(async () => {
+  const [education, { refetch: refetchEducation }] = createResource(async () => {
     const { data: articles } = await supabase.from('articles').select('*').order('created_at', { ascending: false });
     const { data: posters } = await supabase.from('posters').select('*').order('created_at', { ascending: false });
     return { articles: articles || [], posters: posters || [] };
   });
 
-  const [partners] = createResource(async () => {
+  const [partners, { refetch: refetchPartners }] = createResource(async () => {
     const { data } = await supabase.from('partners').select('*');
     return data || [];
   });
 
-  const [contactSettings] = createResource(async () => {
+  const [contactSettings, { refetch: refetchContactSettings }] = createResource(async () => {
     const { data, error } = await supabase
       .from('site_contact_settings')
       .select('social_links, phones, emails, booking_url')
@@ -1920,12 +1920,12 @@ export default function App() {
             }
           >
             <Dashboard t={t} setRoute={setRoute} lang={lang} setLang={setLang} onLogout={handleLogout} currentUserRole={currentUserRole()} products={products()} experts={experts()} profiles={profiles()} education={education()} partners={partners()} contactSettings={contactSettings()} refreshAll={() => {
-              products.refetch();
-              experts.refetch();
-              profiles.refetch();
-              education.refetch();
-              partners.refetch();
-              contactSettings.refetch();
+              refetchProducts();
+              refetchExperts();
+              refetchProfiles();
+              refetchEducation();
+              refetchPartners();
+              refetchContactSettings();
             }} />
           </Show>
         </Show>
