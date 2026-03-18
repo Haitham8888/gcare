@@ -14,15 +14,18 @@ export default function LoginPage(props) {
         setLoading(true)
 
         try {
+            const normalizedEmail = email().trim().toLowerCase()
             const { error: authError } = await supabase.auth.signInWithPassword({
-                email: email(),
+                email: normalizedEmail,
                 password: password(),
             })
 
             if (authError) throw authError
             // Success: App.jsx listener will handle redirection/state
         } catch (err) {
-            setError(props.lang() === 'ar' ? 'بيانات الاعتماد غير صحيحة أو الحساب غير موجود' : 'Invalid credentials or user not found')
+            console.error('Login error:', err)
+            const fallback = props.lang() === 'ar' ? 'بيانات الاعتماد غير صحيحة أو الحساب غير موجود' : 'Invalid credentials or user not found'
+            setError(err?.message || fallback)
             setLoading(false)
         }
     }
