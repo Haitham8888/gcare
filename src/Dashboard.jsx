@@ -127,6 +127,9 @@ export default function Dashboard(props) {
     const [contactForm, setContactForm] = createSignal(normalizeContactSettings(props.contactSettings));
 
     const isPublisher = createMemo(() => props.currentUserRole === 'publisher');
+    const publisherAllowedTabs = ['articles', 'media'];
+    const publisherAllowedModalTypes = ['article', 'poster'];
+    const publisherAllowedDeleteTables = ['articles', 'posters'];
 
     const setActiveTabPersisted = (tabId) => {
         setActiveTab(tabId);
@@ -146,7 +149,7 @@ export default function Dashboard(props) {
 
     const tabs = createMemo(() => {
         if (!isPublisher()) return allTabs();
-        return allTabs().filter(tab => ['articles', 'media', 'contact'].includes(tab.id));
+        return allTabs().filter(tab => publisherAllowedTabs.includes(tab.id));
     });
 
     createEffect(() => {
@@ -240,6 +243,10 @@ export default function Dashboard(props) {
     };
 
     const openModal = (type, item = null) => {
+        if (isPublisher() && !publisherAllowedModalTypes.includes(type)) {
+            alert(props.lang() === 'ar' ? 'غير مصرح لك بهذه العملية' : 'You are not allowed to perform this action');
+            return;
+        }
         setModalType(type);
         setEditingItem(item);
         setUploadURL(item?.img || item?.main_image || '');
@@ -249,6 +256,12 @@ export default function Dashboard(props) {
 
     const handleSave = async (e) => {
         e.preventDefault();
+
+        if (isPublisher() && !publisherAllowedModalTypes.includes(modalType())) {
+            alert(props.lang() === 'ar' ? 'غير مصرح لك بهذه العملية' : 'You are not allowed to perform this action');
+            return;
+        }
+
         setLoading(true);
         const formData = new FormData(e.target);
         const data = Object.fromEntries(formData.entries());
@@ -393,6 +406,12 @@ export default function Dashboard(props) {
 
     const handleDelete = async (table, id) => {
         if (!confirm(props.lang() === 'ar' ? 'هل أنت متأكد من الحذف؟' : 'Are you sure you want to delete?')) return;
+
+        if (isPublisher() && !publisherAllowedDeleteTables.includes(table)) {
+            alert(props.lang() === 'ar' ? 'غير مصرح لك بهذه العملية' : 'You are not allowed to perform this action');
+            return;
+        }
+
         try {
             if (table === 'users') {
                 const { error } = await supabase.rpc('admin_delete_dashboard_user', {
@@ -429,6 +448,11 @@ export default function Dashboard(props) {
     };
 
     const saveContactSettings = async () => {
+        if (isPublisher()) {
+            alert(props.lang() === 'ar' ? 'غير مصرح لك بهذه العملية' : 'You are not allowed to perform this action');
+            return;
+        }
+
         setLoading(true);
         try {
             const payload = contactForm();
