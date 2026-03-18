@@ -126,7 +126,7 @@ export default function Dashboard(props) {
     const [isUploading, setIsUploading] = createSignal(false);
     const [contactForm, setContactForm] = createSignal(normalizeContactSettings(props.contactSettings));
 
-    const isPublisher = createMemo(() => props.currentUserRole === 'publisher');
+    const isAdmin = createMemo(() => props.currentUserRole === 'admin');
     const publisherAllowedTabs = ['articles', 'media'];
     const publisherAllowedModalTypes = ['article', 'poster'];
     const publisherAllowedDeleteTables = ['articles', 'posters'];
@@ -148,7 +148,7 @@ export default function Dashboard(props) {
     ]);
 
     const tabs = createMemo(() => {
-        if (!isPublisher()) return allTabs();
+        if (isAdmin()) return allTabs();
         return allTabs().filter(tab => publisherAllowedTabs.includes(tab.id));
     });
 
@@ -243,7 +243,7 @@ export default function Dashboard(props) {
     };
 
     const openModal = (type, item = null) => {
-        if (isPublisher() && !publisherAllowedModalTypes.includes(type)) {
+        if (!isAdmin() && !publisherAllowedModalTypes.includes(type)) {
             alert(props.lang() === 'ar' ? 'غير مصرح لك بهذه العملية' : 'You are not allowed to perform this action');
             return;
         }
@@ -257,7 +257,7 @@ export default function Dashboard(props) {
     const handleSave = async (e) => {
         e.preventDefault();
 
-        if (isPublisher() && !publisherAllowedModalTypes.includes(modalType())) {
+        if (!isAdmin() && !publisherAllowedModalTypes.includes(modalType())) {
             alert(props.lang() === 'ar' ? 'غير مصرح لك بهذه العملية' : 'You are not allowed to perform this action');
             return;
         }
@@ -407,7 +407,7 @@ export default function Dashboard(props) {
     const handleDelete = async (table, id) => {
         if (!confirm(props.lang() === 'ar' ? 'هل أنت متأكد من الحذف؟' : 'Are you sure you want to delete?')) return;
 
-        if (isPublisher() && !publisherAllowedDeleteTables.includes(table)) {
+        if (!isAdmin() && !publisherAllowedDeleteTables.includes(table)) {
             alert(props.lang() === 'ar' ? 'غير مصرح لك بهذه العملية' : 'You are not allowed to perform this action');
             return;
         }
@@ -448,7 +448,7 @@ export default function Dashboard(props) {
     };
 
     const saveContactSettings = async () => {
-        if (isPublisher()) {
+        if (!isAdmin()) {
             alert(props.lang() === 'ar' ? 'غير مصرح لك بهذه العملية' : 'You are not allowed to perform this action');
             return;
         }
