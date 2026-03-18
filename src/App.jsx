@@ -1809,7 +1809,7 @@ export default function App() {
   });
 
   const [currentUserRole] = createResource(session, async (activeSession) => {
-    if (!activeSession?.user?.id) return 'publisher';
+    if (!activeSession?.user?.id) return null;
     const { data, error } = await supabase
       .from('profiles')
       .select('role')
@@ -1823,6 +1823,11 @@ export default function App() {
 
     return data?.role || 'publisher';
   });
+
+  const dashboardReady = createMemo(() => {
+    if (!isLoggedIn()) return true
+    return !currentUserRole.loading && !!currentUserRole()
+  })
 
   const translations = translationsData
 
@@ -1906,14 +1911,23 @@ export default function App() {
       {route() === 'about' ? <AboutPage t={t} education={education()} /> : null}
       {route() === 'dashboard' ? (
         <Show when={isLoggedIn()} fallback={<LoginPage t={t} lang={lang} />}>
-          <Dashboard t={t} setRoute={setRoute} lang={lang} setLang={setLang} onLogout={handleLogout} currentUserRole={currentUserRole() || 'publisher'} products={products()} experts={experts()} profiles={profiles()} education={education()} partners={partners()} contactSettings={contactSettings()} refreshAll={() => {
-            products.refetch();
-            experts.refetch();
-            profiles.refetch();
-            education.refetch();
-            partners.refetch();
-            contactSettings.refetch();
-          }} />
+          <Show
+            when={dashboardReady()}
+            fallback={
+              <div style={{ padding: '2rem', 'text-align': 'center', color: '#64748b', 'font-weight': 700 }}>
+                {lang() === 'ar' ? 'جاري تحميل لوحة التحكم...' : 'Loading dashboard...'}
+              </div>
+            }
+          >
+            <Dashboard t={t} setRoute={setRoute} lang={lang} setLang={setLang} onLogout={handleLogout} currentUserRole={currentUserRole()} products={products()} experts={experts()} profiles={profiles()} education={education()} partners={partners()} contactSettings={contactSettings()} refreshAll={() => {
+              products.refetch();
+              experts.refetch();
+              profiles.refetch();
+              education.refetch();
+              partners.refetch();
+              contactSettings.refetch();
+            }} />
+          </Show>
         </Show>
       ) : null}
       {route() === 'home' ? <HomePage t={t} lang={lang} setActiveProduct={setActiveProduct} products={products()} education={education()} partners={partners()} contactSettings={contactSettings()} /> : null}

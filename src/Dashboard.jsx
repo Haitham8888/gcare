@@ -2,6 +2,27 @@ import { createSignal, createMemo, Show, For, createEffect } from 'solid-js';
 import { supabase, getAssetUrl } from './supabaseClient';
 import './Dashboard.css';
 
+const DASHBOARD_TAB_STORAGE_KEY = 'gcare_dashboard_active_tab';
+
+const readStoredDashboardTab = () => {
+    if (typeof window === 'undefined') return null;
+    try {
+        const value = window.localStorage.getItem(DASHBOARD_TAB_STORAGE_KEY);
+        return value && value.trim() ? value : null;
+    } catch {
+        return null;
+    }
+};
+
+const storeDashboardTab = (tabId) => {
+    if (typeof window === 'undefined') return;
+    try {
+        window.localStorage.setItem(DASHBOARD_TAB_STORAGE_KEY, tabId);
+    } catch {
+        // Ignore localStorage errors.
+    }
+};
+
 function Icon(props) {
     const icons = {
         'package': <svg width={props.size || 20} height={props.size || 20} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width={props.stroke || 2} stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>,
@@ -88,7 +109,7 @@ export default function Dashboard(props) {
         };
     };
 
-    const [activeTab, setActiveTab] = createSignal('overview');
+    const [activeTab, setActiveTab] = createSignal(readStoredDashboardTab() || 'overview');
     const [isSidebarOpen, setIsSidebarOpen] = createSignal(true);
     const [isModalOpen, setIsModalOpen] = createSignal(false);
     const [modalType, setModalType] = createSignal('product'); 
@@ -101,6 +122,11 @@ export default function Dashboard(props) {
     const [contactForm, setContactForm] = createSignal(normalizeContactSettings(props.contactSettings));
 
     const isPublisher = createMemo(() => props.currentUserRole === 'publisher');
+
+    const setActiveTabPersisted = (tabId) => {
+        setActiveTab(tabId);
+        storeDashboardTab(tabId);
+    };
 
     const allTabs = createMemo(() => [
         { id: 'overview', label: props.lang() === 'ar' ? 'الإحصائيات' : 'Overview', icon: 'home' },
@@ -125,7 +151,7 @@ export default function Dashboard(props) {
     createEffect(() => {
         const allowed = tabs().map(tab => tab.id);
         if (!allowed.includes(activeTab())) {
-            setActiveTab(allowed[0] || 'articles');
+            setActiveTabPersisted(allowed[0] || 'articles');
         }
     });
 
@@ -363,12 +389,19 @@ export default function Dashboard(props) {
     const handleDelete = async (table, id) => {
         if (!confirm(props.lang() === 'ar' ? 'هل أنت متأكد من الحذف؟' : 'Are you sure you want to delete?')) return;
         try {
-            const { error } = await supabase.from(table).delete().eq('id', id);
-            if (error) throw error;
+            if (table === 'users') {
+                const { error } = await supabase.rpc('admin_delete_dashboard_user', {
+                    p_user_id: id
+                });
+                if (error) throw error;
+            } else {
+                const { error } = await supabase.from(table).delete().eq('id', id);
+                if (error) throw error;
+            }
             props.refreshAll();
         } catch (error) {
             console.error('Delete error:', error);
-            alert('Error deleting');
+            alert(error?.message || (props.lang() === 'ar' ? 'تعذر الحذف' : 'Delete failed'));
         }
     };
 
@@ -500,7 +533,7 @@ export default function Dashboard(props) {
                         {(tab) => (
                             <button 
                                 class={`dash-nav-item ${activeTab() === tab.id ? 'active' : ''}`}
-                                onClick={() => setActiveTab(tab.id)}
+                                onClick={() => setActiveTabPersisted(tab.id)}
                             >
                                 <Icon name={tab.icon} />
                                 <span>{tab.label}</span>
@@ -602,7 +635,7 @@ export default function Dashboard(props) {
                                                                     class="action-icon-btn delete" 
                                                                     disabled={isIntro}
                                                                     style={{opacity: isIntro ? 0.3 : 1}}
-                                                                    onClick={() => handleDelete(isIntro ? 'posters' : (activeTab() === 'media' ? 'posters' : (activeTab() === 'articles' ? 'articles' : (activeTab() === 'experts' ? 'doctors' : (activeTab() === 'users' ? 'profiles' : activeTab())))), item.id)}
+                                                                                                                                        onClick={() => handleDelete(isIntro ? 'posters' : (activeTab() === 'media' ? 'posters' : (activeTab() === 'articles' ? 'articles' : (activeTab() === 'experts' ? 'doctors' : (activeTab() === 'users' ? 'users' : activeTab())))), item.id)}
                                                                   >
                                                                       <Icon name="trash" />
                                                                       <span>{props.lang() === 'ar' ? 'حذف' : 'Delete'}</span>
