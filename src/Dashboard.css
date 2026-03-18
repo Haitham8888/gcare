@@ -1013,3 +1013,68 @@
   cursor: pointer;
   color: var(--dash-ink);
 }
+
+.dash-contact-container {
+  display: grid;
+  gap: 16px;
+}
+
+.dash-contact-card {
+  background: #fff;
+  border: 1px solid var(--dash-border);
+  border-radius: var(--dash-radius-lg);
+  padding: 18px;
+}
+
+.dash-contact-card h3 {
+  margin: 0 0 8px;
+}
+
+.dash-contact-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.dash-contact-row {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.dash-contact-label-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+}
+
+.dash-social-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
+.dash-contact-input {
+  width: 100%;
+  border: 1px solid var(--dash-border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #fff;
+  color: var(--dash-ink);
+}
+
+.dash-contact-input.full {
+  margin-top: 8px;
+}
+
+.dash-contact-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 900px) {
+  .dash-contact-row {
+    grid-template-columns: 1fr;
+  }
+}

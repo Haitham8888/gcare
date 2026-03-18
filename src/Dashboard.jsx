@@ -22,6 +22,72 @@ function Icon(props) {
 
 export default function Dashboard(props) {
     const productCategoryOptions = ['IVD', 'IUD', 'IUS', 'WomanCare'];
+    const socialIconMap = {
+        linkedin: 'static/img/in.svg',
+        x: 'static/img/x.svg',
+        tiktok: 'static/img/tiktok.svg',
+        instagram: 'static/img/insta.svg',
+        whatsapp: 'static/img/whatsapp.svg'
+    };
+    const defaultContactSettings = {
+        social_links: [
+            { key: 'linkedin', label: 'LinkedIn', href: 'https://www.linkedin.com/company/goldencare-medical-company/', enabled: true },
+            { key: 'x', label: 'X', href: 'https://x.com/G_Careksa', enabled: true },
+            { key: 'tiktok', label: 'TikTok', href: 'https://www.tiktok.com/@g_careksa', enabled: true },
+            { key: 'instagram', label: 'Instagram', href: 'https://www.instagram.com/G_Careksa', enabled: true },
+            { key: 'whatsapp', label: 'WhatsApp', href: 'https://wa.me/966552527862', enabled: false }
+        ],
+        phones: [
+            { label: 'Primary', value: '+966552527862', enabled: true },
+            { label: 'Secondary', value: '+966555849237', enabled: true }
+        ],
+        emails: [
+            { label: 'General', value: 'info@gcare.sa', enabled: true },
+            { label: 'Health Education', value: 'hep@gcare.sa', enabled: true }
+        ],
+        booking_url: 'https://outlook.office.com/book/Bookings@gcare.sa/?ismsaljsauthenabled=true'
+    };
+    const normalizeContactSettings = (raw) => {
+        const source = raw || {};
+        const sourceSocial = Array.isArray(source.social_links) ? source.social_links : [];
+        const socialMap = new Map(sourceSocial.map(item => [String(item?.key || '').toLowerCase(), item]));
+
+        const social_links = defaultContactSettings.social_links.map((fallback) => {
+            const current = socialMap.get(fallback.key) || {};
+            return {
+                key: fallback.key,
+                label: current.label || fallback.label,
+                href: current.href || fallback.href,
+                enabled: typeof current.enabled === 'boolean' ? current.enabled : fallback.enabled
+            };
+        });
+
+        const phones = defaultContactSettings.phones.map((fallback, index) => {
+            const current = (Array.isArray(source.phones) ? source.phones : [])[index] || {};
+            return {
+                label: current.label || fallback.label,
+                value: current.value || fallback.value,
+                enabled: typeof current.enabled === 'boolean' ? current.enabled : fallback.enabled
+            };
+        });
+
+        const emails = defaultContactSettings.emails.map((fallback, index) => {
+            const current = (Array.isArray(source.emails) ? source.emails : [])[index] || {};
+            return {
+                label: current.label || fallback.label,
+                value: current.value || fallback.value,
+                enabled: typeof current.enabled === 'boolean' ? current.enabled : fallback.enabled
+            };
+        });
+
+        return {
+            social_links,
+            phones,
+            emails,
+            booking_url: source.booking_url || defaultContactSettings.booking_url
+        };
+    };
+
     const [activeTab, setActiveTab] = createSignal('overview');
     const [isSidebarOpen, setIsSidebarOpen] = createSignal(true);
     const [isModalOpen, setIsModalOpen] = createSignal(false);
@@ -32,16 +98,36 @@ export default function Dashboard(props) {
     const [uploadURLs, setUploadURLs] = createSignal([]); // Support for multiple images
     const [uploadProgress, setUploadProgress] = createSignal(0);
     const [isUploading, setIsUploading] = createSignal(false);
+    const [contactForm, setContactForm] = createSignal(normalizeContactSettings(props.contactSettings));
 
-    const tabs = createMemo(() => [
+    const isPublisher = createMemo(() => props.currentUserRole === 'publisher');
+
+    const allTabs = createMemo(() => [
         { id: 'overview', label: props.lang() === 'ar' ? 'الإحصائيات' : 'Overview', icon: 'home' },
         { id: 'products', label: props.lang() === 'ar' ? 'المنتجات' : 'Products', icon: 'package' },
         { id: 'experts', label: props.lang() === 'ar' ? 'فريق العمل' : 'Team', icon: 'briefcase' },
         { id: 'articles', label: props.lang() === 'ar' ? 'إدارة المقالات' : 'Articles Management', icon: 'book-open' },
         { id: 'media', label: props.lang() === 'ar' ? 'المركز الإعلامي' : 'Media Center', icon: 'image' },
+        { id: 'contact', label: props.lang() === 'ar' ? 'التواصل' : 'Contact', icon: 'users' },
         { id: 'partners', label: props.lang() === 'ar' ? 'شركاء النجاح' : 'Partners', icon: 'users' },
         { id: 'users', label: props.lang() === 'ar' ? 'المستخدمين' : 'Users', icon: 'shield' }
     ]);
+
+    const tabs = createMemo(() => {
+        if (!isPublisher()) return allTabs();
+        return allTabs().filter(tab => ['articles', 'media', 'contact'].includes(tab.id));
+    });
+
+    createEffect(() => {
+        setContactForm(normalizeContactSettings(props.contactSettings));
+    });
+
+    createEffect(() => {
+        const allowed = tabs().map(tab => tab.id);
+        if (!allowed.includes(activeTab())) {
+            setActiveTab(allowed[0] || 'articles');
+        }
+    });
 
     const handleFileUploadBulk = async (files) => {
         if (!files || files.length === 0) return;
@@ -286,6 +372,49 @@ export default function Dashboard(props) {
         }
     };
 
+    const updateContactField = (section, index, field, value) => {
+        setContactForm((prev) => {
+            const next = {
+                ...prev,
+                [section]: [...prev[section]]
+            };
+            next[section][index] = {
+                ...next[section][index],
+                [field]: value
+            };
+            return next;
+        });
+    };
+
+    const updateBookingUrl = (value) => {
+        setContactForm((prev) => ({ ...prev, booking_url: value }));
+    };
+
+    const saveContactSettings = async () => {
+        setLoading(true);
+        try {
+            const payload = contactForm();
+            const { error } = await supabase
+                .from('site_contact_settings')
+                .upsert({
+                    id: 1,
+                    social_links: payload.social_links,
+                    phones: payload.phones,
+                    emails: payload.emails,
+                    booking_url: payload.booking_url
+                }, { onConflict: 'id' });
+
+            if (error) throw error;
+            props.refreshAll();
+            alert(props.lang() === 'ar' ? 'تم حفظ بيانات التواصل بنجاح' : 'Contact settings saved successfully');
+        } catch (error) {
+            console.error('Contact settings save error:', error);
+            alert(error?.message || (props.lang() === 'ar' ? 'تعذر حفظ بيانات التواصل' : 'Failed to save contact settings'));
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const FileUploadZone = (propsSub) => (
         <div 
             class={`upload-dropzone ${isUploading() ? 'dragging' : ''}`}
@@ -400,7 +529,7 @@ export default function Dashboard(props) {
                 </header>
 
                 <div class="dash-content-area">
-                    {activeTab() !== 'overview' && (
+                    {activeTab() !== 'overview' && activeTab() !== 'contact' && (
                         <div class="dash-table-container fade-in">
                             <div class="dash-table-header">
                                 <h3>{activeTabLabel()}</h3>
@@ -486,6 +615,110 @@ export default function Dashboard(props) {
                                         </For>
                                     </tbody>
                                 </table>
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab() === 'contact' && (
+                        <div class="dash-contact-container fade-in">
+                            <div class="dash-contact-card">
+                                <h3>{props.lang() === 'ar' ? 'برامج التواصل الاجتماعي' : 'Social Platforms'}</h3>
+                                <p class="dash-text-muted">{props.lang() === 'ar' ? 'فعّل البرنامج عبر الشيك بوكس ثم أضف الرابط.' : 'Enable each platform with the checkbox, then set its link.'}</p>
+
+                                <div class="dash-contact-grid">
+                                    <For each={contactForm().social_links}>
+                                        {(item, index) => (
+                                            <div class="dash-contact-row">
+                                                <div class="dash-contact-label-box">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={item.enabled}
+                                                        onChange={(e) => updateContactField('social_links', index(), 'enabled', e.currentTarget.checked)}
+                                                    />
+                                                    <img src={getAssetUrl(socialIconMap[item.key])} alt="" class="dash-social-icon" />
+                                                    <span>{item.label}</span>
+                                                </div>
+                                                <input
+                                                    class="dash-contact-input"
+                                                    type="url"
+                                                    value={item.href}
+                                                    placeholder="https://"
+                                                    onInput={(e) => updateContactField('social_links', index(), 'href', e.currentTarget.value)}
+                                                />
+                                            </div>
+                                        )}
+                                    </For>
+                                </div>
+                            </div>
+
+                            <div class="dash-contact-card">
+                                <h3>{props.lang() === 'ar' ? 'البريد الإلكتروني' : 'Emails'}</h3>
+                                <div class="dash-contact-grid">
+                                    <For each={contactForm().emails}>
+                                        {(item, index) => (
+                                            <div class="dash-contact-row">
+                                                <div class="dash-contact-label-box">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={item.enabled}
+                                                        onChange={(e) => updateContactField('emails', index(), 'enabled', e.currentTarget.checked)}
+                                                    />
+                                                    <span>{item.label}</span>
+                                                </div>
+                                                <input
+                                                    class="dash-contact-input"
+                                                    type="email"
+                                                    value={item.value}
+                                                    placeholder="name@example.com"
+                                                    onInput={(e) => updateContactField('emails', index(), 'value', e.currentTarget.value)}
+                                                />
+                                            </div>
+                                        )}
+                                    </For>
+                                </div>
+                            </div>
+
+                            <div class="dash-contact-card">
+                                <h3>{props.lang() === 'ar' ? 'أرقام الجوال' : 'Phone Numbers'}</h3>
+                                <div class="dash-contact-grid">
+                                    <For each={contactForm().phones}>
+                                        {(item, index) => (
+                                            <div class="dash-contact-row">
+                                                <div class="dash-contact-label-box">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={item.enabled}
+                                                        onChange={(e) => updateContactField('phones', index(), 'enabled', e.currentTarget.checked)}
+                                                    />
+                                                    <span>{item.label}</span>
+                                                </div>
+                                                <input
+                                                    class="dash-contact-input"
+                                                    value={item.value}
+                                                    placeholder="+9665..."
+                                                    onInput={(e) => updateContactField('phones', index(), 'value', e.currentTarget.value)}
+                                                />
+                                            </div>
+                                        )}
+                                    </For>
+                                </div>
+                            </div>
+
+                            <div class="dash-contact-card">
+                                <h3>{props.lang() === 'ar' ? 'رابط حجز الموعد' : 'Appointment Booking URL'}</h3>
+                                <input
+                                    class="dash-contact-input full"
+                                    type="url"
+                                    value={contactForm().booking_url}
+                                    placeholder="https://"
+                                    onInput={(e) => updateBookingUrl(e.currentTarget.value)}
+                                />
+                            </div>
+
+                            <div class="dash-contact-actions">
+                                <button class="btn-save" onClick={saveContactSettings} disabled={loading()}>
+                                    {loading() ? '...' : (props.lang() === 'ar' ? 'حفظ بيانات التواصل' : 'Save Contact Settings')}
+                                </button>
                             </div>
                         </div>
                     )}

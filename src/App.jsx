@@ -16,14 +16,88 @@ const getSocialIcon = (key) => {
   return icons[key] ? getAssetUrl(icons[key]) : null
 }
 
-const socialLinks = [
-  { label: 'LinkedIn', href: 'https://www.linkedin.com/company/goldencare-medical-company/' },
-  { label: 'X', href: 'https://x.com/G_Careksa' },
-  { label: 'TikTok', href: 'https://www.tiktok.com/@g_careksa' },
-  { label: 'Instagram', href: 'https://www.instagram.com/G_Careksa' }
-]
+const DEFAULT_CONTACT_SETTINGS = {
+  social_links: [
+    { key: 'linkedin', label: 'LinkedIn', href: 'https://www.linkedin.com/company/goldencare-medical-company/', enabled: true },
+    { key: 'x', label: 'X', href: 'https://x.com/G_Careksa', enabled: true },
+    { key: 'tiktok', label: 'TikTok', href: 'https://www.tiktok.com/@g_careksa', enabled: true },
+    { key: 'instagram', label: 'Instagram', href: 'https://www.instagram.com/G_Careksa', enabled: true },
+    { key: 'whatsapp', label: 'WhatsApp', href: 'https://wa.me/966552527862', enabled: false }
+  ],
+  phones: [
+    { label: 'Primary', value: '+966552527862', enabled: true },
+    { label: 'Secondary', value: '+966555849237', enabled: true }
+  ],
+  emails: [
+    { label: 'General', value: 'info@gcare.sa', enabled: true },
+    { label: 'Health Education', value: 'hep@gcare.sa', enabled: true }
+  ],
+  booking_url: 'https://outlook.office.com/book/Bookings@gcare.sa/?ismsaljsauthenabled=true'
+}
+
+const CONTACT_SOCIAL_ORDER = ['linkedin', 'x', 'tiktok', 'instagram', 'whatsapp']
+
+const normalizeContactSettings = (raw) => {
+  const source = raw || {}
+  const socialMap = new Map((Array.isArray(source.social_links) ? source.social_links : []).map((item) => [String(item?.key || '').toLowerCase(), item]))
+
+  const social_links = CONTACT_SOCIAL_ORDER.map((key) => {
+    const fallback = DEFAULT_CONTACT_SETTINGS.social_links.find((item) => item.key === key)
+    const current = socialMap.get(key) || {}
+    return {
+      key,
+      label: current.label || fallback.label,
+      href: current.href || fallback.href,
+      enabled: typeof current.enabled === 'boolean' ? current.enabled : fallback.enabled
+    }
+  })
+
+  const fallbackPhones = DEFAULT_CONTACT_SETTINGS.phones
+  const currentPhones = Array.isArray(source.phones) ? source.phones : []
+  const phones = fallbackPhones.map((fallback, index) => {
+    const current = currentPhones[index] || {}
+    return {
+      label: current.label || fallback.label,
+      value: current.value || fallback.value,
+      enabled: typeof current.enabled === 'boolean' ? current.enabled : fallback.enabled
+    }
+  })
+
+  const fallbackEmails = DEFAULT_CONTACT_SETTINGS.emails
+  const currentEmails = Array.isArray(source.emails) ? source.emails : []
+  const emails = fallbackEmails.map((fallback, index) => {
+    const current = currentEmails[index] || {}
+    return {
+      label: current.label || fallback.label,
+      value: current.value || fallback.value,
+      enabled: typeof current.enabled === 'boolean' ? current.enabled : fallback.enabled
+    }
+  })
+
+  return {
+    social_links,
+    phones,
+    emails,
+    booking_url: source.booking_url || DEFAULT_CONTACT_SETTINGS.booking_url
+  }
+}
+
+const cleanPhoneValue = (value) => String(value || '').replace(/\s+/g, '')
+const toTelHref = (value) => `tel:${cleanPhoneValue(value)}`
+const toWhatsappHref = (value) => `https://wa.me/${cleanPhoneValue(value).replace(/^\+/, '')}`
 
 const PRODUCT_CATEGORY_OPTIONS = ['IVD', 'IUD', 'IUS', 'WomanCare']
+const LANG_STORAGE_KEY = 'gcare_lang'
+
+const readStoredLang = () => {
+  if (typeof window === 'undefined') return null
+  try {
+    const stored = window.localStorage.getItem(LANG_STORAGE_KEY)
+    return stored === 'ar' || stored === 'en' ? stored : null
+  } catch {
+    return null
+  }
+}
 
 const normalizeProductCategory = (value) => {
   const v = String(value || '').trim()
@@ -536,7 +610,7 @@ function HomePage(props) {
       <SectionDivider />
       <Education t={props.t} lang={props.lang} education={props.education} />
       <SectionDivider />
-      <Contact t={props.t} />
+      <Contact t={props.t} contactSettings={props.contactSettings} />
     </>
   )
 }
@@ -696,6 +770,10 @@ function ProductsPage(props) {
 
 function ContactPage(props) {
   let messageRef;
+  const settings = createMemo(() => normalizeContactSettings(props.contactSettings))
+  const enabledPhones = createMemo(() => settings().phones.filter((item) => item.enabled && item.value))
+  const enabledEmails = createMemo(() => settings().emails.filter((item) => item.enabled && item.value))
+  const primaryPhone = createMemo(() => enabledPhones()[0]?.value || DEFAULT_CONTACT_SETTINGS.phones[0].value)
 
   createEffect(() => {
     if (props.prefilledMessage() && messageRef) {
@@ -773,9 +851,9 @@ function ContactPage(props) {
 
             <div class="contact-info-grid">
               {[
-                { title: props.t('contactPhone'), value: props.t('contactPhoneValue'), href: 'tel:+966552527862', note: props.t('contactPhoneNote'), isLtr: true },
-                { title: props.t('contactEmailLabel'), value: 'info@gcare.sa', href: 'mailto:info@gcare.sa', note: props.t('contactEmailNote'), isLtr: true },
-                { title: props.t('contactEmailHealthLabel'), value: 'hep@gcare.sa', href: 'mailto:hep@gcare.sa', note: props.t('contactEmailHealthNote'), isLtr: true },
+                { title: props.t('contactPhone'), value: enabledPhones()[0]?.value || props.t('contactPhoneValue'), href: enabledPhones()[0]?.value ? toTelHref(enabledPhones()[0].value) : null, note: props.t('contactPhoneNote'), isLtr: true },
+                { title: props.t('contactEmailLabel'), value: enabledEmails()[0]?.value || 'info@gcare.sa', href: enabledEmails()[0]?.value ? `mailto:${enabledEmails()[0].value}` : null, note: props.t('contactEmailNote'), isLtr: true },
+                { title: props.t('contactEmailHealthLabel'), value: enabledEmails()[1]?.value || 'hep@gcare.sa', href: enabledEmails()[1]?.value ? `mailto:${enabledEmails()[1].value}` : null, note: props.t('contactEmailHealthNote'), isLtr: true },
                 { title: props.t('contactAddress'), value: props.t('contactAddressValue'), href: 'https://www.google.com/maps/place/24%C2%B041\'13.2%22N+46%C2%B041\'12.1%22E/@24.686993,46.686684,17z', note: props.t('contactVisitNote'), isLtr: false }
               ].map((card) => (
                 <div class="info-card">
@@ -794,7 +872,7 @@ function ContactPage(props) {
           </div>
         </div>
       </section>
-      <Contact t={props.t} />
+      <Contact t={props.t} contactSettings={props.contactSettings} />
     </>
   )
 }
@@ -1268,6 +1346,9 @@ function LakiPage(props) {
 function ExpertPage(props) {
   const baseUrl = import.meta.env.BASE_URL
   const [stepIndex, setStepIndex] = createSignal(0)
+  const settings = createMemo(() => normalizeContactSettings(props.contactSettings))
+  const enabledPhones = createMemo(() => settings().phones.filter((item) => item.enabled && item.value))
+  const primaryPhone = createMemo(() => enabledPhones()[0]?.value || DEFAULT_CONTACT_SETTINGS.phones[0].value)
 
   const advantages = createMemo(() => [
     {
@@ -1348,7 +1429,7 @@ function ExpertPage(props) {
             <p class="expert-hero-subtitle">
               {props.t('expertHeroSubtitle')}
             </p>
-            <a href="https://wa.me/966552527862" class="btn btn-primary expert-cta-btn">{props.t('expertJoinAction')}</a>
+            <a href={toWhatsappHref(primaryPhone())} class="btn btn-primary expert-cta-btn">{props.t('expertJoinAction')}</a>
           </div>
           <div class="expert-hero-image">
             <img src={getAssetUrl('static/img/G - Care-01.svg')} alt="Medical Expert" />
@@ -1451,6 +1532,13 @@ function ExpertPage(props) {
 function EducationPage(props) {
   const [eduRoute, setEduRoute] = createSignal('main')
   const baseUrl = import.meta.env.BASE_URL
+  const settings = createMemo(() => normalizeContactSettings(props.contactSettings))
+  const enabledPhones = createMemo(() => settings().phones.filter((item) => item.enabled && item.value))
+  const enabledEmails = createMemo(() => settings().emails.filter((item) => item.enabled && item.value))
+  const bookingUrl = createMemo(() => settings().booking_url || DEFAULT_CONTACT_SETTINGS.booking_url)
+  const primaryPhone = createMemo(() => enabledPhones()[0]?.value || DEFAULT_CONTACT_SETTINGS.phones[0].value)
+  const secondaryPhone = createMemo(() => enabledPhones()[1]?.value || enabledPhones()[0]?.value || DEFAULT_CONTACT_SETTINGS.phones[1].value)
+  const primaryEmail = createMemo(() => enabledEmails()[0]?.value || DEFAULT_CONTACT_SETTINGS.emails[0].value)
 
   return (
     <>
@@ -1498,7 +1586,7 @@ function EducationPage(props) {
                     <div class="booking-card-body">
                       <h3 class="booking-card-title">{props.t('contactAppointmentTitle')}</h3>
                       <p class="booking-card-desc">{props.t('contactAppointmentSub')}</p>
-                      <a class="btn btn-booking-main" href="https://outlook.office.com/book/Bookings@gcare.sa/?ismsaljsauthenabled=true" target="_blank" rel="noopener noreferrer">
+                      <a class="btn btn-booking-main" href={bookingUrl()} target="_blank" rel="noopener noreferrer">
                         {props.t('contactAppointmentBtn')}
                       </a>
                     </div>
@@ -1508,13 +1596,13 @@ function EducationPage(props) {
                     <div class="edu-contact-card-body">
                       <h4 class="edu-contact-card-title">{props.t('eduContactTitle')}</h4>
                       <div class="edu-contact-methods-v2">
-                        <a href="https://wa.me/966555849237" target="_blank" rel="noopener noreferrer" class="wa-premium-action">
+                        <a href={toWhatsappHref(secondaryPhone())} target="_blank" rel="noopener noreferrer" class="wa-premium-action">
                           <img src={getAssetUrl('static/img/whatsapp.svg')} alt="" class="wa-mid-icon" />
-                          <span class="wa-number-mid" dir="ltr">0555849237</span>
+                          <span class="wa-number-mid" dir="ltr">{secondaryPhone()}</span>
                         </a>
                         <div class="edu-email-box">
                           <span class="email-label">{props.t('eduEmailLabel')}</span>
-                          <a href="mailto:hep@gcare.sa" class="email-link-v2">hep@gcare.sa</a>
+                          <a href={`mailto:${primaryEmail()}`} class="email-link-v2">{primaryEmail()}</a>
                         </div>
                       </div>
                     </div>
@@ -1527,13 +1615,19 @@ function EducationPage(props) {
         {eduRoute() === 'laki' && <LakiPage t={props.t} setEduRoute={setEduRoute} education={props.education} lang={props.lang} />}
         {eduRoute() === 'expert' && <ExpertPage t={props.t} setEduRoute={setEduRoute} experts={props.experts} lang={props.lang} />}
       </div>
-      <Contact t={props.t} />
+      <Contact t={props.t} contactSettings={props.contactSettings} />
     </>
   )
 }
 
 function Contact(props) {
   const baseUrl = import.meta.env.BASE_URL
+  const settings = createMemo(() => normalizeContactSettings(props.contactSettings))
+  const activeSocialLinks = createMemo(() => settings().social_links.filter((item) => item.enabled && item.href))
+  const enabledPhones = createMemo(() => settings().phones.filter((item) => item.enabled && item.value))
+  const enabledEmails = createMemo(() => settings().emails.filter((item) => item.enabled && item.value))
+  const primaryPhone = createMemo(() => enabledPhones()[0]?.value || DEFAULT_CONTACT_SETTINGS.phones[0].value)
+  const primaryEmail = createMemo(() => enabledEmails()[0]?.value || DEFAULT_CONTACT_SETTINGS.emails[0].value)
   return (
     <footer class="footer" id="contact">
       <div class="footer-top-divider"></div>
@@ -1553,8 +1647,8 @@ function Contact(props) {
           </p>
 
           <div class="socials-links-grid">
-            {socialLinks.map((item) => {
-              const key = item.label.toLowerCase().replace(/\s+/g, '')
+            {activeSocialLinks().map((item) => {
+              const key = item.key
               return (
                 <a class={`social-icon-link social-${key}`} href={item.href} target="_blank" rel="noreferrer" aria-label={item.label}>
                   {getSocialIcon(key) ? (
@@ -1588,7 +1682,7 @@ function Contact(props) {
               <svg class="info-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l2.27-2.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
               <span class="info-label">{props.t('footerPhoneTitle')}</span>
             </div>
-            <a href="tel:+966552527862" class="info-value phone-number">{props.t('contactPhoneValue')}</a>
+            <a href={toTelHref(primaryPhone())} class="info-value phone-number">{primaryPhone()}</a>
           </div>
 
           <div class="info-group">
@@ -1596,7 +1690,7 @@ function Contact(props) {
               <svg class="info-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
               <span class="info-label">{props.t('footerInquiryTitle')}</span>
             </div>
-            <a href={`mailto:info@gcare.sa`} class="info-value">info@gcare.sa</a>
+            <a href={`mailto:${primaryEmail()}`} class="info-value">{primaryEmail()}</a>
           </div>
         </div>
 
@@ -1628,8 +1722,10 @@ function Contact(props) {
 import translationsData from './data/translations.json'
 
 export default function App() {
-  const [lang, setLang] = createSignal('ar')
+  const initialStoredLang = readStoredLang()
+  const [lang, setLang] = createSignal(initialStoredLang || 'ar')
   const [route, setRoute] = createSignal('home')
+  const [dashboardLangInitialized, setDashboardLangInitialized] = createSignal(false)
   const [prefilledMessage, setPrefilledMessage] = createSignal('')
   const [activeProduct, setActiveProduct] = createSignal(null)
   const [session, setSession] = createSignal(null)
@@ -1697,6 +1793,37 @@ export default function App() {
     return data || [];
   });
 
+  const [contactSettings] = createResource(async () => {
+    const { data, error } = await supabase
+      .from('site_contact_settings')
+      .select('social_links, phones, emails, booking_url')
+      .eq('id', 1)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Contact settings fetch error:', error);
+      return normalizeContactSettings(DEFAULT_CONTACT_SETTINGS);
+    }
+
+    return normalizeContactSettings(data || DEFAULT_CONTACT_SETTINGS);
+  });
+
+  const [currentUserRole] = createResource(session, async (activeSession) => {
+    if (!activeSession?.user?.id) return 'publisher';
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', activeSession.user.id)
+      .maybeSingle();
+
+    if (error) {
+      console.error('User role fetch error:', error);
+      return 'publisher';
+    }
+
+    return data?.role || 'publisher';
+  });
+
   const translations = translationsData
 
   const t = (key) => translations[lang()]?.[key] ?? key
@@ -1717,6 +1844,12 @@ export default function App() {
     const nextLang = lang()
     document.documentElement.lang = nextLang
     document.documentElement.dir = nextLang === 'ar' ? 'rtl' : 'ltr'
+
+    try {
+      window.localStorage.setItem(LANG_STORAGE_KEY, nextLang)
+    } catch {
+      // Ignore storage errors (private mode, blocked storage, etc.)
+    }
   })
 
   const computeRoute = () => {
@@ -1734,6 +1867,14 @@ export default function App() {
     onHashChange()
     window.addEventListener('hashchange', onHashChange)
     onCleanup(() => window.removeEventListener('hashchange', onHashChange))
+  })
+
+  createEffect(() => {
+    if (route() !== 'dashboard') return
+    if (dashboardLangInitialized()) return
+
+    if (!initialStoredLang) setLang('en')
+    setDashboardLangInitialized(true)
   })
 
   createEffect(() => {
@@ -1760,21 +1901,22 @@ export default function App() {
     <div class="page">
       {route() !== 'dashboard' && <NavBar t={t} lang={lang} setLang={setLang} />}
       {route() === 'products' ? <ProductsPage t={t} setRoute={setRoute} setPrefilledMessage={setPrefilledMessage} lang={lang} activeProduct={activeProduct} setActiveProduct={setActiveProduct} products={products()} /> : null}
-      {route() === 'contact' ? <ContactPage t={t} prefilledMessage={prefilledMessage} setPrefilledMessage={setPrefilledMessage} /> : null}
-      {route() === 'education' ? <EducationPage t={t} education={education()} experts={experts()} lang={lang} /> : null}
+      {route() === 'contact' ? <ContactPage t={t} prefilledMessage={prefilledMessage} setPrefilledMessage={setPrefilledMessage} contactSettings={contactSettings()} /> : null}
+      {route() === 'education' ? <EducationPage t={t} education={education()} experts={experts()} lang={lang} contactSettings={contactSettings()} /> : null}
       {route() === 'about' ? <AboutPage t={t} education={education()} /> : null}
       {route() === 'dashboard' ? (
         <Show when={isLoggedIn()} fallback={<LoginPage t={t} lang={lang} />}>
-          <Dashboard t={t} setRoute={setRoute} lang={lang} setLang={setLang} onLogout={handleLogout} products={products()} experts={experts()} profiles={profiles()} education={education()} partners={partners()} refreshAll={() => {
+          <Dashboard t={t} setRoute={setRoute} lang={lang} setLang={setLang} onLogout={handleLogout} currentUserRole={currentUserRole() || 'publisher'} products={products()} experts={experts()} profiles={profiles()} education={education()} partners={partners()} contactSettings={contactSettings()} refreshAll={() => {
             products.refetch();
             experts.refetch();
             profiles.refetch();
             education.refetch();
             partners.refetch();
+            contactSettings.refetch();
           }} />
         </Show>
       ) : null}
-      {route() === 'home' ? <HomePage t={t} lang={lang} setActiveProduct={setActiveProduct} products={products()} education={education()} partners={partners()} /> : null}
+      {route() === 'home' ? <HomePage t={t} lang={lang} setActiveProduct={setActiveProduct} products={products()} education={education()} partners={partners()} contactSettings={contactSettings()} /> : null}
     </div>
   )
 }
