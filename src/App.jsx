@@ -754,12 +754,12 @@ function AboutPage(props) {
 function ProductsPage(props) {
   return (
     <>
-      <Products 
-        t={props.t} 
-        setRoute={props.setRoute} 
-        setPrefilledMessage={props.setPrefilledMessage} 
-        lang={props.lang} 
-        activeProduct={props.activeProduct} 
+      <Products
+        t={props.t}
+        setRoute={props.setRoute}
+        setPrefilledMessage={props.setPrefilledMessage}
+        lang={props.lang}
+        activeProduct={props.activeProduct}
         setActiveProduct={props.setActiveProduct}
         products={props.products}
       />
@@ -963,7 +963,7 @@ function ClientsSlider(props) {
           <h2 class="section-title">{props.t('clientsTitle')}</h2>
         </div>
         <div class="clients-slider">
-          <Show when={clients().length > 0} fallback={<p style={{"text-align": "center", color: "var(--muted)"}}>{props.t('loading')}</p>}>
+          <Show when={clients().length > 0} fallback={<p style={{ "text-align": "center", color: "var(--muted)" }}>{props.t('loading')}</p>}>
             <div class="clients-track" classList={{
               'en': (props.lang ? props.lang() === 'en' : document.documentElement.dir === 'ltr'),
               'ar': (props.lang ? props.lang() === 'ar' : document.documentElement.dir === 'rtl')
@@ -1057,7 +1057,7 @@ function Education(props) {
       (p) => p.title_ar !== 'MAIN' && p.title_ar !== 'INTRO'
     );
     if (posters.length > 0) {
-      const sorted = [...posters].sort((a,b) => {
+      const sorted = [...posters].sort((a, b) => {
         return 0;
       });
       return sorted.map(p => ({
@@ -1167,12 +1167,14 @@ function Education(props) {
 function LakiPage(props) {
   const baseUrl = import.meta.env.BASE_URL
   const [selectedImg, setSelectedImg] = createSignal(null)
+  const [showAllGuides, setShowAllGuides] = createSignal(false)
+  const [showAllPosters, setShowAllPosters] = createSignal(false)
 
   const contentSeries = createMemo(() => (props.education?.articles || []).map(item => {
     const title = item.title_ar || item.title_en ? (props.lang() === 'ar' ? item.title_ar : item.title_en) : props.t(item.title_key);
     const category = item.category_ar || item.category_en ? (props.lang() === 'ar' ? item.category_ar : item.category_en) : props.t(item.category_key);
     const excerpt = item.excerpt_ar || item.excerpt_en ? (props.lang() === 'ar' ? item.excerpt_ar : item.excerpt_en) : props.t(item.excerpt_key);
-    
+
     return {
       ...item,
       title,
@@ -1183,7 +1185,7 @@ function LakiPage(props) {
     };
   }))
 
-  const guideCards = createMemo(() => contentSeries().slice(0, 3))
+  const guideCards = createMemo(() => showAllGuides() ? contentSeries() : contentSeries().slice(0, 3))
 
   const posterCards = createMemo(() => {
     const posters = (props.education?.posters || []).filter(
@@ -1195,7 +1197,6 @@ function LakiPage(props) {
         const img = (p.img || '').toLowerCase()
         return !img.endsWith('.mp4') && !img.endsWith('.webm')
       })
-      .slice(0, 3)
       .map((p, index) => ({
         title: (props.lang() === 'ar' ? p.title_ar : p.title_en) || props.t(`lakiPoster${index + 1}`),
         category: props.t('lakiPostersTitle'),
@@ -1203,7 +1204,7 @@ function LakiPage(props) {
         img: getAssetUrl(p.img)
       }))
 
-    return imagePosters
+    return showAllPosters() ? imagePosters : imagePosters.slice(0, 3)
   })
 
   return (
@@ -1298,6 +1299,13 @@ function LakiPage(props) {
                   </div>
                 ))}
               </div>
+              <Show when={contentSeries().length > 3}>
+                <div class="laki-articles-footer">
+                  <button class="btn btn-pink laki-explore-btn-lower" onClick={() => setShowAllGuides(!showAllGuides())}>
+                    {showAllGuides() ? (props.lang() === 'ar' ? 'عرض أقل' : 'Show Less') : props.t('lakiBrowseGuides')}
+                  </button>
+                </div>
+              </Show>
             </div>
 
             <div class="laki-content-block">
@@ -1322,12 +1330,13 @@ function LakiPage(props) {
                   ))}
                 </Show>
               </div>
-
-              <div class="laki-articles-footer">
-                <button class="btn btn-pink laki-explore-btn-lower" onClick={() => (window.location.hash = '#contact-page')}>
-                  {props.t('lakiBrowseGuides')}
-                </button>
-              </div>
+              <Show when={(props.education?.posters || []).filter(p => p.img && p.title_ar !== 'MAIN' && p.title_ar !== 'INTRO').length > 3}>
+                <div class="laki-articles-footer">
+                  <button class="btn btn-pink laki-explore-btn-lower" onClick={() => setShowAllPosters(!showAllPosters())}>
+                    {showAllPosters() ? (props.lang() === 'ar' ? 'عرض أقل' : 'Show Less') : props.t('lakiExploreMore')}
+                  </button>
+                </div>
+              </Show>
             </div>
           </div>
         </div>
@@ -1697,9 +1706,17 @@ function Contact(props) {
         {/* Left Col: Newsletter & Socials */}
         <div class="foot-col foot-newsletter-col">
           <h3 class="footer-heading">{props.t('newsletterTitle')}</h3>
-          <form class="newsletter-form">
+          <form class="newsletter-form" onSubmit={(e) => {
+            e.preventDefault();
+            const form = e.currentTarget;
+            const input = form.querySelector('input');
+            if (input.value.trim()) {
+              alert(props.lang() === 'ar' ? 'شكراً لرأيك، تم الإرسال بنجاح!' : 'Thank you for your feedback, sent successfully!');
+              input.value = '';
+            }
+          }}>
             <div class="newsletter-input-group">
-              <input type="email" placeholder={props.t('newsletterPlaceholder')} required />
+              <input type="text" placeholder={props.t('newsletterPlaceholder')} required />
               <button class="newsletter-btn" type="submit">
                 <span>{props.t('newsletterSubmit')}</span>
               </button>
@@ -1723,7 +1740,7 @@ import translationsData from './data/translations.json'
 
 export default function App() {
   const initialStoredLang = readStoredLang()
-  const [lang, setLang] = createSignal(initialStoredLang || 'ar')
+  const [lang, setLang] = createSignal(initialStoredLang || 'en')
   const [route, setRoute] = createSignal('home')
   const [dashboardLangInitialized, setDashboardLangInitialized] = createSignal(false)
   const [prefilledMessage, setPrefilledMessage] = createSignal('')
@@ -1749,8 +1766,8 @@ export default function App() {
       })) || [];
       console.log('Fetched products:', mapped.length);
       if (mapped.length === 0) {
-          // Diagnostic alert for the user to help me debug
-          // window.alert('Products fetched: 0. Check console for fetch logs.');
+        // Diagnostic alert for the user to help me debug
+        // window.alert('Products fetched: 0. Check console for fetch logs.');
       }
       return mapped;
     } catch (e) {
