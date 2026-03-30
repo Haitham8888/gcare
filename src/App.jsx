@@ -25,8 +25,8 @@ const DEFAULT_CONTACT_SETTINGS = {
     { key: 'whatsapp', label: 'WhatsApp', href: 'https://wa.me/966552527862', enabled: false }
   ],
   phones: [
-    { label: 'Primary', value: '+966552527862', enabled: true },
-    { label: 'Secondary', value: '+966555849237', enabled: true }
+    { label: 'Primary', value: '+966555849237', enabled: true },
+    { label: 'Secondary', value: '+966552527862', enabled: true }
   ],
   emails: [
     { label: 'General', value: 'info@gcare.sa', enabled: true },
@@ -82,9 +82,31 @@ const normalizeContactSettings = (raw) => {
   }
 }
 
-const cleanPhoneValue = (value) => String(value || '').replace(/\s+/g, '')
+const cleanPhoneValue = (value) => {
+  const arabicToLatinDigits = {
+    '٠': '0', '١': '1', '٢': '2', '٣': '3', '٤': '4',
+    '٥': '5', '٦': '6', '٧': '7', '٨': '8', '٩': '9',
+    '۰': '0', '۱': '1', '۲': '2', '۳': '3', '۴': '4',
+    '۵': '5', '۶': '6', '۷': '7', '۸': '8', '۹': '9'
+  }
+
+  const normalized = String(value || '')
+    .replace(/[٠-٩۰-۹]/g, (d) => arabicToLatinDigits[d] || d)
+    .replace(/\s+/g, '')
+
+  return normalized.replace(/(?!^)\+/g, '').replace(/[^\d+]/g, '')
+}
 const toTelHref = (value) => `tel:${cleanPhoneValue(value)}`
 const toWhatsappHref = (value) => `https://wa.me/${cleanPhoneValue(value).replace(/^\+/, '')}`
+const resolveWhatsappHref = (value, fallbackPhone) => {
+  const normalized = String(value || '').trim()
+  if (!normalized) return toWhatsappHref(fallbackPhone)
+  if (/^https?:\/\//i.test(normalized)) return normalized
+  if (normalized.startsWith('wa.me/') || normalized.startsWith('www.wa.me/')) {
+    return `https://${normalized}`
+  }
+  return toWhatsappHref(normalized)
+}
 
 const PRODUCT_CATEGORY_OPTIONS = ['IVD', 'IUD', 'IUS', 'WomanCare']
 const LANG_STORAGE_KEY = 'gcare_lang'
@@ -99,15 +121,16 @@ const readStoredLang = () => {
   }
 }
 
-const normalizeProductCategory = (value) => {
+const normalizeProductCategory = (value, fallbackOptions = []) => {
   const v = String(value || '').trim()
-  if (!v) return 'IVD'
+  if (!v) return fallbackOptions[0] || 'IVD'
   const lower = v.toLowerCase()
   if (lower === 'woman care' || lower === 'womancare' || lower === 'woman_care') return 'WomanCare'
   if (lower === 'ivd') return 'IVD'
   if (lower === 'iud') return 'IUD'
   if (lower === 'ius') return 'IUS'
-  return PRODUCT_CATEGORY_OPTIONS.includes(v) ? v : 'IVD'
+  const match = fallbackOptions.find(opt => opt.toLowerCase() === lower)
+  return match || v || 'IVD'
 }
 
 function NavBar(props) {
@@ -150,7 +173,7 @@ function NavBar(props) {
           <a href={baseUrl} onClick={() => setOpen(false)}>{props.t('navHome')}</a>
           <a href="#about-page" onClick={() => setOpen(false)}>{props.t('navAbout')}</a>
           <a href="#products" onClick={() => setOpen(false)}>{props.t('navProducts')}</a>
-          <a href="#education-page" onClick={() => setOpen(false)}>{props.t('navEducation')}</a>
+          <a href="#education-page-main" onClick={() => setOpen(false)}>{props.t('navEducation')}</a>
           <a href="#contact-page" onClick={() => setOpen(false)}>{props.t('navContact')}</a>
         </nav>
       </div>
@@ -166,14 +189,14 @@ function GlobalSearch(props) {
   const searchableItems = [
     { key: 'navAbout', href: '#about' },
     { key: 'navProducts', href: '#products' },
-    { key: 'navEducation', href: '#education-page' },
+    { key: 'navEducation', href: '#education-page-main' },
     { key: 'navContact', href: '#contact-page' },
     { key: 'catIVD', href: '#products' },
     { key: 'catIUD', href: '#products' },
     { key: 'catIUS', href: '#products' },
     { key: 'catWomanCare', href: '#products' },
-    { key: 'educationTopic1Title', href: '#education-page' },
-    { key: 'educationTopic2Title', href: '#education-page' },
+    { key: 'educationTopic1Title', href: '#education-page-main' },
+    { key: 'educationTopic2Title', href: '#education-page-main' },
   ]
 
   createEffect(() => {
@@ -287,7 +310,7 @@ function Hero(props) {
 function HeroInfiniteSlider(props) {
   const introMedia = () => {
     const main = (props.education?.posters || []).find(p => p.title_ar === 'MAIN' || p.title_ar === 'INTRO');
-    return main ? getAssetUrl(main.img) : getAssetUrl('static/vid/intro.mp4');
+    return main ? getAssetUrl(main.img) : '';
   }
 
   const isVideo = () => {
@@ -375,7 +398,7 @@ function Products(props) {
         <Show when={!(props.activeProduct ? props.activeProduct() : false)}>
           <div class="section-head text-center">
             <h2 class="section-title">{props.t('productDigitalCatalog')}</h2>
-            <p class="hero-subtitle-large">{props.t('productsSubtitle') || 'Integrated medical solutions & devices'}</p>
+            <p class="hero-subtitle-large">{props.t('productsSubtitle')}</p>
           </div>
 
           <div class="category-filter-bar">
@@ -610,7 +633,7 @@ function HomePage(props) {
       <SectionDivider />
       <Education t={props.t} lang={props.lang} education={props.education} />
       <SectionDivider />
-      <Contact t={props.t} contactSettings={props.contactSettings} />
+      <Contact t={props.t} lang={props.lang} contactSettings={props.contactSettings} />
     </>
   )
 }
@@ -671,82 +694,36 @@ function AboutPage(props) {
         <div class="container">
           <h2 class="coe-values-title">{props.t('valuesTitle')}</h2>
           <div class="coe-values-grid">
-
-            <div class="coe-value-card coe-val-1">
-              <div class="coe-value-icon-box">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                  <path d="m9 12 2 2 4-4"></path>
-                </svg>
-              </div>
-              <div class="coe-value-content">
-                <h4>{props.t('valueQualityTitle')}</h4>
-                <p>{props.t('valueQualityDesc')}</p>
-              </div>
-            </div>
-
-            <div class="coe-value-card coe-val-2">
-              <div class="coe-value-icon-box">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M9 18h6"></path>
-                  <path d="M10 22h4"></path>
-                  <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path>
-                </svg>
-              </div>
-              <div class="coe-value-content">
-                <h4>{props.t('valueInnovationTitle')}</h4>
-                <p>{props.t('valueInnovationDesc')}</p>
-              </div>
-            </div>
-
-            <div class="coe-value-card coe-val-3">
-              <div class="coe-value-icon-box">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M12 3v18"></path>
-                  <path d="M18 7l-6-4-6 4"></path>
-                  <path d="M5 10l-3 7h6l-3-7"></path>
-                  <path d="M19 10l-3 7h6l-3-7"></path>
-                </svg>
-              </div>
-              <div class="coe-value-content">
-                <h4>{props.t('valueIntegrityTitle')}</h4>
-                <p>{props.t('valueIntegrityDesc')}</p>
-              </div>
-            </div>
-
-            <div class="coe-value-card coe-val-4">
-              <div class="coe-value-icon-box">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="9" cy="7" r="4"></circle>
-                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                </svg>
-              </div>
-              <div class="coe-value-content">
-                <h4>{props.t('valueTeamworkTitle')}</h4>
-                <p>{props.t('valueTeamworkDesc')}</p>
-              </div>
-            </div>
-
-            <div class="coe-value-card coe-val-5">
-              <div class="coe-value-icon-box">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="8" r="7"></circle>
-                  <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
-                </svg>
-              </div>
-              <div class="coe-value-content">
-                <h4>{props.t('valueServiceTitle')}</h4>
-                <p>{props.t('valueServiceDesc')}</p>
-              </div>
-            </div>
-
+            <For each={(props.education?.articles || []).filter(a => a.type === 'company_value').sort((a, b) => (a.order_index || 0) - (b.order_index || 0))} fallback={
+              <p style={{ "text-align": "center", "grid-column": "1/-1", "color": "#94a3b8", "padding": "2rem" }}>
+                {props.lang() === 'ar' ? 'جاري تحميل القيم أو لا توجد قيم حالية...' : 'Loading values or no values found...'}
+              </p>
+            }>
+              {(val, idx) => (
+                <div class={`coe-value-card coe-val-${(idx() % 5) + 1}`}>
+                  <div class="coe-value-icon-box">
+                    <Show when={val.img} fallback={
+                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="16"></line>
+                        <line x1="8" y1="12" x2="16" y2="12"></line>
+                      </svg>
+                    }>
+                      <img src={getAssetUrl(val.img)} alt="" style={{ width: '48px', height: '48px', 'object-fit': 'contain' }} />
+                    </Show>
+                  </div>
+                  <div class="coe-value-content">
+                    <h4>{props.lang() === 'ar' ? val.title_ar : val.title_en}</h4>
+                    <p>{props.lang() === 'ar' ? val.details_ar : val.details_en}</p>
+                  </div>
+                </div>
+              )}
+            </For>
           </div>
         </div>
       </section>
 
-      <Contact t={props.t} />
+      <Contact t={props.t} lang={props.lang} contactSettings={props.contactSettings} />
     </>
   )
 }
@@ -763,7 +740,7 @@ function ProductsPage(props) {
         setActiveProduct={props.setActiveProduct}
         products={props.products}
       />
-      <Contact t={props.t} />
+      <Contact t={props.t} lang={props.lang} contactSettings={props.contactSettings} />
     </>
   )
 }
@@ -800,7 +777,24 @@ function ContactPage(props) {
                 <div class="contact-form-card">
                   <h3 class="contact-form-title">{props.t('contactTitle')}</h3>
                   <p class="contact-form-subtitle">{props.t('contactFormSubtitle')}</p>
-                  <form class="contact-form-fields" onSubmit={(e) => e.preventDefault()}>
+                  <form class="contact-form-fields" onSubmit={(e) => {
+                    e.preventDefault();
+                    const name = document.getElementById('contact-name').value;
+                    const email = document.getElementById('contact-email').value;
+                    const msg = document.getElementById('contact-message').value;
+                    const targetEmail = enabledEmails()[0]?.value || 'info@gcare.sa';
+                    const subject = encodeURIComponent(props.lang() === 'ar' ? `رسالة استفسار من ${name}` : `Inquiry from ${name}`);
+                    const body = encodeURIComponent(`${props.lang() === 'ar' ? 'الاسم' : 'Name'}: ${name}\n${props.lang() === 'ar' ? 'البريد' : 'Email'}: ${email}\n\n${msg}`);
+
+                    const mailtoUrl = `mailto:${targetEmail}?subject=${subject}&body=${body}`;
+                    window.location.assign(mailtoUrl);
+
+                    // Small feedback
+                    const btn = e.currentTarget.querySelector('.contact-submit');
+                    const originalText = btn.innerText;
+                    btn.innerText = props.lang() === 'ar' ? 'جاري فتح البريد...' : 'Opening mail...';
+                    setTimeout(() => btn.innerText = originalText, 3000);
+                  }}>
                     <div class="field">
                       <input type="text" id="contact-name" placeholder={props.t('contactName')} required />
                     </div>
@@ -872,7 +866,7 @@ function ContactPage(props) {
           </div>
         </div>
       </section>
-      <Contact t={props.t} contactSettings={props.contactSettings} />
+      <Contact t={props.t} lang={props.lang} contactSettings={props.contactSettings} />
     </>
   )
 }
@@ -904,7 +898,7 @@ function HomeAbout(props) {
 function About(props) {
   const images = createMemo(() => {
     const posters = (props.education?.posters || []).filter(
-      (p) => p.img && p.title_ar !== 'MAIN' && p.title_ar !== 'INTRO'
+      (p) => p.img && p.title_ar !== 'MAIN' && p.title_ar !== 'INTRO' && p.category === 'about'
     )
     const media = posters
       .filter((p) => {
@@ -996,8 +990,8 @@ function Visitors(props) {
   // نظام تتبع الزوار باستخدام localStorage
   createEffect(() => {
     try {
-      // الرقم الأساسي (يمكن تغييره)
-      const baseCount = 1247
+      // الرقم الأساسي (يمكن تغييره من إدارة المحتوى)
+      const baseCount = parseInt(props.t('visitorsBase') || '1247')
 
       // جلب عدد الزيارات المحفوظة
       const savedVisits = parseInt(localStorage.getItem('gcare-total-visits') || '0')
@@ -1030,11 +1024,11 @@ function Visitors(props) {
       <div class="container">
         <div class="stats-grid">
           <div class="stat-card">
-            <div class="stat-value">5+</div>
+            <div class="stat-value">{props.t('partnersCount')}</div>
             <div class="stat-label">{props.t('partnersLabel')}</div>
           </div>
           <div class="stat-card">
-            <div class="stat-value">{props.t('achievementsValue')}+</div>
+            <div class="stat-value">{props.t('achievementsValue')}</div>
             <div class="stat-label">{props.t('achievementsLabel')}</div>
           </div>
           <div class="stat-card">
@@ -1054,7 +1048,7 @@ function Education(props) {
     if (!isPostersLoaded()) return []
 
     const posters = (props.education?.posters || []).filter(
-      (p) => p.title_ar !== 'MAIN' && p.title_ar !== 'INTRO'
+      (p) => p.title_ar !== 'MAIN' && p.title_ar !== 'INTRO' && p.category === 'home'
     );
     if (posters.length > 0) {
       const sorted = [...posters].sort((a, b) => {
@@ -1166,14 +1160,25 @@ function Education(props) {
 
 function LakiPage(props) {
   const baseUrl = import.meta.env.BASE_URL
-  const [selectedImg, setSelectedImg] = createSignal(null)
+  const [selectedItem, setSelectedItem] = createSignal(null)
   const [showAllGuides, setShowAllGuides] = createSignal(false)
   const [showAllPosters, setShowAllPosters] = createSignal(false)
 
-  const contentSeries = createMemo(() => (props.education?.articles || []).map(item => {
-    const title = item.title_ar || item.title_en ? (props.lang() === 'ar' ? item.title_ar : item.title_en) : props.t(item.title_key);
-    const category = item.category_ar || item.category_en ? (props.lang() === 'ar' ? item.category_ar : item.category_en) : props.t(item.category_key);
-    const excerpt = item.excerpt_ar || item.excerpt_en ? (props.lang() === 'ar' ? item.excerpt_ar : item.excerpt_en) : props.t(item.excerpt_key);
+  const safeT = (key, fallback = '') => {
+    if (!key || typeof key !== 'string') return fallback
+    return props.t(key)
+  }
+
+  const allEducationArticles = createMemo(() => (props.education?.articles || []).map(item => {
+    const title = item.title_ar || item.title_en
+      ? (props.lang() === 'ar' ? item.title_ar : item.title_en)
+      : safeT(item.title_key, props.lang() === 'ar' ? 'محتوى تثقيفي' : 'Education Content')
+    const category = item.details_ar || item.details_en
+      ? (props.lang() === 'ar' ? item.details_ar : item.details_en)
+      : safeT(item.category_key, props.t('lakiBadge'))
+    const excerpt = item.excerpt_ar || item.excerpt_en
+      ? (props.lang() === 'ar' ? item.excerpt_ar : item.excerpt_en)
+      : safeT(item.excerpt_key, '')
 
     return {
       ...item,
@@ -1181,15 +1186,18 @@ function LakiPage(props) {
       category,
       excerpt,
       linkUrl: item.link_url || '',
+      pdfUrl: getAssetUrl(item.pdf_url),
       img: getAssetUrl(item.img)
     };
   }))
 
-  const guideCards = createMemo(() => showAllGuides() ? contentSeries() : contentSeries().slice(0, 3))
+  const contentSeries = createMemo(() => allEducationArticles().filter(a => a.type === 'general'))
+  const guideList = createMemo(() => allEducationArticles().filter(a => a.type === 'guide' || !a.type))
+  const guideCards = createMemo(() => showAllGuides() ? guideList() : guideList().slice(0, 3))
 
   const posterCards = createMemo(() => {
     const posters = (props.education?.posters || []).filter(
-      (p) => p.img && p.title_ar !== 'MAIN' && p.title_ar !== 'INTRO'
+      (p) => p.img && !['MAIN', 'INTRO', 'HEALTH_EDU_HERO', 'HEALTH_EDU_LAKI_BG', 'HEALTH_EDU_EXPERT_BG', 'HEALTH_EDU_LAKI_HERO', 'HEALTH_EDU_EXPERT_HERO'].includes(p.title_ar) && (p.category === 'laki' || !p.category || !['home', 'about'].includes(p.category))
     )
 
     const imagePosters = posters
@@ -1201,7 +1209,8 @@ function LakiPage(props) {
         title: (props.lang() === 'ar' ? p.title_ar : p.title_en) || props.t(`lakiPoster${index + 1}`),
         category: props.t('lakiPostersTitle'),
         excerpt: props.t('lakiGuidesDesc'),
-        img: getAssetUrl(p.img)
+        img: getAssetUrl(p.img),
+        linkUrl: p.link_url || ''
       }))
 
     return showAllPosters() ? imagePosters : imagePosters.slice(0, 3)
@@ -1219,73 +1228,33 @@ function LakiPage(props) {
             <p class="laki-hero-subtitle">
               {props.t('lakiHeroSubtitle')}
             </p>
-            <button class="back-link-v2" onClick={() => props.setEduRoute('main')}>
+            <button class="back-link-v2" onClick={() => {
+              window.location.hash = '#education-page-main'
+              props.setEduRoute('main')
+            }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5m7 7-7-7 7-7" /></svg>
               {props.t('lakiBreadcrumbHome')} {'>'} {props.t('lakiBreadcrumbEdu')} {'>'} {props.t('lakiBreadcrumbCurrent')}
             </button>
           </div>
           <div class="laki-hero-image">
-            <img src={getAssetUrl('static/img/HealthEducation/health_edu_5.png')} alt="Women Health" />
+            <img src={getAssetUrl(props.lakiHeroImg())} alt="Women Health" />
           </div>
         </div>
       </section>
 
-      <section class="section laki-articles-section">
-        <div class="container">
-          <div class="articles-header">
-            <div class="articles-title-block">
-              <h2 class="laki-section-title large">{props.t('lakiContentSeriesTitle')}</h2>
-            </div>
-          </div>
-
-          <div class="articles-slider-container">
-            <div class="laki-articles-grid">
-              {contentSeries().map(item => (
-                <div class="article-modern-card" onClick={() => item.linkUrl ? window.open(item.linkUrl, '_blank', 'noopener,noreferrer') : setSelectedImg(item.img)}>
-                  <div class="article-card-media">
-                    <img src={item.img} alt="" />
-                    <div class="article-media-overlay">
-                      <h4>{item.title}</h4>
-                    </div>
-                  </div>
-                  <div class="article-card-body">
-                    <h3 class="article-cat">{item.category}</h3>
-                    <p class="article-ex">{item.excerpt}</p>
-                    <Show when={item.linkUrl}>
-                      <a
-                        href={item.linkUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="article-link-btn"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {props.lang() === 'ar' ? 'رابط المقال' : 'Open Article'}
-                      </a>
-                    </Show>
-                  </div>
-                </div>
-              ))}
+      <Show when={contentSeries().length > 0}>
+        <section class="section laki-articles-section" style={{ "background-color": "#f8fafc" }}>
+          <div class="container">
+            <div class="articles-header">
+              <div class="articles-title-block">
+                <h2 class="laki-section-title large">{props.t('lakiContentSeriesTitle')}</h2>
+              </div>
             </div>
 
-            <button class="article-nav-arrow next">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6" /></svg>
-            </button>
-          </div>
-
-          <div class="laki-articles-footer">
-            <button class="btn btn-pink laki-explore-btn-lower">{props.t('lakiLearnMoreAction')}</button>
-          </div>
-        </div>
-      </section>
-
-      <section class="section laki-guides-v2">
-        <div class="container">
-          <div class="laki-content-dual-layout">
-            <div class="laki-content-block">
-              <h2 class="laki-section-title">{props.t('lakiLatestAdditions')}</h2>
-              <div class="laki-articles-grid same-as-articles">
-                {guideCards().map(item => (
-                  <div class="article-modern-card" onClick={() => setSelectedImg(item.img)}>
+            <div class="articles-slider-container">
+              <div class="laki-articles-grid">
+                {contentSeries().map(item => (
+                  <div class="article-modern-card" onClick={() => setSelectedItem(item)}>
                     <div class="article-card-media">
                       <img src={item.img} alt="" />
                       <div class="article-media-overlay">
@@ -1294,134 +1263,212 @@ function LakiPage(props) {
                     </div>
                     <div class="article-card-body">
                       <h3 class="article-cat">{item.category}</h3>
-                      <p class="article-ex">{item.excerpt}</p>
+                      <p class="article-ex" innerHTML={item.excerpt}></p>
+                      <Show when={item.linkUrl}>
+                        <a
+                          href={item.linkUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="article-link-btn"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {props.lang() === 'ar' ? 'رابط المقال' : 'Open Article'}
+                        </a>
+                      </Show>
                     </div>
                   </div>
                 ))}
               </div>
+
               <Show when={contentSeries().length > 3}>
-                <div class="laki-articles-footer">
-                  <button class="btn btn-pink laki-explore-btn-lower" onClick={() => setShowAllGuides(!showAllGuides())}>
-                    {showAllGuides() ? (props.lang() === 'ar' ? 'عرض أقل' : 'Show Less') : props.t('lakiBrowseGuides')}
-                  </button>
-                </div>
+                <button class="article-nav-arrow next">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6" /></svg>
+                </button>
               </Show>
             </div>
 
+            <div class="laki-articles-footer">
+              <button class="btn btn-pink laki-explore-btn-lower">{props.t('lakiLearnMoreAction')}</button>
+            </div>
+          </div>
+        </section>
+      </Show>
+
+      <Show when={guideList().length > 0}>
+        <section class="section laki-guides-v2" id="laki-guides">
+          <div class="container">
+            <div class="laki-content-block">
+              <h2 class="laki-section-title">{props.t('lakiLatestAdditions')}</h2>
+              <div class="laki-articles-grid same-as-articles">
+                {guideCards().map(item => (
+                  <div class="article-modern-card" onClick={() => setSelectedItem(item)}>
+                    <div class="article-card-media">
+                      <img src={item.img} alt="" />
+                      <div class="article-media-overlay">
+                        <h4>{item.title}</h4>
+                      </div>
+                    </div>
+                    <div class="article-card-body">
+                      <h3 class="article-cat">{item.category}</h3>
+                      <p class="article-ex" innerHTML={item.excerpt}></p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div class="laki-articles-footer">
+                <button class="btn btn-pink laki-explore-btn-lower" onClick={() => setShowAllGuides(!showAllGuides())}>
+                  {showAllGuides() ? (props.lang() === 'ar' ? 'عرض أقل' : 'Show Less') : props.t('lakiBrowseGuides')}
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </Show>
+
+      <Show when={posterCards().length > 0}>
+        <section class="section laki-posters-v2" id="laki-posters" style={{ "background-color": "#f8fafc" }}>
+          <div class="container">
             <div class="laki-content-block">
               <h2 class="laki-section-title">{props.t('lakiPostersTitle')}</h2>
               <div class="laki-articles-grid same-as-articles">
-                <Show when={posterCards().length > 0} fallback={
-                  <div class="article-empty-card">{props.lang() === 'ar' ? 'لا توجد بوسترات مضافة حالياً' : 'No posters available yet'}</div>
-                }>
-                  {posterCards().map(item => (
-                    <div class="article-modern-card" onClick={() => setSelectedImg(item.img)}>
-                      <div class="article-card-media">
-                        <img src={item.img} alt="" />
-                        <div class="article-media-overlay">
-                          <h4>{item.title}</h4>
-                        </div>
-                      </div>
-                      <div class="article-card-body">
-                        <h3 class="article-cat">{item.category}</h3>
-                        <p class="article-ex">{item.excerpt}</p>
+                {posterCards().map(item => (
+                  <div class="article-modern-card" onClick={() => setSelectedItem(item)}>
+                    <div class="article-card-media">
+                      <img src={item.img} alt="" />
+                      <div class="article-media-overlay">
+                        <h4>{item.title}</h4>
                       </div>
                     </div>
-                  ))}
-                </Show>
+                    <div class="article-card-body">
+                      <h3 class="article-cat">{item.category}</h3>
+                      <p class="article-ex" innerHTML={item.excerpt}></p>
+                    </div>
+                  </div>
+                ))}
               </div>
-              <Show when={(props.education?.posters || []).filter(p => p.img && p.title_ar !== 'MAIN' && p.title_ar !== 'INTRO').length > 3}>
-                <div class="laki-articles-footer">
-                  <button class="btn btn-pink laki-explore-btn-lower" onClick={() => setShowAllPosters(!showAllPosters())}>
-                    {showAllPosters() ? (props.lang() === 'ar' ? 'عرض أقل' : 'Show Less') : props.t('lakiExploreMore')}
-                  </button>
+              <div class="laki-articles-footer">
+                <button class="btn btn-pink laki-explore-btn-lower" onClick={() => setShowAllPosters(!showAllPosters())}>
+                  {showAllPosters() ? (props.lang() === 'ar' ? 'عرض أقل' : 'Show Less') : props.t('lakiExploreMore')}
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </Show>
+
+      {selectedItem() && (
+        <div class="article-detail-modal" onClick={() => setSelectedItem(null)}>
+          <div class="modal-content-card" onClick={(e) => e.stopPropagation()}>
+            <button class="modal-close-btn" onClick={() => setSelectedItem(null)}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6 6 18M6 6l12 12" /></svg>
+            </button>
+            <div class="modal-hero-container">
+              <img src={selectedItem().img} alt="" class="modal-hero-img" />
+            </div>
+            <div class="modal-body-content">
+              <span class="modal-cat-badge">{selectedItem().category}</span>
+              <h2 class="modal-title-h">{selectedItem().title}</h2>
+              <div class="modal-excerpt-p" innerHTML={selectedItem().excerpt}></div>
+              <Show when={selectedItem().pdfUrl}>
+                <div style={{ "margin-top": "1.5rem" }}>
+                  <a
+                    href={selectedItem().pdfUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="btn btn-brand"
+                    style={{ "padding": "1rem 2rem", "border-radius": "12px", "display": "flex", "align-items": "center", "gap": "10px", "justify-content": "center" }}
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="12" y1="18" x2="12" y2="12" /><polyline points="9 15 12 12 15 15" /></svg>
+                    {props.lang() === 'ar' ? 'تحميل الملف (PDF)' : 'Download PDF'}
+                  </a>
+                </div>
+              </Show>
+              <Show when={selectedItem().linkUrl}>
+                <div style={{ "margin-top": "1.5rem" }}>
+                  <a
+                    href={selectedItem().linkUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="btn btn-pink"
+                    style={{ "padding": "1rem 2rem", "border-radius": "12px", "display": "flex", "align-items": "center", "gap": "10px", "justify-content": "center" }}
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
+                    {props.lang() === 'ar' ? 'عرض المحتوى الكامل' : 'View Full Content'}
+                  </a>
                 </div>
               </Show>
             </div>
           </div>
         </div>
-      </section>
-
-      {selectedImg() && (
-        <div class="lightbox" onClick={() => setSelectedImg(null)}>
-          <img src={selectedImg()} alt="" />
-          <button class="close-lightbox">×</button>
-        </div>
       )}
-    </div>
+    </div >
   )
 }
 
 function ExpertPage(props) {
   const baseUrl = import.meta.env.BASE_URL
   const [stepIndex, setStepIndex] = createSignal(0)
+
+  createEffect(() => {
+    const timer = setInterval(() => {
+      setStepIndex(prev => (prev + 1) % steps().length);
+    }, 5000);
+    onCleanup(() => clearInterval(timer));
+  });
+
   const settings = createMemo(() => normalizeContactSettings(props.contactSettings))
   const enabledPhones = createMemo(() => settings().phones.filter((item) => item.enabled && item.value))
+  const enabledEmails = createMemo(() => settings().emails.filter((item) => item.enabled && item.value))
   const primaryPhone = createMemo(() => enabledPhones()[0]?.value || DEFAULT_CONTACT_SETTINGS.phones[0].value)
+  const expertPhone = createMemo(() => {
+    const eduPhone = props.t('eduWhatsAppNumber')
+    return enabledPhones()[1]?.value || eduPhone || enabledPhones()[0]?.value || DEFAULT_CONTACT_SETTINGS.phones[1].value
+  })
+  const expertJoinHref = createMemo(() => resolveWhatsappHref(props.t('expertJoinWhatsappUrl'), expertPhone()))
+  const primaryEmail = createMemo(() => enabledEmails()[0]?.value || DEFAULT_CONTACT_SETTINGS.emails[0].value)
 
-  const advantages = createMemo(() => [
-    {
-      title: props.t('expertWhy1Title'),
-      icon: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
-        </svg>
-      )
-    },
-    {
-      title: props.t('expertWhy2Title'),
-      icon: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-        </svg>
-      )
-    },
-    {
-      title: props.t('expertWhy3Title'),
-      icon: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-        </svg>
-      )
-    },
-    {
-      title: props.t('expertWhy4Title'),
-      icon: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
-        </svg>
-      )
-    },
-    {
-      title: props.t('expertWhy5Title'),
-      icon: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-        </svg>
-      )
-    },
-    {
-      title: props.t('expertWhy6Title'),
-      icon: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-        </svg>
-      )
+  const advantages = createMemo(() => {
+    const dynamic = ((props.education || {}).articles || []).filter(a => a.type === 'expert_why').sort((a, b) => (a.order_index || 0) - (b.order_index || 0))
+    const icons = [
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>,
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>,
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></svg>,
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>,
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>,
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+    ]
+
+    if (dynamic.length > 0) {
+      return dynamic.map((p, i) => ({
+        title: props.lang() === 'ar' ? `${p.title_ar} ${p.excerpt_ar}` : `${p.title_en} ${p.excerpt_en}`,
+        icon: p.img ? (
+          <img src={getAssetUrl(p.img)} style={{ width: '20px', height: '20px', 'filter': 'brightness(0) invert(1)' }} />
+        ) : icons[i % icons.length]
+      }))
     }
-  ])
 
-  const steps = createMemo(() => [
-    { id: 1, title: props.t('expertStep1Title'), desc: props.t('expertStep1Desc') },
-    { id: 2, title: props.t('expertStep2Title'), desc: props.t('expertStep2Desc') },
-    { id: 3, title: props.t('expertStep3Title'), desc: props.t('expertStep3Desc') },
-    { id: 4, title: props.t('expertStep4Title'), desc: props.t('expertStep4Desc') },
-    { id: 5, title: props.t('expertStep5Title'), desc: props.t('expertStep5Desc') },
-    { id: 6, title: props.t('expertStep6Title'), desc: props.t('expertStep6Desc') }
-  ])
+    return [
+      { title: props.t('expertWhy1Title'), icon: icons[0] },
+      { title: props.t('expertWhy2Title'), icon: icons[1] },
+      { title: props.t('expertWhy3Title'), icon: icons[2] },
+      { title: props.t('expertWhy4Title'), icon: icons[3] },
+      { title: props.t('expertWhy5Title'), icon: icons[4] },
+      { title: props.t('expertWhy6Title'), icon: icons[5] }
+    ]
+  })
+
+  const steps = createMemo(() => {
+    const dynamic = ((props.education || {}).articles || []).filter(a => a.type === 'expert_step').sort((a, b) => (a.order_index || 0) - (b.order_index || 0))
+    return dynamic.map((s, i) => ({
+      id: s.order_index || (i + 1),
+      title: props.lang() === 'ar' ? s.title_ar : s.title_en,
+      desc: props.lang() === 'ar' ? s.excerpt_ar : s.excerpt_en
+    }))
+  })
 
   const experts = createMemo(() => (props.experts || []).map(doc => ({
-    name: props.lang() === 'ar' ? doc.name_ar : doc.name_en,
-    role: props.lang() === 'ar' ? doc.role_ar : doc.role_en,
+    name: props.lang() === 'ar' ? doc.title_ar : doc.title_en,
+    role: props.lang() === 'ar' ? doc.details_ar : doc.details_en,
     img: getAssetUrl(doc.img)
   })))
 
@@ -1430,7 +1477,10 @@ function ExpertPage(props) {
       <section class="expert-hero">
         <div class="expert-hero-inner container">
           <div class="expert-hero-text">
-            <button class="back-link-v2" onClick={() => props.setEduRoute('main')}>
+            <button class="back-link-v2" onClick={() => {
+              window.location.hash = '#education-page-main'
+              props.setEduRoute('main')
+            }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5m7 7-7-7 7-7" /></svg>
               {props.t('lakiBreadcrumbHome')} {'>'} {props.t('lakiBreadcrumbEdu')} {'>'} {props.t('expertHeroTitle')}
             </button>
@@ -1438,10 +1488,10 @@ function ExpertPage(props) {
             <p class="expert-hero-subtitle">
               {props.t('expertHeroSubtitle')}
             </p>
-            <a href={toWhatsappHref(primaryPhone())} class="btn btn-primary expert-cta-btn">{props.t('expertJoinAction')}</a>
+            <a href={expertJoinHref()} class="btn btn-primary expert-cta-btn">{props.t('expertJoinAction')}</a>
           </div>
           <div class="expert-hero-image">
-            <img src={getAssetUrl('static/img/G - Care-01.svg')} alt="Medical Expert" />
+            <img src={getAssetUrl(props.expertHeroImg())} alt="Medical Expert" />
           </div>
         </div>
       </section>
@@ -1526,9 +1576,23 @@ function ExpertPage(props) {
           <div class="laki-signup-card">
             <h3>{props.t('expertSignupTitle')}</h3>
             <p class="mb-4">{props.t('expertSignupSub')}</p>
-            <form class="laki-signup-form" onSubmit={e => e.preventDefault()}>
-              <input type="text" placeholder={props.t('expertSignupName')} />
-              <input type="email" placeholder={props.t('expertSignupEmail')} />
+            <form class="laki-signup-form" onSubmit={e => {
+              e.preventDefault();
+              const formData = new FormData(e.currentTarget);
+              const name = String(formData.get('name') || '');
+              const email = String(formData.get('email') || '');
+              const target = primaryEmail() || 'info@gcare.sa';
+              const subject = encodeURIComponent(props.lang() === 'ar' ? 'طلب انضمام لشبكة إكسبرت' : 'Expert Network Join Request');
+              const body = encodeURIComponent(`${props.lang() === 'ar' ? 'الاسم' : 'Name'}: ${name}\n${props.lang() === 'ar' ? 'البريد' : 'Email'}: ${email}`);
+              window.location.assign(`mailto:${target}?subject=${subject}&body=${body}`);
+
+              const btn = e.currentTarget.querySelector('button');
+              const original = btn.innerText;
+              btn.innerText = props.lang() === 'ar' ? 'جاري فتح البريد...' : 'Opening mail...';
+              setTimeout(() => btn.innerText = original, 3000);
+            }}>
+              <input type="text" name="name" placeholder={props.t('expertSignupName')} required />
+              <input type="email" name="email" placeholder={props.t('expertSignupEmail')} required />
               <button type="submit" class="btn btn-primary">{props.t('expertSignupBtn')}</button>
             </form>
           </div>
@@ -1540,6 +1604,10 @@ function ExpertPage(props) {
 
 function EducationPage(props) {
   const [eduRoute, setEduRoute] = createSignal('main')
+  const activeEduRoute = createMemo(() => {
+    const current = eduRoute()
+    return current === 'laki' || current === 'expert' ? current : 'main'
+  })
   const baseUrl = import.meta.env.BASE_URL
   const settings = createMemo(() => normalizeContactSettings(props.contactSettings))
   const enabledPhones = createMemo(() => settings().phones.filter((item) => item.enabled && item.value))
@@ -1548,15 +1616,41 @@ function EducationPage(props) {
   const primaryPhone = createMemo(() => enabledPhones()[0]?.value || DEFAULT_CONTACT_SETTINGS.phones[0].value)
   const secondaryPhone = createMemo(() => enabledPhones()[1]?.value || enabledPhones()[0]?.value || DEFAULT_CONTACT_SETTINGS.phones[1].value)
   const primaryEmail = createMemo(() => enabledEmails()[0]?.value || DEFAULT_CONTACT_SETTINGS.emails[0].value)
+  const eduHeroImg = createMemo(() => (props.education?.posters || []).find(p => p.title_ar === 'HEALTH_EDU_HERO')?.img || 'static/img/HealthEducation/health_edu_5.png')
+  const lakiHeroImg = createMemo(() => (props.education?.posters || []).find(p => p.title_ar === 'HEALTH_EDU_LAKI_HERO')?.img || 'static/img/HealthEducation/health_edu_5.png')
+  const expertHeroImg = createMemo(() => (props.education?.posters || []).find(p => p.title_ar === 'HEALTH_EDU_EXPERT_HERO')?.img || 'static/img/G - Care-01.svg')
+  const lakiBg = createMemo(() => (props.education?.posters || []).find(p => p.title_ar === 'HEALTH_EDU_LAKI_BG')?.img || 'static/img/12.png')
+  const expertBg = createMemo(() => (props.education?.posters || []).find(p => p.title_ar === 'HEALTH_EDU_EXPERT_BG')?.img || 'static/img/13.png')
+
+  createEffect(() => {
+    const syncEduRouteFromHash = () => {
+      const hash = (window.location.hash || '').split('?')[0].replace(/\/+$/, '')
+      if (hash === '#education-page-laki') {
+        setEduRoute('laki')
+        return
+      }
+      if (hash === '#education-page-expert') {
+        setEduRoute('expert')
+        return
+      }
+      if (hash.startsWith('#education-page') || hash === '#education') {
+        setEduRoute('main')
+      }
+    }
+
+    syncEduRouteFromHash()
+    window.addEventListener('hashchange', syncEduRouteFromHash)
+    onCleanup(() => window.removeEventListener('hashchange', syncEduRouteFromHash))
+  })
 
   return (
     <>
       <div class="education-page-wrapper">
-        {eduRoute() === 'main' && (
+        {activeEduRoute() === 'main' && (
           <section class="section education-page" id="education-page">
             <div class="container">
               <div class="section-head edu-header-inline">
-                <img src={getAssetUrl('static/img/HealthEducation/health_edu_5.png')} alt="Laki Wa Biwai Logo" class="edu-logo-inline" />
+                <img src={getAssetUrl(eduHeroImg())} alt="Laki Wa Biwai Logo" class="edu-logo-inline" />
                 <h2 class="edu-tagline-text">{props.t('educationSubtitle')}</h2>
               </div>
 
@@ -1565,23 +1659,29 @@ function EducationPage(props) {
               </div>
 
               <div class="education-programs-grid">
-                <div class="program-card laki-card">
+                <div class="program-card laki-card" style={{ "background-image": `linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), url(${getAssetUrl(lakiBg())})`, "background-size": "cover", "background-position": "center" }}>
                   <div class="program-card-overlay"></div>
                   <div class="program-content">
                     <h3>{props.t('educationTopic2Title')}</h3>
                     <p>{props.t('educationTopic2Body')}</p>
-                    <button class="btn btn-pink" onClick={() => setEduRoute('laki')}>
+                    <button class="btn btn-pink" onClick={() => {
+                      window.location.hash = '#education-page-laki'
+                      setEduRoute('laki')
+                    }}>
                       {props.t('eduLakiExploreBtn')}
                     </button>
                   </div>
                 </div>
 
-                <div class="program-card expert-card">
+                <div class="program-card expert-card" style={{ "background-image": `linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), url(${getAssetUrl(expertBg())})`, "background-size": "cover", "background-position": "center" }}>
                   <div class="program-card-overlay"></div>
                   <div class="program-content">
                     <h3>{props.t('educationTopic1Title')}</h3>
                     <p>{props.t('educationTopic1Body')}</p>
-                    <button class="btn btn-brand-alt" onClick={() => setEduRoute('expert')}>
+                    <button class="btn btn-brand-alt" onClick={() => {
+                      window.location.hash = '#education-page-expert'
+                      setEduRoute('expert')
+                    }}>
                       {props.t('eduExpertJoinBtn')}
                     </button>
                   </div>
@@ -1595,7 +1695,7 @@ function EducationPage(props) {
                     <div class="booking-card-body">
                       <h3 class="booking-card-title">{props.t('contactAppointmentTitle')}</h3>
                       <p class="booking-card-desc">{props.t('contactAppointmentSub')}</p>
-                      <a class="btn btn-booking-main" href={bookingUrl()} target="_blank" rel="noopener noreferrer">
+                      <a class="btn btn-booking-main" href={props.t('eduBookingUrl')} target="_blank" rel="noopener noreferrer">
                         {props.t('contactAppointmentBtn')}
                       </a>
                     </div>
@@ -1605,13 +1705,13 @@ function EducationPage(props) {
                     <div class="edu-contact-card-body">
                       <h4 class="edu-contact-card-title">{props.t('eduContactTitle')}</h4>
                       <div class="edu-contact-methods-v2">
-                        <a href={toWhatsappHref(secondaryPhone())} target="_blank" rel="noopener noreferrer" class="wa-premium-action">
+                        <a href={toWhatsappHref(props.t('eduWhatsAppNumber'))} target="_blank" rel="noopener noreferrer" class="wa-premium-action">
                           <img src={getAssetUrl('static/img/whatsapp.svg')} alt="" class="wa-mid-icon" />
-                          <span class="wa-number-mid" dir="ltr">{secondaryPhone()}</span>
+                          <span class="wa-number-mid" dir="ltr">{props.t('eduWhatsAppNumber')}</span>
                         </a>
                         <div class="edu-email-box">
                           <span class="email-label">{props.t('eduEmailLabel')}</span>
-                          <a href={`mailto:${primaryEmail()}`} class="email-link-v2">{primaryEmail()}</a>
+                          <a href={`mailto:${props.t('eduEmailAddress')}`} class="email-link-v2">{props.t('eduEmailAddress')}</a>
                         </div>
                       </div>
                     </div>
@@ -1621,10 +1721,10 @@ function EducationPage(props) {
             </div>
           </section>
         )}
-        {eduRoute() === 'laki' && <LakiPage t={props.t} setEduRoute={setEduRoute} education={props.education} lang={props.lang} />}
-        {eduRoute() === 'expert' && <ExpertPage t={props.t} setEduRoute={setEduRoute} experts={props.experts} lang={props.lang} />}
+        {activeEduRoute() === 'laki' && <LakiPage t={props.t} setEduRoute={setEduRoute} education={props.education} lang={props.lang} eduHeroImg={eduHeroImg} lakiHeroImg={lakiHeroImg} />}
+        {activeEduRoute() === 'expert' && <ExpertPage t={props.t} setEduRoute={setEduRoute} experts={props.experts} lang={props.lang} education={props.education || {}} contactSettings={props.contactSettings} expertHeroImg={expertHeroImg} />}
       </div>
-      <Contact t={props.t} contactSettings={props.contactSettings} />
+      <Contact t={props.t} lang={props.lang} contactSettings={props.contactSettings} />
     </>
   )
 }
@@ -1637,6 +1737,7 @@ function Contact(props) {
   const enabledEmails = createMemo(() => settings().emails.filter((item) => item.enabled && item.value))
   const primaryPhone = createMemo(() => enabledPhones()[0]?.value || DEFAULT_CONTACT_SETTINGS.phones[0].value)
   const primaryEmail = createMemo(() => enabledEmails()[0]?.value || DEFAULT_CONTACT_SETTINGS.emails[0].value)
+  const [footerMessage, setFooterMessage] = createSignal('')
   return (
     <footer class="footer" id="contact">
       <div class="footer-top-divider"></div>
@@ -1706,22 +1807,39 @@ function Contact(props) {
         {/* Left Col: Newsletter & Socials */}
         <div class="foot-col foot-newsletter-col">
           <h3 class="footer-heading">{props.t('newsletterTitle')}</h3>
-          <form class="newsletter-form" onSubmit={(e) => {
-            e.preventDefault();
-            const form = e.currentTarget;
-            const input = form.querySelector('input');
-            if (input.value.trim()) {
-              alert(props.lang() === 'ar' ? 'شكراً لرأيك، تم الإرسال بنجاح!' : 'Thank you for your feedback, sent successfully!');
-              input.value = '';
-            }
-          }}>
+          <div class="newsletter-form-container">
             <div class="newsletter-input-group">
-              <input type="text" placeholder={props.t('newsletterPlaceholder')} required />
-              <button class="newsletter-btn" type="submit">
+              <input
+                type="text"
+                placeholder={props.t('newsletterPlaceholder')}
+                onInput={(e) => setFooterMessage(e.currentTarget.value)}
+                value={footerMessage()}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && footerMessage().trim()) {
+                    const target = primaryEmail() || 'info@gcare.sa';
+                    const subject = encodeURIComponent(props.lang() === 'ar' ? 'رأي حول الموقع' : 'Website Feedback');
+                    const body = encodeURIComponent(footerMessage());
+                    window.location.assign(`mailto:${target}?subject=${subject}&body=${body}`);
+                    setFooterMessage('');
+                  }
+                }}
+              />
+              <button
+                class="newsletter-btn"
+                onClick={() => {
+                  const msg = footerMessage().trim();
+                  if (!msg) return;
+                  const target = primaryEmail() || 'info@gcare.sa';
+                  const subject = encodeURIComponent(props.lang() === 'ar' ? 'رأي حول الموقع' : 'Website Feedback');
+                  const body = encodeURIComponent(msg);
+                  window.location.assign(`mailto:${target}?subject=${subject}&body=${body}`);
+                  setFooterMessage('');
+                }}
+              >
                 <span>{props.t('newsletterSubmit')}</span>
               </button>
             </div>
-          </form>
+          </div>
         </div>
       </div>
 
@@ -1748,6 +1866,16 @@ export default function App() {
   const [session, setSession] = createSignal(null)
   const isLoggedIn = () => !!session()
 
+  const [productCategories, { refetch: refetchCategories }] = createResource(async () => {
+    try {
+      const { data, error } = await supabase.from('product_categories').select('*').order('title_ar');
+      if (error) return [];
+      return data || [];
+    } catch {
+      return [];
+    }
+  });
+
   const [products, { refetch: refetchProducts }] = createResource(async () => {
     try {
       const { data, error } = await supabase.from('products').select('*');
@@ -1755,20 +1883,17 @@ export default function App() {
         console.error('Supabase fetch error:', error);
         return [];
       }
+      const categoryOptions = productCategories()?.map(c => c.title_en) || PRODUCT_CATEGORY_OPTIONS;
       const mapped = data?.map(p => ({
         ...p,
-        name: { ar: p.name_ar, en: p.name_en },
-        category: normalizeProductCategory(p.category),
+        name: { ar: p.title_ar, en: p.title_en },
+        category: normalizeProductCategory(p.category, categoryOptions),
         mainImage: p.main_image,
         images: p.images || [],
         overview: { ar: p.overview_ar, en: p.overview_en },
-        brochureUrl: p.brochure_url || ''
+        brochureUrl: getAssetUrl(p.brochure_url),
+        pdfUrl: getAssetUrl(p.pdf_url)
       })) || [];
-      console.log('Fetched products:', mapped.length);
-      if (mapped.length === 0) {
-        // Diagnostic alert for the user to help me debug
-        // window.alert('Products fetched: 0. Check console for fetch logs.');
-      }
       return mapped;
     } catch (e) {
       console.error('Fetch exception:', e);
@@ -1782,8 +1907,8 @@ export default function App() {
       if (error) return [];
       const mapped = data?.map(d => ({
         ...d,
-        name: { ar: d.name_ar, en: d.name_en },
-        role: { ar: d.role_ar, en: d.role_en },
+        name: { ar: d.title_ar, en: d.title_en },
+        role: { ar: d.details_ar, en: d.details_en },
         image: d.img
       })) || [];
       console.log('Fetched experts:', mapped.length);
@@ -1825,6 +1950,17 @@ export default function App() {
     return normalizeContactSettings(data || DEFAULT_CONTACT_SETTINGS);
   });
 
+  const [remoteTranslations, { refetch: refetchTranslations }] = createResource(async () => {
+    try {
+      const resp = await fetch('https://ik.imagekit.io/gcare/configs/translations.json?t=' + Date.now());
+      if (!resp.ok) return translationsData;
+      return await resp.json();
+    } catch (e) {
+      console.error('Failed to fetch remote translations:', e);
+      return translationsData;
+    }
+  });
+
   const [currentUserRole] = createResource(session, async (activeSession) => {
     if (!activeSession?.user?.id) return null;
     const { data, error } = await supabase
@@ -1841,14 +1977,18 @@ export default function App() {
     return data?.role || 'publisher';
   });
 
-  const dashboardReady = createMemo(() => {
-    if (!isLoggedIn()) return true
-    return !currentUserRole.loading && !!currentUserRole()
-  })
 
-  const translations = translationsData
+  const translations = createMemo(() => remoteTranslations() || translationsData);
 
-  const t = (key) => translations[lang()]?.[key] ?? key
+  const t = (key) => {
+    const data = translations();
+    const currentLang = lang();
+    const val = data[currentLang]?.[key] ?? translationsData[currentLang]?.[key];
+    if (val) return val;
+    // Fallback for categories: strip the 'cat' prefix if not found in translations
+    if (key.startsWith('cat')) return key.substring(3);
+    return key;
+  };
 
   createEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -1875,11 +2015,11 @@ export default function App() {
   })
 
   const computeRoute = () => {
-    const hash = window.location.hash
+    const hash = (window.location.hash || '').split('?')[0].replace(/\/+$/, '')
     if (hash === '#products') return 'products'
-    if (hash === '#contact-page') return 'contact'
-    if (hash === '#education-page') return 'education'
-    if (hash === '#about-page') return 'about'
+    if (hash === '#contact-page' || hash === '#contact') return 'contact'
+    if (hash.startsWith('#education-page') || hash === '#education') return 'education'
+    if (hash === '#about-page' || hash === '#about') return 'about'
     if (hash === '#dashboard') return 'dashboard'
     return 'home'
   }
@@ -1900,7 +2040,10 @@ export default function App() {
   })
 
   createEffect(() => {
-    if (route() !== 'home') return
+    if (route() !== 'home') {
+      window.scrollTo({ top: 0, behavior: 'instant' })
+      return
+    }
     const hash = window.location.hash
     if (!hash || hash === '#products') return
 
@@ -1923,28 +2066,37 @@ export default function App() {
     <div class="page">
       {route() !== 'dashboard' && <NavBar t={t} lang={lang} setLang={setLang} />}
       {route() === 'products' ? <ProductsPage t={t} setRoute={setRoute} setPrefilledMessage={setPrefilledMessage} lang={lang} activeProduct={activeProduct} setActiveProduct={setActiveProduct} products={products()} /> : null}
-      {route() === 'contact' ? <ContactPage t={t} prefilledMessage={prefilledMessage} setPrefilledMessage={setPrefilledMessage} contactSettings={contactSettings()} /> : null}
+      {route() === 'contact' ? <ContactPage t={t} lang={lang} prefilledMessage={prefilledMessage} setPrefilledMessage={setPrefilledMessage} contactSettings={contactSettings()} /> : null}
       {route() === 'education' ? <EducationPage t={t} education={education()} experts={experts()} lang={lang} contactSettings={contactSettings()} /> : null}
-      {route() === 'about' ? <AboutPage t={t} education={education()} /> : null}
+      {route() === 'about' ? <AboutPage t={t} lang={lang} education={education()} /> : null}
       {route() === 'dashboard' ? (
         <Show when={isLoggedIn()} fallback={<LoginPage t={t} lang={lang} />}>
-          <Show
-            when={dashboardReady()}
-            fallback={
-              <div style={{ padding: '2rem', 'text-align': 'center', color: '#64748b', 'font-weight': 700 }}>
-                {lang() === 'ar' ? 'جاري تحميل لوحة التحكم...' : 'Loading dashboard...'}
-              </div>
-            }
-          >
-            <Dashboard t={t} setRoute={setRoute} lang={lang} setLang={setLang} onLogout={handleLogout} currentUserRole={currentUserRole()} products={products()} experts={experts()} profiles={profiles()} education={education()} partners={partners()} contactSettings={contactSettings()} refreshAll={() => {
+          <Dashboard
+            t={t}
+            setRoute={setRoute}
+            lang={lang}
+            setLang={setLang}
+            onLogout={handleLogout}
+            currentUserRole={currentUserRole()}
+            products={products() || []}
+            productCategories={productCategories() || []}
+            experts={experts() || []}
+            profiles={profiles() || []}
+            education={education() || { articles: [], posters: [] }}
+            partners={partners() || []}
+            contactSettings={contactSettings()}
+            rawTranslations={translations()}
+            refreshAll={() => {
               refetchProducts();
               refetchExperts();
               refetchProfiles();
               refetchEducation();
               refetchPartners();
               refetchContactSettings();
-            }} />
-          </Show>
+              refetchCategories();
+              refetchTranslations();
+            }}
+          />
         </Show>
       ) : null}
       {route() === 'home' ? <HomePage t={t} lang={lang} setActiveProduct={setActiveProduct} products={products()} education={education()} partners={partners()} contactSettings={contactSettings()} /> : null}

@@ -1,94 +1,101 @@
-import { createSignal } from 'solid-js'
-import { supabase, getAssetUrl } from './supabaseClient'
-import './LoginPage.css'
+import { createSignal } from 'solid-js';
+import { supabase, getAssetUrl } from './supabaseClient';
+import './LoginPage.css';
 
 export default function LoginPage(props) {
-    const [email, setEmail] = createSignal('')
-    const [password, setPassword] = createSignal('')
-    const [error, setError] = createSignal('')
-    const [loading, setLoading] = createSignal(false)
+    const [email, setEmail] = createSignal('');
+    const [password, setPassword] = createSignal('');
+    const [loading, setLoading] = createSignal(false);
+    const [error, setError] = createSignal('');
 
     const handleLogin = async (e) => {
-        e.preventDefault()
-        setError('')
-        setLoading(true)
+        e.preventDefault();
+        setLoading(true);
+        setError('');
 
         try {
-            const normalizedEmail = email().trim().toLowerCase()
-            const { error: authError } = await supabase.auth.signInWithPassword({
-                email: normalizedEmail,
-                password: password(),
-            })
+            const { error: loginError } = await supabase.auth.signInWithPassword({
+                email: email(),
+                password: password()
+            });
 
-            if (authError) throw authError
-            // Success: App.jsx listener will handle redirection/state
+            if (loginError) {
+                setError(props.lang() === 'ar' ? 'فشل تسجيل الدخول. يرجى التحقق من بياناتك.' : 'Login failed. Please check your credentials.');
+            }
         } catch (err) {
-            console.error('Login error:', err)
-            const fallback = props.lang() === 'ar' ? 'بيانات الاعتماد غير صحيحة أو الحساب غير موجود' : 'Invalid credentials or user not found'
-            setError(err?.message || fallback)
-            setLoading(false)
+            setError(props.lang() === 'ar' ? 'حدث خطأ غير متوقع.' : 'An unexpected error occurred.');
+        } finally {
+            setLoading(false);
         }
-    }
-
-    const Icon = (iconProps) => {
-        switch (iconProps.name) {
-            case 'lock': return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
-            case 'user': return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
-            case 'arrow-right': return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-7-7 7 7-7 7" /></svg>
-            default: return null
-        }
-    }
+    };
 
     return (
         <div class="login-page-wrapper" dir={props.lang() === 'ar' ? 'rtl' : 'ltr'}>
             <div class="login-card">
+                <img
+                    class="login-logo"
+                    src={getAssetUrl('static/img/G - Care-01.svg')}
+                    alt="G-Care Logo"
+                />
+
                 <div class="login-header">
-                    <img src={getAssetUrl('static/img/G - Care-01.svg')} alt="Logo" class="login-logo" />
-                    <h1>{props.lang() === 'ar' ? 'تسجيل الدخول' : 'Login'}</h1>
-                    <p>{props.lang() === 'ar' ? 'يرجى تسجيل الدخول للمتابعة' : 'Please login to continue'}</p>
+                    <h1>{props.lang() === 'ar' ? 'مرحباً بك' : 'Welcome Back'}</h1>
+                    <p>{props.lang() === 'ar' ? 'سجل الدخول لإدارة موقع G-Care' : 'Sign in to manage G-Care website'}</p>
                 </div>
 
                 <form class="login-form" onSubmit={handleLogin}>
                     <div class="input-group">
-                        <span class="input-icon"><Icon name="user" /></span>
+                        <span class="input-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                <polyline points="22,6 12,13 2,6" />
+                            </svg>
+                        </span>
                         <input
                             type="email"
-                            placeholder={props.lang() === 'ar' ? 'البريد الإلكتروني' : 'Email'}
+                            placeholder={props.lang() === 'ar' ? 'البريد الإلكتروني' : 'Email Address'}
                             value={email()}
-                            onInput={(e) => setEmail(e.target.value)}
+                            onInput={(e) => setEmail(e.currentTarget.value)}
                             required
                         />
                     </div>
 
                     <div class="input-group">
-                        <span class="input-icon"><Icon name="lock" /></span>
+                        <span class="input-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                            </svg>
+                        </span>
                         <input
                             type="password"
                             placeholder={props.lang() === 'ar' ? 'كلمة المرور' : 'Password'}
                             value={password()}
-                            onInput={(e) => setPassword(e.target.value)}
+                            onInput={(e) => setPassword(e.currentTarget.value)}
                             required
                         />
                     </div>
 
                     {error() && <div class="login-error">{error()}</div>}
 
-                    <button type="submit" class="login-submit-btn" disabled={loading()}>
+                    <button class="login-submit-btn" type="submit" disabled={loading()}>
                         {loading() ? (
                             <span class="spinner"></span>
                         ) : (
-                            <>
-                                {props.lang() === 'ar' ? 'دخول' : 'Login'}
-                                <span class="btn-icon"><Icon name="arrow-right" /></span>
-                            </>
+                            <span>{props.lang() === 'ar' ? 'تسجيل الدخول' : 'Sign In'}</span>
+                        )}
+                        {!loading() && (
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                {props.lang() === 'ar' ? <path d="M19 12H5m7 7-7-7 7-7" /> : <path d="M5 12h14m-7-7 7 7-7 7" />}
+                            </svg>
                         )}
                     </button>
                 </form>
 
                 <div class="login-footer">
-                    <p>© 2026 G-Care Medical Company</p>
+                    <p>{props.lang() === 'ar' ? 'جَميع الحقوق محفوظة لشركة G-Care © ٢٠٢٦' : 'All Rights Reserved for G-Care © 2026'}</p>
                 </div>
             </div>
         </div>
-    )
+    );
 }
