@@ -26,3 +26,4 @@ public/admin/env.php
 .env
 venv
 edits/
+deploy_ftp.py

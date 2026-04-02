@@ -1185,13 +1185,14 @@ function LakiPage(props) {
       title,
       category,
       excerpt,
+      type: item.type || (item.category === 'laki_article' ? 'article' : (item.category === 'laki_guide' ? 'guide' : 'guide')),
       linkUrl: item.link_url || '',
       pdfUrl: getAssetUrl(item.pdf_url),
       img: getAssetUrl(item.img)
     };
   }))
 
-  const contentSeries = createMemo(() => allEducationArticles().filter(a => a.type === 'general'))
+  const contentSeries = createMemo(() => allEducationArticles().filter(a => a.type === 'general' || a.type === 'article'))
   const guideList = createMemo(() => allEducationArticles().filter(a => a.type === 'guide' || !a.type))
   const guideCards = createMemo(() => showAllGuides() ? guideList() : guideList().slice(0, 3))
 
@@ -1210,7 +1211,8 @@ function LakiPage(props) {
         category: props.t('lakiPostersTitle'),
         excerpt: props.t('lakiGuidesDesc'),
         img: getAssetUrl(p.img),
-        linkUrl: p.link_url || ''
+        linkUrl: p.link_url || '',
+        type: 'poster'
       }))
 
     return showAllPosters() ? imagePosters : imagePosters.slice(0, 3)
@@ -1357,51 +1359,55 @@ function LakiPage(props) {
       </Show>
 
       {selectedItem() && (
-        <div class="article-detail-modal" onClick={() => setSelectedItem(null)}>
+        <div class={`article-detail-modal type-${selectedItem().type || 'general'}`} onClick={() => setSelectedItem(null)}>
           <div class="modal-content-card" onClick={(e) => e.stopPropagation()}>
             <button class="modal-close-btn" onClick={() => setSelectedItem(null)}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6 6 18M6 6l12 12" /></svg>
             </button>
-            <div class="modal-hero-container">
-              <img src={selectedItem().img} alt="" class="modal-hero-img" />
-            </div>
-            <div class="modal-body-content">
-              <span class="modal-cat-badge">{selectedItem().category}</span>
-              <h2 class="modal-title-h">{selectedItem().title}</h2>
-              <div class="modal-excerpt-p" innerHTML={selectedItem().excerpt}></div>
-              <Show when={selectedItem().pdfUrl}>
-                <div style={{ "margin-top": "1.5rem" }}>
-                  <a
-                    href={selectedItem().pdfUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="btn btn-brand"
-                    style={{ "padding": "1rem 2rem", "border-radius": "12px", "display": "flex", "align-items": "center", "gap": "10px", "justify-content": "center" }}
-                  >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="12" y1="18" x2="12" y2="12" /><polyline points="9 15 12 12 15 15" /></svg>
-                    {props.lang() === 'ar' ? 'تحميل الملف (PDF)' : 'Download PDF'}
-                  </a>
-                </div>
-              </Show>
-              <Show when={selectedItem().linkUrl}>
-                <div style={{ "margin-top": "1.5rem" }}>
-                  <a
-                    href={selectedItem().linkUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="btn btn-pink"
-                    style={{ "padding": "1rem 2rem", "border-radius": "12px", "display": "flex", "align-items": "center", "gap": "10px", "justify-content": "center" }}
-                  >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
-                    {props.lang() === 'ar' ? 'عرض المحتوى الكامل' : 'View Full Content'}
-                  </a>
-                </div>
-              </Show>
+            <div class="modal-body-scroll">
+              <div class="modal-hero-container">
+                <a href={selectedItem().img} target="_blank" rel="noopener noreferrer" style={{ cursor: 'zoom-in' }}>
+                  <img src={selectedItem().img} alt="" class="modal-hero-img" title={props.lang() === 'ar' ? 'عرض الصورة بالحجم الكامل' : 'View Full Size'} />
+                </a>
+              </div>
+              <div class="modal-body-content">
+                <span class="modal-cat-badge">{selectedItem().category}</span>
+                <h2 class="modal-title-h">{selectedItem().title}</h2>
+                <div class="modal-excerpt-p" innerHTML={selectedItem().excerpt}></div>
+                <Show when={selectedItem().pdfUrl}>
+                  <div style={{ "margin-top": "1.5rem" }}>
+                    <a
+                      href={selectedItem().pdfUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="btn btn-brand"
+                      style={{ "padding": "1rem 2rem", "border-radius": "12px", "display": "flex", "align-items": "center", "gap": "10px", "justify-content": "center" }}
+                    >
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="12" y1="18" x2="12" y2="12" /><polyline points="9 15 12 12 15 15" /></svg>
+                      {props.lang() === 'ar' ? 'تحميل الملف (PDF)' : 'Download PDF'}
+                    </a>
+                  </div>
+                </Show>
+                <Show when={selectedItem().linkUrl}>
+                  <div style={{ "margin-top": "1.5rem" }}>
+                    <a
+                      href={selectedItem().linkUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="btn btn-pink"
+                      style={{ "padding": "1rem 2rem", "border-radius": "12px", "display": "flex", "align-items": "center", "gap": "10px", "justify-content": "center" }}
+                    >
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
+                      {props.lang() === 'ar' ? 'عرض المحتوى الكامل' : 'View Full Content'}
+                    </a>
+                  </div>
+                </Show>
+              </div>
             </div>
           </div>
         </div>
       )}
-    </div >
+    </div>
   )
 }
 

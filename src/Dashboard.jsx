@@ -152,12 +152,19 @@ const ImageCropperModal = (props) => {
     let imageRef;
     let cropperInstance;
     const [previewUrl, setPreviewUrl] = createSignal('');
+    const [aspectRatio, setAspectRatio] = createSignal(1);
+
+    createEffect(() => {
+        if (props.isOpen() && props.aspectRatio()) {
+            setAspectRatio(props.aspectRatio());
+        }
+    });
 
     createEffect(() => {
         if (props.isOpen() && props.src() && imageRef) {
             if (cropperInstance) cropperInstance.destroy();
             cropperInstance = new Cropper(imageRef, {
-                aspectRatio: props.aspectRatio || 1 / 1.1,
+                aspectRatio: aspectRatio(),
                 viewMode: 1,
                 dragMode: 'move',
                 autoCropArea: 1,
@@ -178,18 +185,43 @@ const ImageCropperModal = (props) => {
         }
     });
 
+    createEffect(() => {
+        if (cropperInstance && aspectRatio()) {
+            cropperInstance.setAspectRatio(aspectRatio());
+        }
+    });
+
     const updatePreview = () => {
         if (!cropperInstance) return;
         const canvas = cropperInstance.getCroppedCanvas({
             width: 800,
-            height: 880
+            height: 800 / aspectRatio()
         });
         setPreviewUrl(canvas.toDataURL('image/jpeg', 0.9));
     };
 
     const handleConfirm = () => {
         if (!cropperInstance) return;
-        cropperInstance.getCroppedCanvas().toBlob((blob) => {
+
+        let targetWidth = 1200;
+        let targetHeight = 1200 / aspectRatio();
+
+        // Specific sizes if ratio matches
+        if (Math.abs(aspectRatio() - (1200 / 644)) < 0.01) {
+            targetWidth = 1200;
+            targetHeight = 644;
+        } else if (Math.abs(aspectRatio() - (42 / 59.5)) < 0.01) {
+            // Guides/Posters: keep high quality
+            targetWidth = 1000;
+            targetHeight = 1000 / aspectRatio();
+        }
+
+        cropperInstance.getCroppedCanvas({
+            width: targetWidth,
+            height: targetHeight,
+            imageSmoothingEnabled: true,
+            imageSmoothingQuality: 'high'
+        }).toBlob((blob) => {
             props.onConfirm(blob);
             props.onClose();
         }, 'image/jpeg', 0.9);
@@ -201,7 +233,29 @@ const ImageCropperModal = (props) => {
                 <div class="cropper-container-premium fade-in">
                     <div class="cropper-main-area">
                         <div class="cropper-header">
-                            <h3>{props.t('cropImage') || (props.lang() === 'ar' ? 'تعديل وقص الصورة' : 'Edit & Crop Image')}</h3>
+                            <div>
+                                <h3>{props.lang() === 'ar' ? 'تعديل وقص الصورة' : 'Edit & Crop Image'}</h3>
+                                <div class="cropper-ratios">
+                                    <button
+                                        class={`ratio-btn ${aspectRatio() === 1 ? 'active' : ''}`}
+                                        onClick={() => setAspectRatio(1)}
+                                    >
+                                        {props.lang() === 'ar' ? 'مربع (1:1)' : 'Square (1:1)'}
+                                    </button>
+                                    <button
+                                        class={`ratio-btn ${Math.abs(aspectRatio() - (1200 / 644)) < 0.01 ? 'active' : ''}`}
+                                        onClick={() => setAspectRatio(1200 / 644)}
+                                    >
+                                        {props.lang() === 'ar' ? 'مقالات (1200x644px / 31.75x17.05cm)' : 'Articles (1200x644px)'}
+                                    </button>
+                                    <button
+                                        class={`ratio-btn ${Math.abs(aspectRatio() - (42 / 59.5)) < 0.01 ? 'active' : ''}`}
+                                        onClick={() => setAspectRatio(42 / 59.5)}
+                                    >
+                                        {props.lang() === 'ar' ? 'أدلة (42x59.5cm) أو بوسترات (14.8x21cm)' : 'Guides & Posters'}
+                                    </button>
+                                </div>
+                            </div>
                             <button class="action-icon-btn close" onClick={props.onClose}><Icon name="x" /></button>
                         </div>
                         <div class="cropper-canvas-wrap">
@@ -212,22 +266,14 @@ const ImageCropperModal = (props) => {
                         <div>
                             <span class="preview-title-badge">{props.lang() === 'ar' ? 'معاينة مباشرة' : 'Live Preview'}</span>
                             <div class="live-preview-box">
-                                <div class="article-modern-card">
-                                    <div class="article-card-media">
+                                <div class="article-modern-card" style={{ "aspect-ratio": aspectRatio() }}>
+                                    <div class="article-card-media" style={{ "aspect-ratio": aspectRatio() }}>
                                         <Show when={previewUrl()} fallback={<div class="loader-spinner"></div>}>
-                                            <img src={previewUrl()} alt="Preview" />
+                                            <img src={previewUrl()} alt="Preview" style={{ "object-fit": "cover", "width": "100%", "height": "100%" }} />
                                         </Show>
                                         <div class="article-media-overlay">
-                                            <h4>{props.itemTitle() || (props.lang() === 'ar' ? 'عنوان المقال هنا' : 'Article Title Here')}</h4>
+                                            <h4>{props.itemTitle() || (props.lang() === 'ar' ? 'عنوان المحتوى' : 'Content Title')}</h4>
                                         </div>
-                                    </div>
-                                    <div class="article-card-body">
-                                        <h3 class="article-cat">{props.lang() === 'ar' ? 'مقال' : 'Article'}</h3>
-                                        <p class="article-ex">
-                                            {props.lang() === 'ar'
-                                                ? 'هذه معاينة حقيقية لشكل المقال في الصفحة الرئيسية بعد رفع الصورة المقصوصة...'
-                                                : 'This is a real-time preview of how the article will look on the home page...'}
-                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -331,6 +377,7 @@ export default function Dashboard(props) {
     const [croppingSrc, setCroppingSrc] = createSignal('');
     const [isCropperOpen, setIsCropperOpen] = createSignal(false);
     const [cropperCallback, setCropperCallback] = createSignal(null);
+    const [targetAspectRatio, setTargetAspectRatio] = createSignal(1);
 
     createEffect(() => {
         if (props.rawTranslations && Object.keys(props.rawTranslations).length > 0) {
@@ -344,6 +391,8 @@ export default function Dashboard(props) {
         // Return unique keys just in case
         return [...new Set([...base, ...cats])];
     });
+
+    const quickOverviewStatKeys = ['visitorsLabel', 'visitorsBase', 'partnersLabel', 'partnersCount', 'achievementsLabel', 'achievementsValue'];
 
     const getTransLabel = (section, key, lang) => {
         const labelsAr = {
@@ -537,7 +586,26 @@ export default function Dashboard(props) {
         input.accept = 'image/*,video/*';
         input.onchange = (e) => {
             const file = e.target.files[0];
-            if (file) handleAssetUpload(file, titleAr, titleEn, filePrefix);
+            if (!file) return;
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (re) => {
+                    let initialRatio = 1;
+                    if (filePrefix === 'poster' || titleAr.includes('LAKI_BG')) initialRatio = 42 / 59.5;
+                    else if (titleAr.includes('HERO') || titleAr.includes('MAIN')) initialRatio = 1200 / 644;
+
+                    setTargetAspectRatio(initialRatio);
+                    setCroppingSrc(re.target.result);
+                    setCropperCallback(() => (blob) => {
+                        const croppedFile = new File([blob], file.name, { type: 'image/jpeg' });
+                        handleAssetUpload(croppedFile, titleAr, titleEn, filePrefix);
+                    });
+                    setIsCropperOpen(true);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                handleAssetUpload(file, titleAr, titleEn, filePrefix);
+            }
         };
         input.click();
     };
@@ -592,6 +660,11 @@ export default function Dashboard(props) {
             setUploadURLs([...uploadURLs(), ...urls]);
             if (urls.length > 0) setUploadURL(urls[0]);
             setUploadProgress(100);
+
+            if (urls.length > 0) {
+                alert(props.lang() === 'ar' ? 'تم رفع الملفات بنجاح!' : 'Files uploaded successfully!');
+            }
+
             setTimeout(() => {
                 setUploadingType(null);
                 setUploadProgress(0);
@@ -633,6 +706,9 @@ export default function Dashboard(props) {
             setUploadURL(data.filePath);
             setUploadURLs(prev => [...prev, data.filePath]);
             setUploadProgress(100);
+
+            alert(props.lang() === 'ar' ? 'تم رفع الصورة بنجاح!' : 'Image uploaded successfully!');
+
             setTimeout(() => setUploadingType(null), 500);
         } catch (error) {
             console.error('Error uploading:', error);
@@ -905,6 +981,23 @@ export default function Dashboard(props) {
         }
 
         try {
+            // Find the item to get its file paths BEFORE deleting from DB
+            let item = null;
+            if (table === 'products') item = (props.products || []).find(p => p.id === id);
+            else if (table === 'articles') item = (props.education?.articles || []).find(a => a.id === id);
+            else if (table === 'posters') item = (props.education?.posters || []).find(p => p.id === id);
+            else if (table === 'partners') item = (props.partners || []).find(p => p.id === id);
+            else if (table === 'experts') item = (props.experts || []).find(e => e.id === id);
+
+            const filePaths = [];
+            if (item) {
+                if (item.img) filePaths.push(item.img);
+                if (item.main_image) filePaths.push(item.main_image);
+                if (item.pdf_url) filePaths.push(item.pdf_url);
+                if (item.brochure_url) filePaths.push(item.brochure_url);
+                if (Array.isArray(item.images)) item.images.forEach(pth => filePaths.push(pth));
+            }
+
             if (table === 'users') {
                 const { error } = await supabase.rpc('admin_delete_dashboard_user', {
                     p_user_id: id
@@ -916,6 +1009,35 @@ export default function Dashboard(props) {
             }
             props.refreshAll();
             if (table === 'products') cleanupEmptyCategories();
+
+            // Perform ImageKit cleanup in background
+            if (filePaths.length > 0) {
+                const privateKey = import.meta.env.VITE_IMAGEKIT_PRIVATE_KEY;
+                const authHeader = 'Basic ' + btoa(privateKey + ':');
+
+                filePaths.forEach(async (path) => {
+                    if (!path || path.startsWith('static/')) return;
+                    try {
+                        // Search by path to find fileId
+                        const searchRes = await fetch(`https://api.imagekit.io/v1/files?path=${path}`, {
+                            headers: { 'Authorization': authHeader }
+                        });
+                        if (searchRes.ok) {
+                            const files = await searchRes.json();
+                            if (files && files.length > 0) {
+                                const fileId = files[0].fileId;
+                                await fetch(`https://api.imagekit.io/v1/files/${fileId}`, {
+                                    method: 'DELETE',
+                                    headers: { 'Authorization': authHeader }
+                                });
+                                console.log('Deleted from IK:', path);
+                            }
+                        }
+                    } catch (e) {
+                        console.error('IK Cleanup error for:', path, e);
+                    }
+                });
+            }
         } catch (error) {
             console.error('Delete error:', error);
             alert(error?.message || (props.lang() === 'ar' ? 'تعذر الحذف' : 'Delete failed'));
@@ -1009,21 +1131,24 @@ export default function Dashboard(props) {
                     if (!file) return;
                     if (ps.multiple) handleFileUploadBulk(e.dataTransfer.files);
                     else if (ps.pdf) handleFileUploadPDF(file);
-                    else {
-                        if (['article', 'guide', 'poster', 'expert_step', 'expert_why'].includes(modalType())) {
-                            const reader = new FileReader();
-                            reader.onload = (re) => {
-                                setCroppingSrc(re.target.result);
-                                setCropperCallback(() => (blob) => {
-                                    const croppedFile = new File([blob], file.name, { type: 'image/jpeg' });
-                                    handleFileUpload(croppedFile);
-                                });
-                                setIsCropperOpen(true);
-                            };
-                            reader.readAsDataURL(file);
-                        } else {
-                            handleFileUpload(file);
-                        }
+                    else if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = (re) => {
+                            let initialRatio = 1;
+                            if (modalType() === 'article') initialRatio = 1200 / 644;
+                            else if (['guide', 'poster'].includes(modalType())) initialRatio = 42 / 59.5;
+
+                            setTargetAspectRatio(initialRatio);
+                            setCroppingSrc(re.target.result);
+                            setCropperCallback(() => (blob) => {
+                                const croppedFile = new File([blob], file.name, { type: 'image/jpeg' });
+                                handleFileUpload(croppedFile);
+                            });
+                            setIsCropperOpen(true);
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        handleFileUpload(file);
                     }
                 }}
                 onClick={() => document.getElementById(inputId).click()}
@@ -1039,21 +1164,25 @@ export default function Dashboard(props) {
                         if (!file) return;
                         if (ps.multiple) handleFileUploadBulk(e.target.files);
                         else if (ps.pdf) handleFileUploadPDF(file);
-                        else {
-                            if (['article', 'guide', 'poster', 'expert_step', 'expert_why'].includes(modalType())) {
-                                const reader = new FileReader();
-                                reader.onload = (re) => {
-                                    setCroppingSrc(re.target.result);
-                                    setCropperCallback(() => (blob) => {
-                                        const croppedFile = new File([blob], file.name, { type: 'image/jpeg' });
-                                        handleFileUpload(croppedFile);
-                                    });
-                                    setIsCropperOpen(true);
-                                };
-                                reader.readAsDataURL(file);
-                            } else {
-                                handleFileUpload(file);
-                            }
+                        else if (file.type.startsWith('image/')) {
+                            const reader = new FileReader();
+                            reader.onload = (re) => {
+                                let initialRatio = 1;
+                                if (modalType() === 'article') initialRatio = 16 / 10;
+                                else if (['guide', 'poster'].includes(modalType()) || (modalType() === 'product' && activeTab() === 'guides')) initialRatio = 42 / 59.5;
+                                else if (['product', 'expert', 'partner', 'company_value', 'expert_why', 'expert_step'].includes(modalType())) initialRatio = 1;
+
+                                setTargetAspectRatio(initialRatio);
+                                setCroppingSrc(re.target.result);
+                                setCropperCallback(() => (blob) => {
+                                    const croppedFile = new File([blob], file.name, { type: 'image/jpeg' });
+                                    handleFileUpload(croppedFile);
+                                });
+                                setIsCropperOpen(true);
+                            };
+                            reader.readAsDataURL(file);
+                        } else {
+                            handleFileUpload(file);
                         }
                     }}
                 />
@@ -1083,7 +1212,7 @@ export default function Dashboard(props) {
         }
         else if (tab === 'articles') {
             const list = (props.education || {}).articles || [];
-            raw = list.filter(a => a.type === 'general');
+            raw = list.filter(a => a.type === 'article' || a.type === 'general');
         }
         else if (tab === 'guides') {
             const list = (props.education || {}).articles || [];
@@ -2009,6 +2138,55 @@ export default function Dashboard(props) {
                                         <div class="creative-badge">{props.lang() === 'ar' ? 'نشط' : 'Active'}</div>
                                     </div>
                                 </div>
+
+                                <Show when={isAdmin()}>
+                                    <div class="dash-table-container quick-stats-editor fade-in">
+                                        <div class="dash-table-header quick-stats-header">
+                                            <div>
+                                                <h3>{props.lang() === 'ar' ? 'تعديل سريع لإحصائيات الرئيسية' : 'Quick Edit Home Stats'}</h3>
+                                                <p class="quick-stats-subtitle">{props.lang() === 'ar' ? 'تحديث الشركاء والإنجازات وإجمالي الزيارات مباشرة من صفحة الإحصائيات.' : 'Update partners, achievements, and total visits directly from the overview page.'}</p>
+                                            </div>
+                                            <button class="btn-save" onClick={saveTranslations} disabled={loading()}>
+                                                <Icon name="save" size={16} />
+                                                <span>{loading() ? (props.lang() === 'ar' ? 'جاري الحفظ...' : 'Saving...') : (props.lang() === 'ar' ? 'حفظ الإحصائيات' : 'Save Stats')}</span>
+                                            </button>
+                                        </div>
+
+                                        <div class="quick-stats-grid">
+                                            <div class="quick-stats-col">
+                                                <h4 class="lang-title">العربية (AR)</h4>
+                                                <For each={quickOverviewStatKeys}>
+                                                    {(key) => (
+                                                        <div class="form-group premium-group quick-stats-field">
+                                                            <label class="premium-label">{getTransLabel('home', key, 'ar')}</label>
+                                                            <input
+                                                                class="premium-input"
+                                                                value={getTransValue('ar', key)}
+                                                                onInput={(e) => updateTranslation('ar', key, e.currentTarget.value)}
+                                                            />
+                                                        </div>
+                                                    )}
+                                                </For>
+                                            </div>
+
+                                            <div class="quick-stats-col">
+                                                <h4 class="lang-title">English (EN)</h4>
+                                                <For each={quickOverviewStatKeys}>
+                                                    {(key) => (
+                                                        <div class="form-group premium-group quick-stats-field">
+                                                            <label class="premium-label">{getTransLabel('home', key, 'en')}</label>
+                                                            <input
+                                                                class="premium-input"
+                                                                value={getTransValue('en', key)}
+                                                                onInput={(e) => updateTranslation('en', key, e.currentTarget.value)}
+                                                            />
+                                                        </div>
+                                                    )}
+                                                </For>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Show>
                             </div>
                         )}
                     </div>
@@ -2193,7 +2371,16 @@ export default function Dashboard(props) {
                                     <Show when={['article', 'guide'].includes(modalType())}>
                                         <div class="form-group" style={{ "grid-column": "1 / -1" }}>
                                             <label class="premium-label"><Icon name="image" size={16} /> {props.lang() === 'ar' ? 'صورة المقال' : 'Article Image'}</label>
-                                            <FileUploadZone multiple={false} />
+                                            <Show when={uploadURL() || (editingItem() && editingItem()?.img)}>
+                                                <div class="current-file-preview">
+                                                    <img src={getAssetUrl(uploadURL() || editingItem()?.img)} alt="" />
+                                                    <span>{uploadURL() || editingItem()?.img}</span>
+                                                    <button type="button" class="btn-remove" onClick={() => { setUploadURL(''); if (editingItem()) editingItem().img = ''; }}>
+                                                        <Icon name="x" size={16} />
+                                                    </button>
+                                                </div>
+                                            </Show>
+                                            <FileUploadZone multiple={false} id="articleImageInput" />
                                         </div>
                                         <div class="form-group" style={{ "grid-column": "1 / -1" }}>
                                             <label class="premium-label"><Icon name="file-text" size={16} /> {props.lang() === 'ar' ? 'ملف PDF (اختياري)' : 'PDF File (Optional)'}</label>
@@ -2332,6 +2519,7 @@ export default function Dashboard(props) {
             <ImageCropperModal
                 isOpen={isCropperOpen}
                 src={croppingSrc}
+                aspectRatio={targetAspectRatio}
                 onClose={() => setIsCropperOpen(false)}
                 onConfirm={(blob) => cropperCallback()?.(blob)}
                 t={props.t}
