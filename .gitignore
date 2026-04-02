@@ -27,3 +27,4 @@ public/admin/env.php
 venv
 edits/
 deploy_ftp.py
+direct_deploy.py
