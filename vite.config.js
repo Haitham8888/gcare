@@ -4,6 +4,10 @@ import solid from 'vite-plugin-solid'
 const isProd = process.env.NODE_ENV === 'production'
 
 export default defineConfig({
-  base: '/gcare/',
+  base: './',
   plugins: [solid()],
+  server: {
+    host: true,
+    port: 5173
+  }
 })
