@@ -1,50 +1,50 @@
-# G-Care Medical Co. | شركة جي كير الطبية 🏥
+# G-Care Medical Co. | شركة جي كير الطبية
 
-[![Website Status](https://img.shields.io/badge/Status-Live-success.svg)](https://gcare.sa)
-[![Tech Stack](https://img.shields.io/badge/Stack-SolidJS%20%2B%20Supabase-blue.svg)](https://solidjs.com)
+[![Production Status](https://img.shields.io/badge/Status-Active-success.svg)](https://gcare.sa)
+[![Technological Stack](https://img.shields.io/badge/Stack-SolidJS%20%2B%20Supabase-blue.svg)](https://solidjs.com)
 
-هذا المستودع يحتوي على الكود المصدري لموقع **شركة جي كير الطبية**، وهو موقع تعريفي متكامل مع لوحة تحكم إدارية متطورة لإدارة المحتوى والمنتجات والمقالات الطبية.
+هذا المستودع يحتوي على الكود المصدري الرسمي لموقع شركة جي كير الطبية، وهو موقع مؤسسي متكامل يتضمن لوحة تحكم إدارية متطورة لإدارة المحتوى والخدمات والمنشورات الطبية.
 
-This repository contains the source code for the **G-Care Medical Co.** website, profiling a full corporate site integrated with an advanced administrative dashboard for content, product, and medical article management.
-
----
-
-## 🛠️ تقنيات المشروع | Tech Stack
-
-- **Frontend**: [SolidJS](https://www.solidjs.com/) (Vite)
-- **Database & Auth**: [Supabase](https://supabase.com/)
-- **Media Hosting**: [ImageKit.io](https://imagekit.io/)
-- **Deployment**: Custom Python FTP Deployer
+This repository contains the official source code for the G-Care Medical Co. corporate website, including an advanced administrative dashboard for comprehensive management of content, services, and medical publications.
 
 ---
 
-## 🚀 التشغيل والتطوير | Local Development
+## التقنيات المستخدمة | Technological Stack
 
-### المتطلبات | Prerequisites
+- **Frontend Framework**: SolidJS (Vite Build Tool)
+- **Backend & Authentication**: Supabase
+- **Cloud Storage**: ImageKit.io
+- **Deployment Infrastructure**: Custom Python FTP Integration
 
-- **Node.js**: v18.x or higher
-- **npm**: v9.x or higher
-- **Python**: v3.x (for deployment scripts)
+---
 
-### خطوات التشغيل | Setup Instructions
+## بيئة التطوير والتشغيل | Local Development
 
-1. **تثبيت المكتبات | Install dependencies:**
+### المتطلبات التقنية | Prerequisites
+
+- Node.js (Version 18.x or higher)
+- npm (Version 9.x or higher)
+- Python (Version 3.x for deployment scripts)
+
+### تعليمات الإعداد | Setup Instructions
+
+1. **تثبيت الملحقات البرمجية | Install dependencies:**
 
    ```bash
    npm install
    ```
 
-2. **ملف الإعدادات | Environment Variables:**
-   تأكد من وجود ملف `.env` في جذر المشروع يحتوي على الروابط والمفاتيح البرمجية (API Keys).
-   Make sure to have a `.env` file in the root with necessary Supabase and ImageKit credentials.
+2. **تهيئة متغيرات البيئة | Environment Configuration:**
+   يتطلب تشغيل المشروع وجود ملف `.env` في المجلد الرئيسي يحتوي على مفاتيح الربط الخاصة بـ (Supabase & ImageKit).
+   The project requires a `.env` file in the root directory containing valid authentication keys for Supabase and ImageKit services.
 
-3. **تشغيل الموقع محلياً | Start development server:**
+3. **بدأ تشغيل بيئة التطوير | Start development server:**
 
    ```bash
    npm run dev
    ```
 
-4. **بناء النسخة النهائية | Production Build:**
+4. **تجميع الملفات النهائية | Production Build:**
 
    ```bash
    npm run build
@@ -52,21 +52,21 @@ This repository contains the source code for the **G-Care Medical Co.** website,
 
 ---
 
-## 📂 هيكلية المجلدات | Folder Structure
+## هيكلية ملفات المشروع | Project Structure
 
-- `src/`: الأكواد البرمجية والمكونات (Components & Logic).
-- `public/`: الصور والملفات الثابتة (Static Assets).
-- `dist/`: المخرجات النهائية الجاهزة للنشر (Built Assets).
-- `setup_db.py`: سكربت تهيئة قاعدة البيانات (Database initialization).
-- `deploy_ftp.py`: أداة الرفع الآلي للسيرفر (Automatic Deployment script).
+- `src/`: الأكواد المصدرية والمكونات المنطقية للمشروع.
+- `public/`: الوسائط والملفات الثابتة.
+- `dist/`: المخرجات النهائية الجاهزة للنشر المباشر.
+- `setup_db.py`: معالج تهيئة جداول قاعدة البيانات.
+- `deploy_ftp.py`: أداة الأتمتة الخاصة بالرفع للسيرفر الرئيسي.
 
 ---
 
-## 🏗️ النشر والتحديث | Deployment
+## النشر وإدارة التحديثات | Deployment Management
 
-تم توفير سكربت خاص بلغة بايثون للقيام بعملية النشر التلقائي للسيرفر الرئيسي عبر بروتوكول FTP:
+تم دمج أداة مخصصة بلغة بايثون لتسهيل عملية النشر الآلي لبيئة الإنتاج عبر بروتوكول FTP لضمان استمرارية الخدمة:
 
-We provided a custom Python script for automatic deployment to the main production server via FTP:
+A specialized Python automation tool is integrated to facilitate seamless deployment to the production environment via FTP, ensuring service continuity:
 
 ```bash
 python deploy_ftp.py
@@ -74,11 +74,11 @@ python deploy_ftp.py
 
 ---
 
-## 📞 الدعم الفني | Technical Support
+## الضمان والدعم الفني | Technical Support & Warranty
 
-يتمتع العميل بفترة دعم فني مجانية لمدة **5 أشهر** من تاريخ التسليم النهائي لضمان استقرار التشغيل وصيانة أي أخطاء برمجية.
+تلتزم إدارة المشروع بتقديم دعم فني تقني شامل لمدة خمسة (5) أشهر من تاريخ التسليم النهائي، وذلك لضمان استقرار الأنظمة البرمجية ومعالجة أي خلل تقني طارئ.
 
-The client is entitled to **5 months** of complimentary technical support from the final delivery date to ensure operational stability and bug fixes.
+The project management is committed to providing comprehensive technical support for a period of five (5) months from the final delivery date, ensuring system stability and addressing any technical malfunctions.
 
 ---
 
