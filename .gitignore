@@ -28,3 +28,9 @@ venv
 edits/
 # deploy_ftp.py
 direct_deploy.py
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
