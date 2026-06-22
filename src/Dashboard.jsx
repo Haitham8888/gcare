@@ -1,6 +1,5 @@
 import { createSignal, createMemo, Show, For, createEffect, onCleanup, onMount } from 'solid-js';
 import { supabase, getAssetUrl } from './supabaseClient';
-import ImageKit from 'imagekit-javascript';
 import './Dashboard.css';
 import Cropper from 'cropperjs';
 import 'cropperjs/dist/cropper.css';
@@ -39,6 +38,7 @@ function Icon(props) {
         'italic': <svg width={props.size || 14} height={props.size || 14} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="4" x2="10" y2="4" /><line x1="14" y1="20" x2="5" y2="20" /><line x1="15" y1="4" x2="9" y2="20" /></svg>,
         'underline': <svg width={props.size || 14} height={props.size || 14} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v7a6 6 0 0 0 12 0V3" /><line x1="4" y1="21" x2="20" y2="21" /></svg>,
         'list': <svg width={props.size || 14} height={props.size || 14} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" /></svg>,
+        'upload-cloud': <svg width={props.size || 20} height={props.size || 20} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width={props.stroke || 2} stroke-linecap="round" stroke-linejoin="round"><path d="M12 13v8" /><path d="m8 17 4-4 4 4" /><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3" /><path d="M16 16h1a3 3 0 0 0 0-6h-.5" /></svg>,
     };
     return icons[props.name] || null;
 }
@@ -350,7 +350,7 @@ export default function Dashboard(props) {
         };
     };
 
-    const [activeTab, setActiveTab] = createSignal('overview');
+    const [activeTab, setActiveTab] = createSignal(readStoredDashboardTab() || 'overview');
     const [mediaSubTab, setMediaSubTab] = createSignal(null);
     const [isSidebarOpen, setIsSidebarOpen] = createSignal(false);
     const [isModalOpen, setIsModalOpen] = createSignal(false);
@@ -478,16 +478,77 @@ export default function Dashboard(props) {
     const setActiveTabPersisted = (tabId) => {
         setActiveTab(tabId);
         setMediaSubTab(null);
+        storeDashboardTab(tabId);
         if (window.innerWidth <= 1024) setIsSidebarOpen(false);
+    };
+
+    const getDashboardAuthHeaders = async () => {
+        const { data: { session } } = await supabase.auth.getSession();
+        return session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {};
+    };
+
+    const getImageKitUploadAuth = async () => {
+        const authEndpoint = import.meta.env.VITE_IMAGEKIT_AUTH_ENDPOINT;
+        const publicKey = import.meta.env.VITE_IMAGEKIT_PUBLIC_KEY;
+
+        if (!authEndpoint || !publicKey) {
+            throw new Error(props.lang() === 'ar'
+                ? 'إعدادات رفع الملفات الآمنة غير مكتملة. يرجى ضبط VITE_IMAGEKIT_AUTH_ENDPOINT و VITE_IMAGEKIT_PUBLIC_KEY.'
+                : 'Secure upload settings are incomplete. Configure VITE_IMAGEKIT_AUTH_ENDPOINT and VITE_IMAGEKIT_PUBLIC_KEY.');
+        }
+
+        const response = await fetch(authEndpoint, {
+            headers: await getDashboardAuthHeaders(),
+            credentials: 'include'
+        });
+
+        if (!response.ok) throw new Error('ImageKit auth failed');
+        const auth = await response.json();
+
+        if (!auth.token || !auth.signature || !auth.expire) {
+            throw new Error('Invalid ImageKit auth response');
+        }
+
+        return { ...auth, publicKey };
+    };
+
+    const uploadImageKitForm = async (formData) => {
+        const auth = await getImageKitUploadAuth();
+        formData.append('publicKey', auth.publicKey);
+        formData.append('token', auth.token);
+        formData.append('signature', auth.signature);
+        formData.append('expire', auth.expire);
+
+        return fetch('https://upload.imagekit.io/api/v1/files/upload', {
+            method: 'POST',
+            body: formData
+        });
+    };
+
+    const deleteImageKitFileByPath = async (path) => {
+        const manageEndpoint = import.meta.env.VITE_IMAGEKIT_MANAGE_ENDPOINT;
+        if (!manageEndpoint) {
+            console.warn('Skipping ImageKit cleanup: VITE_IMAGEKIT_MANAGE_ENDPOINT is not configured');
+            return;
+        }
+
+        const response = await fetch(manageEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(await getDashboardAuthHeaders())
+            },
+            credentials: 'include',
+            body: JSON.stringify({ action: 'deleteByPath', path })
+        });
+
+        if (!response.ok) throw new Error('ImageKit cleanup failed');
     };
 
     const saveTranslations = async () => {
         if (!isAdmin()) return;
         setLoading(true);
         try {
-            const privateKey = import.meta.env.VITE_IMAGEKIT_PRIVATE_KEY;
-            const authHeader = 'Basic ' + btoa(privateKey + ':');
-
             const jsonStr = JSON.stringify(transData(), null, 2);
             const blob = new Blob([jsonStr], { type: 'application/json' });
             const file = new File([blob], "translations.json");
@@ -499,11 +560,7 @@ export default function Dashboard(props) {
             formData.append('folder', 'configs');
             formData.append('overwriteFile', 'true');
 
-            const response = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
-                method: 'POST',
-                headers: { 'Authorization': authHeader },
-                body: formData
-            });
+            const response = await uploadImageKitForm(formData);
 
             if (!response.ok) throw new Error('Upload failed');
 
@@ -544,19 +601,13 @@ export default function Dashboard(props) {
     const handleAssetUpload = async (file, titleAr, titleEn, filePrefix) => {
         setLoading(true);
         try {
-            const privateKey = import.meta.env.VITE_IMAGEKIT_PRIVATE_KEY;
-            const authHeader = 'Basic ' + btoa(privateKey + ':');
             const formData = new FormData();
             formData.append('file', file);
             formData.append('fileName', `${filePrefix}-${Date.now()}.${file.type.split('/')[1] || 'png'}`);
             formData.append('useUniqueFileName', 'false');
             formData.append('folder', 'website_assets');
 
-            const resp = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
-                method: 'POST',
-                headers: { 'Authorization': authHeader },
-                body: formData
-            });
+            const resp = await uploadImageKitForm(formData);
             const resJson = await resp.json();
             if (!resp.ok) throw new Error();
 
@@ -574,7 +625,7 @@ export default function Dashboard(props) {
             alert(props.lang() === 'ar' ? 'تم التحديث بنجاح' : 'Updated successfully');
             props.refreshAll();
         } catch (err) {
-            alert(props.lang() === 'ar' ? 'فشل التحديث' : 'Update failed');
+            alert(err?.message || (props.lang() === 'ar' ? 'فشل التحديث' : 'Update failed'));
         } finally {
             setLoading(false);
         }
@@ -634,8 +685,6 @@ export default function Dashboard(props) {
         try {
             const urls = [];
             const total = files.length;
-            const privateKey = import.meta.env.VITE_IMAGEKIT_PRIVATE_KEY;
-            const authHeader = 'Basic ' + btoa(privateKey + ':');
 
             for (let i = 0; i < total; i++) {
                 const file = files[i];
@@ -645,11 +694,7 @@ export default function Dashboard(props) {
                 formData.append('useUniqueFileName', 'true');
                 formData.append('folder', 'uploads');
 
-                const response = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
-                    method: 'POST',
-                    headers: { 'Authorization': authHeader },
-                    body: formData
-                });
+                const response = await uploadImageKitForm(formData);
                 if (response.ok) {
                     const data = await response.json();
                     urls.push(data.filePath);
@@ -671,7 +716,7 @@ export default function Dashboard(props) {
             }, 500);
         } catch (error) {
             console.error('Error uploading:', error.message);
-            alert(props.lang() === 'ar' ? 'فشل تحميل بعض الملفات' : 'Upload failed for some files');
+            alert(error?.message || (props.lang() === 'ar' ? 'فشل تحميل بعض الملفات' : 'Upload failed for some files'));
             setUploadingType(null);
         }
     };
@@ -687,15 +732,8 @@ export default function Dashboard(props) {
             formData.append('useUniqueFileName', 'true');
             formData.append('folder', 'uploads');
 
-            const privateKey = import.meta.env.VITE_IMAGEKIT_PRIVATE_KEY;
-            const authHeader = 'Basic ' + btoa(privateKey + ':');
-
             setUploadProgress(60);
-            const response = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
-                method: 'POST',
-                headers: { 'Authorization': authHeader },
-                body: formData
-            });
+            const response = await uploadImageKitForm(formData);
 
             if (!response.ok) {
                 const errData = await response.json();
@@ -712,7 +750,7 @@ export default function Dashboard(props) {
             setTimeout(() => setUploadingType(null), 500);
         } catch (error) {
             console.error('Error uploading:', error);
-            alert(props.lang() === 'ar' ? 'فشل رفع الملف!' : 'File upload failed!');
+            alert(error?.message || (props.lang() === 'ar' ? 'فشل رفع الملف!' : 'File upload failed!'));
             setUploadingType(null);
         }
     };
@@ -728,15 +766,8 @@ export default function Dashboard(props) {
             formData.append('useUniqueFileName', 'true');
             formData.append('folder', 'pdfs');
 
-            const privateKey = import.meta.env.VITE_IMAGEKIT_PRIVATE_KEY;
-            const authHeader = 'Basic ' + btoa(privateKey + ':');
-
             setUploadProgress(60);
-            const response = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
-                method: 'POST',
-                headers: { 'Authorization': authHeader },
-                body: formData
-            });
+            const response = await uploadImageKitForm(formData);
 
             if (!response.ok) {
                 const errData = await response.json();
@@ -749,7 +780,7 @@ export default function Dashboard(props) {
             setTimeout(() => setUploadingType(null), 500);
         } catch (error) {
             console.error('Error uploading PDF:', error);
-            alert(props.lang() === 'ar' ? 'فشل رفع ملف PDF!' : 'PDF upload failed!');
+            alert(error?.message || (props.lang() === 'ar' ? 'فشل رفع ملف PDF!' : 'PDF upload failed!'));
             setUploadingType(null);
         }
     };
@@ -830,6 +861,7 @@ export default function Dashboard(props) {
         if (imageRequiredTypes.includes(modalType())) {
             if (!uploadURL() && uploadURLs().length === 0) {
                 alert(props.lang() === 'ar' ? 'يرجى رفع صورة أولاً' : 'Please upload at least one image');
+                setLoading(false);
                 return;
             }
         }
@@ -908,8 +940,7 @@ export default function Dashboard(props) {
                         title_en: data.title_en,
                         details_ar: data.details_ar,
                         details_en: data.details_en,
-                        img: uploadURL(),
-                        order_index: parseInt(data.order_index) || 0
+                        img: uploadURL()
                     };
                 } else if (['article', 'guide', 'expert_step', 'expert_why', 'company_value'].includes(modalType())) {
                     finalData = {
@@ -987,7 +1018,7 @@ export default function Dashboard(props) {
             else if (table === 'articles') item = (props.education?.articles || []).find(a => a.id === id);
             else if (table === 'posters') item = (props.education?.posters || []).find(p => p.id === id);
             else if (table === 'partners') item = (props.partners || []).find(p => p.id === id);
-            else if (table === 'experts') item = (props.experts || []).find(e => e.id === id);
+            else if (table === 'doctors') item = (props.experts || []).find(e => e.id === id);
 
             const filePaths = [];
             if (item) {
@@ -1012,27 +1043,10 @@ export default function Dashboard(props) {
 
             // Perform ImageKit cleanup in background
             if (filePaths.length > 0) {
-                const privateKey = import.meta.env.VITE_IMAGEKIT_PRIVATE_KEY;
-                const authHeader = 'Basic ' + btoa(privateKey + ':');
-
                 filePaths.forEach(async (path) => {
                     if (!path || path.startsWith('static/')) return;
                     try {
-                        // Search by path to find fileId
-                        const searchRes = await fetch(`https://api.imagekit.io/v1/files?path=${path}`, {
-                            headers: { 'Authorization': authHeader }
-                        });
-                        if (searchRes.ok) {
-                            const files = await searchRes.json();
-                            if (files && files.length > 0) {
-                                const fileId = files[0].fileId;
-                                await fetch(`https://api.imagekit.io/v1/files/${fileId}`, {
-                                    method: 'DELETE',
-                                    headers: { 'Authorization': authHeader }
-                                });
-                                console.log('Deleted from IK:', path);
-                            }
-                        }
+                        await deleteImageKitFileByPath(path);
                     } catch (e) {
                         console.error('IK Cleanup error for:', path, e);
                     }
@@ -2044,7 +2058,7 @@ export default function Dashboard(props) {
                                         <div class="stat-icon-bg"><Icon name="book-open" stroke={2.5} /></div>
                                         <div class="dash-stat-info">
                                             <span class="dash-stat-label">{props.lang() === 'ar' ? 'المقالات' : 'Articles'}</span>
-                                            <span class="dash-stat-value">{((props.education || {}).articles || []).filter(a => a.type === 'general').length}</span>
+                                            <span class="dash-stat-value">{((props.education || {}).articles || []).filter(a => a.type === 'article' || a.type === 'general').length}</span>
                                         </div>
                                         <Show when={isAdmin()}>
                                             <button class="edit-stat-btn" onClick={() => setActiveTabPersisted('articles')} title="Manage Articles">

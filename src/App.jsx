@@ -553,7 +553,7 @@ function Products(props) {
                   <div class="tab-content">
                     <Show when={activeTab() === 'overview'}>
                       <div class="tab-pane fade-in">
-                        <p>{props.activeProduct().overview[props.lang()]}</p>
+                        <div innerHTML={props.activeProduct().overview[props.lang()]} />
                       </div>
                     </Show>
                     <Show when={activeTab() === 'specs'}>
