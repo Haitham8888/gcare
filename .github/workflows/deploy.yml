@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [gh-pages]
+    branches: [master]
   workflow_dispatch:
 
 permissions:
@@ -25,13 +25,19 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
 
       - name: Install
         run: npm ci
 
       - name: Build
         run: npm run build
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
+          VITE_IMAGEKIT_PUBLIC_KEY: ${{ secrets.VITE_IMAGEKIT_PUBLIC_KEY }}
+          VITE_IMAGEKIT_URL_ENDPOINT: ${{ secrets.VITE_IMAGEKIT_URL_ENDPOINT }}
+          VITE_IMAGEKIT_PRIVATE_KEY: ${{ secrets.VITE_IMAGEKIT_PRIVATE_KEY }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -74,5 +80,16 @@ jobs:
           port: ${{ secrets.FTP_PORT }}
           local-dir: ./dist/
           server-dir: ./
-          timeout: 60000
-          passive: true
+          dangerous-clean-slate: false
+          timeout: 120000
+          exclude: |
+            **/node_modules/**
+            **/.git*
+            **/.git*/**
+            **/admin/**
+            **/cgi-bin/**
+            **/.well-known/**
+            **/static/img/products/**
+            **/static/img/Products/**
+            **/static/img/*HealthEducation/**
+            **/static/img/experts/**

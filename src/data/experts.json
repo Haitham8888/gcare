@@ -1,0 +1,25 @@
+{
+    "experts": [
+        {
+            "name_ar": "د. سارة الأحمد",
+            "name_en": "Dr. Sarah Al-Ahmed",
+            "role_ar": "استشارية طب النساء والولادة",
+            "role_en": "Consultant OB/GYN",
+            "img": "static/img/0c672357-323e-4792-8605-0e4f67c43db9.jpg"
+        },
+        {
+            "name_ar": "د. ليلى مروان",
+            "name_en": "Dr. Layla Marwan",
+            "role_ar": "أخصائية تثقيف صحي",
+            "role_en": "Health Educator",
+            "img": "static/img/45a473c7-debf-48cc-9a41-b9d61c38a0f1.jpg"
+        },
+        {
+            "name_ar": "د. نورة التميمي",
+            "name_en": "Dr. Noura Al-Tamimi",
+            "role_ar": "استشارية غدد صماء",
+            "role_en": "Consultant Endocrinologist",
+            "img": "static/img/ba862794-b872-49ac-be68-d173678fcbed.jpg"
+        }
+    ]
+}

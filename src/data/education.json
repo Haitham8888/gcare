@@ -1,0 +1,42 @@
+{
+    "articles": [
+        {
+            "id": 1,
+            "title_key": "lakiSeries1Title",
+            "category_key": "lakiSeries1Cat",
+            "excerpt_key": "lakiSeries1Ex",
+            "img": "static/img/HealthEducation/health_edu_3.png"
+        },
+        {
+            "id": 2,
+            "title_key": "lakiSeries2Title",
+            "category_key": "lakiSeries2Cat",
+            "excerpt_key": "lakiSeries2Ex",
+            "img": "static/img/HealthEducation/health_edu_4.png"
+        },
+        {
+            "id": 3,
+            "title_key": "lakiSeries3Title",
+            "category_key": "lakiSeries3Cat",
+            "excerpt_key": "lakiSeries3Ex",
+            "img": "static/img/HealthEducation/health_edu_5.png"
+        }
+    ],
+    "posters": [
+        {
+            "id": 1,
+            "title_key": "lakiLatest1",
+            "img": "static/img/HealthEducation/health_edu_3.png"
+        },
+        {
+            "id": 2,
+            "title_key": "lakiLatest2",
+            "img": "static/img/HealthEducation/health_edu_4.png"
+        },
+        {
+            "id": 3,
+            "title_key": "lakiLatest3",
+            "img": "static/img/HealthEducation/health_edu_5.png"
+        }
+    ]
+}
